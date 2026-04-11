@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specialized Tech Solutions - Shiv Technology</title>
+    <meta name="description" content="Specialized tech solutions tailored to your business needs. Custom-built, compliant, scalable, and seamlessly integrated technology services">
+     <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+
+    <style type="text/tailwindcss">
+    @layer theme {
+        :root {
+            --primary-color: #0a1931;
+            --secondary-color: #b3cfe5;
+            --accent-color: #4a7fa7;
+            --tertiary-color: #1a3d63;
+            --light-bg: #f6fafd;
+            --neon-blue: #00d4ff;
+            --neon-cyan: #00fff5;
+            --neon-purple: #b537f2;
+        }
+    }
+
+    @layer utilities {
+        .cyber-grid {
+            background: 
+                linear-gradient(90deg, transparent 49%, rgba(0,212,255,0.1) 50%, transparent 51%),
+                linear-gradient(180deg, transparent 49%, rgba(0,212,255,0.1) 50%, transparent 51%);
+            background-size: 100px 100px;
+        }
+    }
+    </style>
+</head>
+<body class="bg-[var(--primary-color)] cyber-grid">
+    <div id="root"></div>
+    
+    <script type="text/babel" src="components/Header.js"></script>
+    <script type="text/babel" src="components/SpecializedTechPage.js"></script>
+    <script type="text/babel" src="components/Footer.js"></script>
+    <script type="text/babel" src="specialized-tech-app.js"></script>
+</body>
+</html>
