@@ -37,7 +37,6 @@ function HelpdeskApp() {
         <Header />
         <HelpdeskPage />
         <Footer />
-        <Chatbot />
       </div>
     );
   } catch (error) {
