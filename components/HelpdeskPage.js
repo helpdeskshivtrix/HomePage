@@ -117,7 +117,7 @@ function HelpdeskPage() {
 
                     {submitStatus === 'error' && (
                       <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6 text-red-300 text-center">
-                        Failed to submit ticket. Please try Whatsapp +91 9593594429
+                        Failed to submit ticket. Please try Whatsapp +91 8424008055
                       </div>
                     )}
 
@@ -166,9 +166,9 @@ function HelpdeskPage() {
                     <div className="flex gap-4">
                       <button
                         className="flex-1 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-all"
-                        onClick={() => window.location.href = "tel:+919593594429"}
+                        onClick={() => window.location.href = "tel:+918424008055"}
                       >
-                        Call Us: +91 9593594429
+                        Call Us: +91 8424008055
                       </button>
 
                       <button
@@ -210,14 +210,14 @@ function HelpdeskPage() {
                     {/* Email */}
                     <div
                       className="flex items-center cursor-pointer"
-                      onClick={() => window.location.href = "mailto:helpdesk.shivtrix.co.in@gmail.com"}
+                      onClick={() => window.location.href = "mailto:support@shivtrix.co.in"}
                     >
                       <div className="w-10 h-10 bg-[var(--accent-color)] rounded-lg flex items-center justify-center mr-3">
                         <div className="icon-mail text-lg text-white"></div>
                       </div>
                       <div>
                         <div className="text-white font-semibold">Email Support</div>
-                        <div className="text-[var(--secondary-color)] text-sm">helpdesk.shivtrix.co.in@gmail.com</div>
+                        <div className="text-[var(--secondary-color)] text-sm">support@shivtrix.co.in</div>
                       </div>
                     </div>
 
