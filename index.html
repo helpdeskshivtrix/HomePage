@@ -10,7 +10,6 @@
 
 :root{
   --bg:#F2F2F7;
-  --bg-grouped:#E5E5EA;
   --card:#FFFFFF;
   --ink:#1C1C1E;
   --ink2:#3A3A3C;
@@ -20,321 +19,157 @@
   --saffron:#FF6B00;
   --saffron-pale:#FFF4EC;
   --saffron-deep:#CC5500;
-  --radius-xs:8px;
-  --radius-sm:12px;
+  --neon-blue:#00B4FF;
   --radius:18px;
   --radius-lg:22px;
-  --radius-xl:28px;
 }
 
-body{
-  font-family:'Figtree',system-ui,-apple-system,sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  min-height:100vh;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-}
+body{font-family:'Figtree',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
 
-/* ── HEADER ── */
-header{
-  position:sticky;top:0;z-index:200;
-  background:rgba(242,242,247,.82);
-  backdrop-filter:blur(20px) saturate(180%);
-  -webkit-backdrop-filter:blur(20px) saturate(180%);
-  border-bottom:0.5px solid var(--separator);
-}
-.header-inner{
-  max-width:1200px;margin:0 auto;
-  padding:0 20px;
-  height:60px;
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-}
-.logo{
-  display:flex;flex-direction:column;
-  line-height:1;
-}
-.logo-name{
-  font-size:1.05rem;font-weight:800;letter-spacing:-0.4px;
-  color:var(--ink);
-}
+/* HEADER */
+header{position:sticky;top:0;z-index:200;background:rgba(242,242,247,.82);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:0.5px solid var(--separator);}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.logo{display:flex;flex-direction:column;line-height:1;}
+.logo-name{font-size:1.05rem;font-weight:800;letter-spacing:-0.4px;color:var(--ink);}
 .logo-name span{color:var(--saffron);}
-.logo-sub{
-  font-size:.65rem;font-weight:500;color:var(--muted);
-  letter-spacing:.03em;margin-top:2px;
-}
-
-.search-pill{
-  flex:1;max-width:380px;
-  display:flex;align-items:center;gap:8px;
-  background:rgba(118,118,128,.12);
-  border-radius:12px;
-  padding:0 12px;height:38px;
-  border:none;transition:background .2s;
-}
+.logo-sub{font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:.03em;margin-top:2px;}
+.search-pill{flex:1;max-width:380px;display:flex;align-items:center;gap:8px;background:rgba(118,118,128,.12);border-radius:12px;padding:0 12px;height:38px;border:none;transition:background .2s;}
 .search-pill:focus-within{background:rgba(118,118,128,.2);}
 .search-pill svg{color:var(--muted);flex-shrink:0;width:16px;height:16px;}
-.search-pill input{
-  border:none;background:transparent;
-  font-family:inherit;font-size:.88rem;color:var(--ink);
-  flex:1;outline:none;
-}
+.search-pill input{border:none;background:transparent;font-family:inherit;font-size:.88rem;color:var(--ink);flex:1;outline:none;}
 .search-pill input::placeholder{color:var(--muted);}
-.clear-x{
-  background:rgba(118,118,128,.4);border:none;
-  width:18px;height:18px;border-radius:50%;
-  display:none;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;color:#fff;font-size:.65rem;font-weight:700;
-}
+.clear-x{background:rgba(118,118,128,.4);border:none;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:#fff;font-size:.65rem;font-weight:700;}
 .clear-x.on{display:flex;}
 
-/* ── HERO ── */
-.hero{
-  background:var(--saffron);
-  padding:64px 20px 56px;
-  text-align:center;
-  position:relative;overflow:hidden;
-}
-.hero::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(255,255,255,.18),transparent);
-  pointer-events:none;
-}
-.hero-eyebrow{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,255,255,.22);
-  border:1px solid rgba(255,255,255,.3);
-  color:rgba(255,255,255,.95);
-  font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  padding:5px 14px;border-radius:50px;
-  margin-bottom:20px;
-}
-.hero h1{
-  font-size:clamp(2rem,5vw,3.2rem);
-  font-weight:800;color:#fff;
-  letter-spacing:-1.5px;line-height:1.1;
-  margin-bottom:14px;
-}
+/* HERO */
+.hero{background:var(--saffron);padding:64px 20px 56px;text-align:center;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(255,255,255,.18),transparent);pointer-events:none;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.95);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 14px;border-radius:50px;margin-bottom:20px;}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px;}
 .hero h1 span{opacity:.85;}
-.hero p{
-  color:rgba(255,255,255,.82);
-  font-size:.98rem;font-weight:400;line-height:1.65;
-  max-width:480px;margin:0 auto 28px;
-}
-.hero-cta{
-  display:inline-flex;align-items:center;gap:8px;
-  background:#fff;color:var(--saffron-deep);
-  font-family:inherit;font-size:.88rem;font-weight:700;
-  padding:13px 26px;border-radius:50px;border:none;cursor:pointer;
-  text-decoration:none;
-  transition:transform .15s,box-shadow .15s;
-  box-shadow:0 4px 20px rgba(0,0,0,.15);
-}
+.hero p{color:rgba(255,255,255,.82);font-size:.98rem;line-height:1.65;max-width:480px;margin:0 auto 28px;}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--saffron-deep);font-family:inherit;font-size:.88rem;font-weight:700;padding:13px 26px;border-radius:50px;border:none;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(0,0,0,.15);}
 .hero-cta:hover{transform:scale(1.03);box-shadow:0 6px 28px rgba(0,0,0,.22);}
 
-/* ── PILL ROW ── */
-.stats-row{
-  background:var(--ink);
-  padding:14px 20px;
-  display:flex;align-items:center;justify-content:center;
-  gap:28px;flex-wrap:wrap;
-}
-.stat{
-  display:flex;flex-direction:column;align-items:center;gap:1px;
-}
+/* STATS */
+.stats-row{background:var(--ink);padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;}
+.stat{display:flex;flex-direction:column;align-items:center;gap:1px;}
 .stat-val{font-size:1.15rem;font-weight:800;color:var(--saffron);}
 .stat-lbl{font-size:.65rem;font-weight:500;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;}
 
-/* ── MAIN ── */
+/* MAIN */
 main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
+.top-bar{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:6px;padding:0 4px;}
+.section-title{font-size:1.4rem;font-weight:800;letter-spacing:-.5px;color:var(--ink);}
+.count-lbl{font-size:.78rem;font-weight:500;color:var(--muted);}
 
-.top-bar{
-  display:flex;align-items:baseline;justify-content:space-between;
-  margin-bottom:16px;flex-wrap:wrap;gap:6px;
-  padding:0 4px;
-}
-.section-title{
-  font-size:1.4rem;font-weight:800;letter-spacing:-.5px;color:var(--ink);
-}
-.count-lbl{
-  font-size:.78rem;font-weight:500;color:var(--muted);
-}
-
-/* ── CATEGORY FILTERS ── */
-.cat-row{
-  display:flex;gap:7px;flex-wrap:wrap;
-  margin-bottom:24px;padding:0 2px;
-}
-.cat-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  background:var(--card);
-  border:0.5px solid var(--separator2);
-  color:var(--ink2);
-  font-family:inherit;font-size:.78rem;font-weight:600;
-  padding:8px 16px;border-radius:50px;cursor:pointer;
-  transition:all .16s;white-space:nowrap;
-  -webkit-tap-highlight-color:transparent;
-}
+/* FILTERS */
+.cat-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:24px;padding:0 2px;}
+.cat-btn{display:inline-flex;align-items:center;gap:5px;background:var(--card);border:0.5px solid var(--separator2);color:var(--ink2);font-family:inherit;font-size:.78rem;font-weight:600;padding:8px 16px;border-radius:50px;cursor:pointer;transition:all .16s;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
 .cat-btn:hover{background:var(--saffron-pale);border-color:var(--saffron);color:var(--saffron);}
-.cat-btn.active{
-  background:var(--ink);border-color:var(--ink);
-  color:#fff;
-}
+.cat-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
 
-/* ── GRID ── */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:12px;
-}
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
 
-/* ── CARD ── */
-.card{
-  background:var(--card);
-  border-radius:var(--radius-lg);
-  border:0.5px solid var(--separator);
-  padding:18px 16px 14px;
-  display:flex;flex-direction:column;gap:12px;
-  cursor:default;
-  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
-  animation:pop .3s ease both;
-}
-.card:hover{
-  transform:translateY(-4px) scale(1.01);
-  box-shadow:0 12px 40px rgba(0,0,0,.1);
-  border-color:rgba(0,0,0,.1);
-}
-.card-head{
-  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
-}
-.cat-icon-wrap{
-  width:44px;height:44px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.35rem;flex-shrink:0;
-}
-.badge{
-  font-size:.63rem;font-weight:700;letter-spacing:.03em;
-  padding:4px 9px;border-radius:6px;
-  text-align:right;line-height:1.5;margin-top:2px;
-  text-transform:uppercase;
-}
-.card-name{
-  font-size:.88rem;font-weight:700;color:var(--ink);
-  line-height:1.4;flex:1;
-  font-feature-settings:"kern" 1;
-}
-.wa-btn{
-  display:flex;align-items:center;justify-content:center;gap:7px;
-  background:var(--ink);color:#fff;
-  font-family:inherit;font-size:.78rem;font-weight:700;
-  padding:10px 14px;border-radius:12px;border:none;
-  text-decoration:none;cursor:pointer;
-  transition:background .18s,transform .15s;
-  margin-top:auto;letter-spacing:.01em;
-}
+/* CARD */
+.card{background:var(--card);border-radius:var(--radius-lg);border:0.5px solid var(--separator);padding:18px 16px 14px;display:flex;flex-direction:column;gap:12px;cursor:default;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;animation:pop .3s ease both;}
+.card:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 12px 40px rgba(0,0,0,.1);border-color:rgba(0,0,0,.1);}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.cat-icon-wrap{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;}
+.badge{font-size:.63rem;font-weight:700;letter-spacing:.03em;padding:4px 9px;border-radius:6px;text-align:right;line-height:1.5;margin-top:2px;text-transform:uppercase;}
+.card-name{font-size:.88rem;font-weight:700;color:var(--ink);line-height:1.4;flex:1;}
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--ink);color:#fff;font-family:inherit;font-size:.78rem;font-weight:700;padding:10px 14px;border-radius:12px;border:none;text-decoration:none;cursor:pointer;transition:background .18s,transform .15s;margin-top:auto;letter-spacing:.01em;}
 .wa-btn:hover{background:#000;transform:scale(1.02);}
-.wa-btn svg{flex-shrink:0;}
 
-/* ── NO RESULTS ── */
-.no-res{
-  display:none;text-align:center;padding:72px 20px;
-}
+/* NO RESULTS */
+.no-res{display:none;text-align:center;padding:72px 20px;}
 .no-res.on{display:block;}
 .no-res-emoji{font-size:2.5rem;margin-bottom:12px;}
 .no-res h3{font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:6px;}
 .no-res p{font-size:.85rem;color:var(--muted);}
 .no-res button{background:none;border:none;cursor:pointer;color:var(--saffron);font-family:inherit;font-size:inherit;font-weight:700;}
 
-/* ── CONTACT ── */
+/* CONTACT */
 .contact-section{background:var(--ink);padding:52px 20px;}
 .contact-inner{max-width:1200px;margin:0 auto;}
-.contact-eyebrow{
-  display:inline-block;
-  font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--saffron);margin-bottom:10px;
-}
-.contact-title{
-  font-size:2rem;font-weight:800;color:#fff;
-  letter-spacing:-1px;margin-bottom:28px;line-height:1.2;
-}
+.contact-eyebrow{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--saffron);margin-bottom:10px;}
+.contact-title{font-size:2rem;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:28px;line-height:1.2;}
 .contact-grid{display:flex;gap:12px;flex-wrap:wrap;}
-.contact-card{
-  background:rgba(255,255,255,.07);
-  border:0.5px solid rgba(255,255,255,.12);
-  border-radius:var(--radius);
-  padding:18px 22px;
-  min-width:200px;
-  transition:background .18s;
-}
+.contact-card{background:rgba(255,255,255,.07);border:0.5px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:18px 22px;min-width:200px;transition:background .18s;}
 .contact-card:hover{background:rgba(255,255,255,.11);}
-.contact-card-label{
-  font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:rgba(255,255,255,.4);margin-bottom:6px;
-}
-.contact-card-val{
-  font-size:.95rem;font-weight:600;
-}
+.contact-card-label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;}
+.contact-card-val{font-size:.95rem;font-weight:600;}
 .contact-card-val a{color:var(--saffron);text-decoration:none;}
 .contact-card-val a:hover{text-decoration:underline;}
 .contact-card-val span{color:rgba(255,255,255,.9);}
 
-/* ── FOOTER ── */
-footer{
-  background:#111;color:rgba(255,255,255,.3);
-  font-size:.73rem;text-align:center;padding:18px;
-  letter-spacing:.02em;
-}
+/* ══════════════════════════════════════════
+   FOOTER  —  hardcoded from Footer.js
+   (JSX converted to plain HTML/CSS)
+══════════════════════════════════════════ */
+.site-footer{background:#000;border-top:1px solid rgba(0,180,255,.25);padding:52px 0 0;font-family:'Figtree',system-ui,-apple-system,sans-serif;}
+.site-footer a{text-decoration:none;transition:color .18s;}
+.footer-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;}
 
-/* ── ANIMATIONS ── */
-@keyframes pop{
-  from{opacity:0;transform:scale(.96) translateY(8px);}
-  to{opacity:1;transform:scale(1) translateY(0);}
-}
+.footer-brand{}
+.footer-logo-link{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;text-decoration:none;}
+.footer-wordmark .wm-shiv{font-size:1.5rem;font-weight:800;color:#fff;letter-spacing:-0.5px;}
+.footer-wordmark .wm-trix{font-size:1.5rem;font-weight:800;color:var(--saffron);letter-spacing:-0.5px;}
+.footer-tagline{color:#9ca3af;font-size:.88rem;line-height:1.7;max-width:360px;margin-bottom:24px;}
+.footer-socials{display:flex;gap:10px;}
+.footer-social-btn{width:36px;height:36px;background:#1f2937;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .18s;text-decoration:none;}
+.footer-social-btn:hover{background:var(--neon-blue);}
+.footer-social-btn svg{width:16px;height:16px;fill:#fff;}
+
+.footer-col h4{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;margin-bottom:18px;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+.footer-col ul li a{font-size:.875rem;color:#9ca3af;}
+.footer-col ul li a:hover{color:var(--neon-blue);}
+
+.footer-bottom{border-top:1px solid #1f2937;margin-top:48px;padding:20px 24px;text-align:center;}
+.footer-bottom p{font-size:.78rem;color:#6b7280;}
+
+/* CATEGORY COLOUR TOKENS */
+.it-icon{background:#E8F0FF;} .it-badge{background:#D1E0FF;color:#1A3A9C;}
+.net-icon{background:#E8F7FA;} .net-badge{background:#C7EDF4;color:#0E6A82;}
+.epfo-icon{background:#FFF2E5;} .epfo-badge{background:#FFE1BF;color:#8C4200;}
+.fin-icon{background:#F0EAFF;} .fin-badge{background:#E0D0FF;color:#5B21B6;}
+.gov-icon{background:#EAF0FF;} .gov-badge{background:#D5E3FF;color:#1E4FAD;}
+.print-icon{background:#FDEAEA;} .print-badge{background:#FBCECE;color:#991B1B;}
+.sch-icon{background:#FDF6E3;} .sch-badge{background:#FAE9B0;color:#7A4F08;}
+.biz-icon{background:#F0F0F5;} .biz-badge{background:#E0E0EA;color:#2D2D50;}
+
+/* ANIMATIONS */
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .hidden{display:none!important;}
 
-/* ── CATEGORY STYLES ── */
-.it-icon{background:#E8F0FF;}
-.it-badge{background:#D1E0FF;color:#1A3A9C;}
-.net-icon{background:#E8F7FA;}
-.net-badge{background:#C7EDF4;color:#0E6A82;}
-.epfo-icon{background:#FFF2E5;}
-.epfo-badge{background:#FFE1BF;color:#8C4200;}
-.fin-icon{background:#F0EAFF;}
-.fin-badge{background:#E0D0FF;color:#5B21B6;}
-.gov-icon{background:#EAF0FF;}
-.gov-badge{background:#D5E3FF;color:#1E4FAD;}
-.print-icon{background:#FDEAEA;}
-.print-badge{background:#FBCECE;color:#991B1B;}
-.sch-icon{background:#FDF6E3;}
-.sch-badge{background:#FAE9B0;color:#7A4F08;}
-.biz-icon{background:#F0F0F5;}
-.biz-badge{background:#E0E0EA;color:#2D2D50;}
-
-/* ── RESPONSIVE ── */
+/* RESPONSIVE */
+@media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr;gap:32px;}.footer-brand{grid-column:1/-1;}}
 @media(max-width:640px){
   .header-inner{padding:0 14px;height:54px;}
-  .logo-name{font-size:.95rem;}
   .search-pill{max-width:100%;flex:1;}
   .hero{padding:48px 16px 44px;}
-  .hero h1{font-size:1.9rem;letter-spacing:-1px;}
+  .hero h1{font-size:1.9rem;}
   main{padding:20px 10px 48px;}
   .grid{grid-template-columns:repeat(2,1fr);gap:9px;}
   .cat-row{gap:6px;}
   .stats-row{gap:18px;}
+  .footer-grid{grid-template-columns:1fr;}
+  .footer-inner{padding:0 16px;}
 }
-@media(max-width:380px){
-  .grid{grid-template-columns:1fr;}
-}
+@media(max-width:380px){.grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ── HEADER ── -->
 <header>
   <div class="header-inner">
     <div class="logo">
       <div class="logo-name">Shiv<span>trix</span></div>
-      <div class="logo-sub">Communication & Online Services</div>
+      <div class="logo-sub">Communication &amp; Online Services</div>
     </div>
     <div class="search-pill">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -344,18 +179,18 @@ footer{
   </div>
 </header>
 
-<!-- HERO -->
+<!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-eyebrow">Mumbai, 400074</div>
   <h1>Tech Mitra,<br/><span>Always With You.</span></h1>
-  <p>IT, Fintech, Government, Education & Business services — all under one roof at Shivtrix.</p>
+  <p>IT, Fintech, Government, Education &amp; Business services — all under one roof at Shivtrix.</p>
   <a href="https://wa.me/918424008055?text=Hi%2C+I%27d+like+to+know+more+about+your+services" target="_blank" class="hero-cta">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     Chat with Us
   </a>
 </section>
 
-<!-- STATS -->
+<!-- ── STATS ── -->
 <div class="stats-row">
   <div class="stat"><div class="stat-val">500+</div><div class="stat-lbl">Clients</div></div>
   <div class="stat"><div class="stat-val">8</div><div class="stat-lbl">Categories</div></div>
@@ -364,30 +199,27 @@ footer{
   <div class="stat"><div class="stat-val">shivtrix.co.in</div><div class="stat-lbl">Website</div></div>
 </div>
 
-<!-- MAIN -->
+<!-- ── MAIN ── -->
 <main>
   <div class="top-bar">
     <div class="section-title">Services</div>
     <div class="count-lbl" id="count-lbl"></div>
   </div>
 
-  <!-- Filters -->
+  <!-- Filters: IT Support active by default; data-cat typo fixed -->
   <div class="cat-row" id="cat-row">
-    <button class="cat-btn" data-cat="all" onclick="setCategory(this)">All</button>
-    <button class="cat-btn" ata-cat="IT Support" onclick="setCategory(this)">💻 IT Support</button>
-    <button class="cat-btn" data-cat="Networking & Cloud Services" onclick="setCategory(this)">🌐 Networking & Cloud Services</button>
-    <button class="cat-btn" data-cat="EPFO & UAN" onclick="setCategory(this)">⚙️ EPFO</button>
-    <button class="cat-btn" data-cat="Fintech" onclick="setCategory(this)">💳 Fintech</button>
-    <button class="cat-btn" data-cat="Govt Services" onclick="setCategory(this)">🏛 Govt</button>
-    <button class="cat-btn" data-cat="Printing Services" onclick="setCategory(this)">🖨 Printing</button>
-    <button class="cat-btn" data-cat="School & College" onclick="setCategory(this)">🎓 Education</button>
-    <button class="cat-btn" data-cat="Business Services" onclick="setCategory(this)">🏢 Business</button>
+    <button class="cat-btn"        data-cat="all"                      onclick="setCategory(this)">All</button>
+    <button class="cat-btn active" data-cat="IT Support"               onclick="setCategory(this)">💻 IT Support</button>
+    <button class="cat-btn"        data-cat="Networking & Cloud Services" onclick="setCategory(this)">🌐 Networking &amp; Cloud</button>
+    <button class="cat-btn"        data-cat="EPFO & UAN"               onclick="setCategory(this)">⚙️ EPFO</button>
+    <button class="cat-btn"        data-cat="Fintech"                  onclick="setCategory(this)">💳 Fintech</button>
+    <button class="cat-btn"        data-cat="Govt Services"            onclick="setCategory(this)">🏛 Govt</button>
+    <button class="cat-btn"        data-cat="Printing Services"        onclick="setCategory(this)">🖨 Printing</button>
+    <button class="cat-btn"        data-cat="School & College"         onclick="setCategory(this)">🎓 Education</button>
+    <button class="cat-btn"        data-cat="Business Services"        onclick="setCategory(this)">🏢 Business</button>
   </div>
 
-  <!-- Grid -->
   <div class="grid" id="grid"></div>
-
-  <!-- No results -->
   <div class="no-res" id="no-res">
     <div class="no-res-emoji">🔍</div>
     <h3>No services found</h3>
@@ -395,7 +227,7 @@ footer{
   </div>
 </main>
 
-<!-- CONTACT -->
+<!-- ── CONTACT ── -->
 <section class="contact-section">
   <div class="contact-inner">
     <div class="contact-eyebrow">Get in Touch</div>
@@ -407,7 +239,7 @@ footer{
       </div>
       <div class="contact-card">
         <div class="contact-card-label">Email</div>
-        <div class="contact-card-val"><a href="mailto:info@shivtrix.co.in">support@shivtrix.co.in</a></div>
+        <div class="contact-card-val"><a href="mailto:support@shivtrix.co.in">support@shivtrix.co.in</a></div>
       </div>
       <div class="contact-card">
         <div class="contact-card-label">Website</div>
@@ -421,11 +253,75 @@ footer{
   </div>
 </section>
 
-<footer>&copy; 2026 Shivtrix Communication & Online Services &nbsp;·&nbsp; shivtrix.co.in &nbsp;·&nbsp; Mumbai 400074</footer>
+<!-- ══════════════════════════════════════════════
+     FOOTER  —  hardcoded from components/Footer.js
+     (JSX → plain HTML · Tailwind classes → CSS vars)
+══════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+
+      <!-- Brand -->
+      <div class="footer-brand">
+        <a href="helpdesk.html" class="footer-logo-link">
+          <div class="footer-wordmark">
+            <span class="wm-shiv">Shiv</span><span class="wm-trix">trix</span>
+          </div>
+        </a>
+        <p class="footer-tagline">
+          Developing Tomorrow's Digital Backbone Today to Enable the Next Generation of Technology.
+        </p>
+        <div class="footer-socials">
+          <!-- Twitter / X -->
+          <a href="https://x.com/ShivtrixTech" target="_blank" rel="noopener noreferrer" class="footer-social-btn" title="Twitter / X">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+            </svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="https://www.linkedin.com/in/shivtrix-tech" target="_blank" rel="noopener noreferrer" class="footer-social-btn" title="LinkedIn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="managed-support.html">Managed IT Services</a></li>
+          <li><a href="it-consulting.html">IT Strategy &amp; Consulting</a></li>
+          <li><a href="cloud-security.html">Cloud &amp; Cybersecurity Solutions</a></li>
+          <li><a href="specialized-tech.html">Specialized Tech Solutions</a></li>
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+          <li><a href="blog.html">FAQ</a></li>
+          <li><a href="helpdesk.html">Helpdesk</a></li>
+        </ul>
+      </div>
+
+    </div><!-- /footer-grid -->
+  </div><!-- /footer-inner -->
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 Shivtrix. All rights reserved.</p>
+  </div>
+</footer>
 
 <script>
 const SERVICES=[
- 
+  // ── IT Support ──────────────────────────────────────
   {name:"On-Site & Remote IT Support",category:"IT Support",icon:"💻",ic:"it"},
   {name:"Server Maintenance & Monitoring",category:"IT Support",icon:"💻",ic:"it"},
   {name:"System Updates & Upgrades",category:"IT Support",icon:"💻",ic:"it"},
@@ -454,6 +350,7 @@ const SERVICES=[
   {name:"Mini Server Deployment",category:"IT Support",icon:"💻",ic:"it"},
   {name:"On-Premise Virtualization",category:"IT Support",icon:"💻",ic:"it"},
   {name:"Low-Latency Edge Processing",category:"IT Support",icon:"💻",ic:"it"},
+  // ── Networking & Cloud ───────────────────────────────
   {name:"Network Architecture Design",category:"Networking & Cloud Services",icon:"🌐",ic:"net"},
   {name:"Network Setup & Optimization",category:"Networking & Cloud Services",icon:"🌐",ic:"net"},
   {name:"LAN Performance Optimization",category:"Networking & Cloud Services",icon:"🌐",ic:"net"},
@@ -468,6 +365,7 @@ const SERVICES=[
   {name:"ISO Compliance Standards",category:"Networking & Cloud Services",icon:"🌐",ic:"net"},
   {name:"Data Recovery & File Restoration",category:"Networking & Cloud Services",icon:"🌐",ic:"net"},
   {name:"Backup Solutions (Local / Cloud / Hybrid)",category:"Networking & Cloud Services",icon:"🌐",ic:"net"},
+  // ── EPFO & UAN ──────────────────────────────────────
   {name:"UAN Activation & Registration",category:"EPFO & UAN",icon:"⚙️",ic:"epfo"},
   {name:"UAN Password Reset",category:"EPFO & UAN",icon:"⚙️",ic:"epfo"},
   {name:"EPF Withdrawal / Transfer",category:"EPFO & UAN",icon:"⚙️",ic:"epfo"},
@@ -478,6 +376,7 @@ const SERVICES=[
   {name:"Death Claims",category:"EPFO & UAN",icon:"⚙️",ic:"epfo"},
   {name:"E-Shram Card",category:"EPFO & UAN",icon:"⚙️",ic:"epfo"},
   {name:"ESIC Pehchan Card",category:"EPFO & UAN",icon:"⚙️",ic:"epfo"},
+  // ── Fintech ─────────────────────────────────────────
   {name:"Account Opening",category:"Fintech",icon:"💳",ic:"fin"},
   {name:"Cash Deposit & Withdrawal",category:"Fintech",icon:"💳",ic:"fin"},
   {name:"Aadhaar ATM (AePS)",category:"Fintech",icon:"💳",ic:"fin"},
@@ -490,6 +389,7 @@ const SERVICES=[
   {name:"Insurance Premium Payment",category:"Fintech",icon:"💳",ic:"fin"},
   {name:"Loan EMI Payment",category:"Fintech",icon:"💳",ic:"fin"},
   {name:"Digital Wallet Setup",category:"Fintech",icon:"💳",ic:"fin"},
+  // ── Govt Services ───────────────────────────────────
   {name:"DigiLocker Account Setup",category:"Govt Services",icon:"🏛",ic:"gov"},
   {name:"Aadhaar Linking",category:"Govt Services",icon:"🏛",ic:"gov"},
   {name:"Driving License Download",category:"Govt Services",icon:"🏛",ic:"gov"},
@@ -499,6 +399,7 @@ const SERVICES=[
   {name:"Ration Card Services",category:"Govt Services",icon:"🏛",ic:"gov"},
   {name:"Passport Appointment",category:"Govt Services",icon:"🏛",ic:"gov"},
   {name:"Police Verification Certificate",category:"Govt Services",icon:"🏛",ic:"gov"},
+  // ── Printing Services ───────────────────────────────
   {name:"Passport Size Photos (Instant)",category:"Printing Services",icon:"🖨",ic:"print"},
   {name:"Resume Design & Printing",category:"Printing Services",icon:"🖨",ic:"print"},
   {name:"Project Printing",category:"Printing Services",icon:"🖨",ic:"print"},
@@ -511,10 +412,12 @@ const SERVICES=[
   {name:"Lamination",category:"Printing Services",icon:"🖨",ic:"print"},
   {name:"QR Code Stands",category:"Printing Services",icon:"🖨",ic:"print"},
   {name:"Business Cards",category:"Printing Services",icon:"🖨",ic:"print"},
+  // ── School & College ────────────────────────────────
   {name:"Admission Form Filling (School / College)",category:"School & College",icon:"🎓",ic:"sch"},
   {name:"Online Exam Form Submission",category:"School & College",icon:"🎓",ic:"sch"},
   {name:"Hall Ticket / Admit Card Download",category:"School & College",icon:"🎓",ic:"sch"},
   {name:"Result Checking & Printout",category:"School & College",icon:"🎓",ic:"sch"},
+  // ── Business Services ───────────────────────────────
   {name:"MSME / Udyam Registration",category:"Business Services",icon:"🏢",ic:"biz"},
   {name:"Shop Act License Registration",category:"Business Services",icon:"🏢",ic:"biz"},
   {name:"Business PAN Card Application",category:"Business Services",icon:"🏢",ic:"biz"},
@@ -529,17 +432,13 @@ const SERVICES=[
 ];
 
 const BADGE_LABELS={
-  "IT Support":"IT",
-  "Networking & Cloud Services":"Network",
-  "EPFO & UAN":"EPFO",
-  "Fintech":"Fintech",
-  "Govt Services":"Govt",
-  "Printing Services":"Print",
-  "School & College":"Edu",
-  "Business Services":"Business",
+  "IT Support":"IT","Networking & Cloud Services":"Network",
+  "EPFO & UAN":"EPFO","Fintech":"Fintech","Govt Services":"Govt",
+  "Printing Services":"Print","School & College":"Edu","Business Services":"Business",
 };
 
-let activeCat="all",query="";
+// ── Default active tab = IT Support ──
+let activeCat="IT Support", query="";
 
 function buildGrid(){
   const g=document.getElementById("grid");
@@ -576,8 +475,8 @@ function applyFilters(){
     if(mc&&mq){c.classList.remove("hidden");n++;}
     else c.classList.add("hidden");
   });
-  const nr=document.getElementById("no-res");
   document.getElementById("count-lbl").textContent=n+" service"+(n!==1?"s":"");
+  const nr=document.getElementById("no-res");
   n===0?nr.classList.add("on"):nr.classList.remove("on");
 }
 
@@ -590,8 +489,7 @@ function setCategory(btn){
 
 function onSearch(){
   query=document.getElementById("search-input").value.trim().toLowerCase();
-  const cx=document.getElementById("clear-x");
-  query?cx.classList.add("on"):cx.classList.remove("on");
+  document.getElementById("clear-x").classList.toggle("on",!!query);
   applyFilters();
 }
 
@@ -604,7 +502,5 @@ function clearSearch(){
 
 document.addEventListener("DOMContentLoaded",buildGrid);
 </script>
-
-   <script type="text/babel" src="components/Footer.js"></script>
 </body>
 </html>
