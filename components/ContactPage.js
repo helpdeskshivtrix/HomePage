@@ -41,23 +41,23 @@ function ContactPage() {
       {
         icon: 'phone',
         title: 'WhatsApp Support',
-        value: '+91 9593594429',
+        value: '+91 8424008055',
         color: 'from-green-500 to-emerald-500',
-        link: 'https://wa.me/919593594429'
+        link: 'https://wa.me/8424008055'
       },
       {
         icon: 'phone',
         title: 'Call Support',
-        value: '+91 9593594429',
+        value: '+91 8424008055',
         color: 'from-blue-500 to-indigo-500',
-        link: 'tel:9593594429'
+        link: 'tel:8424008055'
       },
       {
         icon: 'mail',
         title: 'Email Support',
-        value: 'helpdesk.shivtrix.co.in@gmail.com',
+        value: 'support@shivtrix.co.in',
         color: 'from-purple-500 to-pink-500',
-        link: 'mailto:helpdesk.shivtrix.co.in@gmail.com'
+        link: 'mailto:support@shivtrix.co.in'
       },
       {
         icon: 'map-pin',
