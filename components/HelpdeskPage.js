@@ -193,7 +193,7 @@ function HelpdeskPage() {
                     <div
                       className="flex items-center cursor-pointer"
                       onClick={() =>
-                        window.open(`https://wa.me/919593594429?text=${encodeURIComponent(
+                        window.open(`https://wa.me/8424008055?text=${encodeURIComponent(
                           `Hello, I need urgent help regarding: ${selectedIssue}.`
                         )}`)
                       }
@@ -203,7 +203,7 @@ function HelpdeskPage() {
                       </div>
                       <div>
                         <div className="text-white font-semibold">Whatsapp Support</div>
-                        <div className="text-[var(--secondary-color)]">+91 9593594429</div>
+                        <div className="text-[var(--secondary-color)]">+91 8424008055</div>
                       </div>
                     </div>
 
