@@ -83,6 +83,7 @@ function Footer() {
                 <li><a href="privacy.html" className="hover:text-[var(--neon-blue)] transition-colors">Privacy Policy</a></li>
                 <li><a href="terms.html" className="hover:text-[var(--neon-blue)] transition-colors">Terms of Service</a></li>
                 <li><a href="blog.html" className="hover:text-[var(--neon-blue)] transition-colors">Faq</a></li>
+              <li><a href="zz/index.html" className="hover:text-[var(--neon-blue)] transition-colors">Dashboard</a></li>
 <li><a href="helpdesk.html" className="hover:text-[var(--neon-blue)] transition-colors">Helpdesk</a></li>
            
               </ul>
