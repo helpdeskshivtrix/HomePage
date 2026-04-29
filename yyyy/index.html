@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shivtrix Dashboard PRO</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script src="services.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ─── RESET & VARS ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #f0f2f8;
+  --surface:    #ffffff;
+  --surface2:   #f7f8fc;
+  --border:     rgba(0,0,0,0.07);
+  --text:       #0d0f14;
+  --text2:      #6b7080;
+  --accent:     #0a6cff;
+  --accent2:    #0050cc;
+  --accent-glow:rgba(10,108,255,0.18);
+  --danger:     #ff3b30;
+  --success:    #30d158;
+  --warn:       #ff9f0a;
+  --wa:         #25d366;
+  --wa-dark:    #128c4a;
+  --wa-glow:    rgba(37,211,102,0.35);
+  --shadow:     0 2px 16px rgba(0,0,0,0.07);
+  --shadow-lg:  0 8px 40px rgba(0,0,0,0.13);
+  --radius:     18px;
+  --radius-sm:  10px;
+  --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+body.dark {
+  --bg:         #0f1117;
+  --surface:    #1c1e26;
+  --surface2:   #252833;
+  --border:     rgba(255,255,255,0.07);
+  --text:       #f0f2f8;
+  --text2:      #8a8fa8;
+  --accent:     #3d8bff;
+  --accent2:    #2272ff;
+  --accent-glow:rgba(61,139,255,0.2);
+  --shadow:     0 2px 16px rgba(0,0,0,0.35);
+  --shadow-lg:  0 8px 40px rgba(0,0,0,0.5);
+  --wa-glow:    rgba(37,211,102,0.45);
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* ─── TOPBAR ────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  transition: background var(--transition);
+}
+
+.brand {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+  user-select: none;
+}
+.brand span { color: var(--text); font-weight: 300; }
+
+.search-wrap {
+  flex: 1;
+  position: relative;
+}
+.search-wrap svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text2);
+  pointer-events: none;
+}
+#search {
+  width: 100%;
+  padding: 9px 14px 9px 38px;
+  border-radius: 30px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+#search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.btn-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: background var(--transition), transform var(--transition), border-color var(--transition);
+  user-select: none;
+}
+.btn-icon:hover { background: var(--surface2); transform: scale(1.05); }
+.btn-icon:active { transform: scale(0.95); }
+.btn-icon.accent {
+  background: var(--accent); border-color: transparent; color: #fff;
+  font-size: 20px; font-weight: 300;
+}
+.btn-icon.accent:hover { background: var(--accent2); }
+
+.lock-indicator {
+  font-size: 11px; font-weight: 600;
+  color: var(--warn);
+  white-space: nowrap;
+}
+
+/* ─── TABS ──────────────────────────────────────────── */
+.tabs-wrap {
+  padding: 12px 20px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs-wrap::-webkit-scrollbar { display: none; }
+.tabs { display: flex; gap: 8px; width: max-content; }
+
+.tab {
+  padding: 7px 16px;
+  border-radius: 30px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--text2);
+  border: 1.5px solid var(--border);
+  transition: all var(--transition);
+  white-space: nowrap;
+  user-select: none;
+}
+.tab:hover { color: var(--text); border-color: var(--accent); }
+.tab.active {
+  background: var(--accent); color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+/* ─── TOOLBAR ───────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 4px;
+}
+.count { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; }
+.toolbar-actions { display: flex; gap: 8px; }
+.btn-sm {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px; font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-sm:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ─── GRID ──────────────────────────────────────────── */
+#grid {
+  padding: 12px 20px 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+#grid.app-view {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+/* ─── CARD ──────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+  display: flex; flex-direction: column; gap: 10px;
+  transition: box-shadow var(--transition), transform var(--transition), background var(--transition);
+  animation: cardIn 0.28s cubic-bezier(0.4,0,0.2,1) both;
+  position: relative;
+}
+.card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.card.dragging { opacity: 0.4; transform: scale(0.97); }
+.card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+@keyframes cardIn {
+  from { opacity:0; transform: translateY(10px) scale(0.97); }
+  to   { opacity:1; transform: none; }
+}
+
+.card.app-card {
+  align-items: center; text-align: center;
+  padding: 14px 8px; gap: 6px;
+}
+
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cat-badge {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.7px; padding: 3px 8px;
+  border-radius: 20px;
+  background: var(--surface2); color: var(--text2);
+  border: 1px solid var(--border);
+}
+.card-actions { display: flex; gap: 6px; align-items: center; }
+
+/* STAR */
+.star-btn {
+  font-size: 17px; cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  display: inline-block;
+  user-select: none;
+  filter: grayscale(1) opacity(0.45);
+  line-height: 1;
+}
+.star-btn.active { filter: none; transform: scale(1.15); }
+.star-btn:hover  { transform: scale(1.3); filter: none; }
+
+/* WHATSAPP BUTTON */
+.wa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--wa);
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 0 0 0 var(--wa-glow);
+  animation: waPulse 2.5s ease-in-out infinite;
+}
+.wa-btn:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 14px 4px var(--wa-glow);
+  animation: none;
+}
+.wa-btn:active { transform: scale(0.92); }
+
+.wa-btn svg { display: block; }
+
+@keyframes waPulse {
+  0%,100% { box-shadow: 0 0 0 0 var(--wa-glow); }
+  50%      { box-shadow: 0 0 10px 5px var(--wa-glow); }
+}
+
+/* DELETE */
+.del-btn {
+  font-size: 14px; cursor: pointer;
+  opacity: 0.45; line-height: 1;
+  transition: opacity var(--transition), transform var(--transition);
+  user-select: none;
+}
+.del-btn:hover { opacity: 1; transform: scale(1.2); color: var(--danger); }
+
+.drag-handle {
+  font-size: 13px; color: var(--text2);
+  cursor: grab; opacity: 0.3;
+  transition: opacity var(--transition);
+  user-select: none;
+}
+.card:hover .drag-handle { opacity: 0.7; }
+
+.cat-icon { font-size: 26px; line-height: 1; margin: 2px 0; }
+
+/* INPUTS */
+.card input.field {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  background: var(--surface2);
+  color: var(--text);
+  width: 100%; outline: none;
+  transition: border-color var(--transition), background var(--transition);
+}
+.card input.field:not([disabled]):focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.card input.field[disabled] { cursor: default; opacity: 0.72; }
+.card input.field.name-field { font-weight: 600; font-size: 14px; }
+.card input.field.url-field  { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); }
+
+/* OPEN BTN */
+.open-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  background: var(--accent); color: #fff;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 13px; font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 4px 12px var(--accent-glow);
+  border: none; cursor: pointer;
+}
+.open-btn:hover { background: var(--accent2); transform: scale(1.02); }
+.open-btn:active { transform: scale(0.97); }
+
+/* App view */
+.app-open {
+  font-size: 12px; font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  background: var(--surface2);
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background var(--transition);
+  border: none; font-family: 'Outfit', sans-serif; cursor: pointer;
+}
+.app-open:hover { background: var(--accent-glow); }
+
+/* ─── EMPTY STATE ───────────────────────────────────── */
+.empty {
+  grid-column: 1/-1; text-align: center;
+  padding: 60px 20px; color: var(--text2);
+  animation: cardIn 0.3s ease both;
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty h3   { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.empty p    { font-size: 14px; opacity: 0.7; }
+
+/* ─── MODAL ─────────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(8px);
+  z-index: 200; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.overlay.active { opacity: 1; pointer-events: all; }
+
+.modal {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0.92);
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 28px 24px;
+  width: min(340px, calc(100vw - 32px));
+  z-index: 201;
+  box-shadow: var(--shadow-lg);
+  border: 1.5px solid var(--border);
+  opacity: 0; pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.34,1.2,0.64,1), opacity 0.22s ease;
+}
+.modal.active {
+  transform: translate(-50%,-50%) scale(1);
+  opacity: 1; pointer-events: all;
+}
+.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.3px; }
+
+.modal-field { margin-bottom: 14px; }
+.modal-field label {
+  display: block; font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--text2); margin-bottom: 6px;
+}
+.modal-field input {
+  width: 100%; padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface2); color: var(--text);
+  font-family: 'Outfit', sans-serif; font-size: 14px; outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.modal-field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+.btn-primary {
+  flex: 1; padding: 11px; border-radius: var(--radius-sm);
+  border: none; background: var(--accent); color: #fff;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+.btn-primary:hover  { background: var(--accent2); }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-cancel {
+  padding: 11px 20px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border); background: transparent;
+  color: var(--text2);
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all var(--transition);
+}
+.btn-cancel:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ─── TOAST ─────────────────────────────────────────── */
+#toast-container {
+  position: fixed; bottom: 28px; right: 20px;
+  z-index: 999; display: flex; flex-direction: column;
+  gap: 10px; align-items: flex-end;
+}
+.toast {
+  background: var(--surface); color: var(--text);
+  padding: 12px 18px; border-radius: 14px;
+  font-size: 14px; font-weight: 500;
+  box-shadow: var(--shadow-lg); border: 1.5px solid var(--border);
+  animation: toastIn 0.3s cubic-bezier(0.34,1.3,0.64,1) both;
+  display: flex; align-items: center; gap: 8px; min-width: 160px;
+}
+.toast.fade-out { animation: toastOut 0.3s ease forwards; }
+@keyframes toastIn  { from { opacity:0; transform:translateY(20px) scale(0.9); } to { opacity:1; transform:none; } }
+@keyframes toastOut { to   { opacity:0; transform:translateY(-10px) scale(0.95); } }
+
+/* ─── UNDO BAR ──────────────────────────────────────── */
+#undo-bar {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #222; color: #fff;
+  padding: 12px 20px; border-radius: 30px;
+  font-size: 14px;
+  display: flex; align-items: center; gap: 14px;
+  z-index: 500;
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+#undo-bar.visible { opacity:1; pointer-events:all; transform:translateX(-50%) translateY(0); }
+#undo-bar button {
+  background: var(--accent); color: #fff; border: none;
+  padding: 5px 14px; border-radius: 20px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ─── PIN MODAL ─────────────────────────────────────── */
+.pin-dots { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
+.pin-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--border); background: transparent;
+  transition: background var(--transition), border-color var(--transition);
+}
+.pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+.pin-pad { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.pin-key {
+  padding: 14px; border-radius: 14px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  color: var(--text); font-family: 'Outfit', sans-serif;
+  font-size: 20px; font-weight: 600; cursor: pointer;
+  transition: all var(--transition); text-align: center;
+}
+.pin-key:hover  { background: var(--accent); color: #fff; border-color: transparent; }
+.pin-key:active { transform: scale(0.92); }
+.pin-key.backspace { font-size: 18px; }
+
+/* ─── SCROLLBAR ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ─── RESPONSIVE ────────────────────────────────────── */
+@media (max-width: 520px) {
+  .brand { display: none; }
+  #grid  { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .topbar { padding: 12px 12px 10px; gap: 8px; }
+  #grid { padding: 10px 12px 40px; }
+  .tabs-wrap { padding: 10px 12px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">Shivtrix<span> PRO</span></div>
+  <div class="search-wrap">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="search" id="search" placeholder="Search services…" autocomplete="off" spellcheck="false">
+  </div>
+  <div id="lock-indicator" class="lock-indicator" title="Locked">🔒</div>
+  <button class="btn-icon" id="btn-view" title="Toggle view">⊞</button>
+  <button class="btn-icon" id="btn-dark" title="Toggle dark mode">🌙</button>
+  <button class="btn-icon" id="btn-lock" title="Lock / Unlock">🔐</button>
+  <button class="btn-icon accent" id="btn-add" title="Add service">+</button>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="count" id="count"></div>
+  <div class="toolbar-actions">
+    <button class="btn-sm" id="btn-export">↑ Export</button>
+    <button class="btn-sm" id="btn-import">↓ Import</button>
+    <input type="file" id="import-file" accept=".json,.js" style="display:none">
+  </div>
+</div>
+
+<!-- GRID -->
+<div id="grid"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal" id="modal">
+  <h2 id="modal-title">Add Service</h2>
+  <div class="modal-field">
+    <label>Name</label>
+    <input type="text" id="m-name" placeholder="e.g. Gmail" autocomplete="off">
+  </div>
+  <div class="modal-field">
+    <label>URL</label>
+    <input type="url" id="m-url" placeholder="https://…" autocomplete="off">
+  </div>
+  <div class="modal-field">
+    <label>Category</label>
+    <input type="text" id="m-cat" placeholder="e.g. Productivity" autocomplete="off">
+  </div>
+  <div class="modal-actions">
+    <button class="btn-cancel" id="modal-cancel">Cancel</button>
+    <button class="btn-primary" id="modal-save">Save Service</button>
+  </div>
+</div>
+
+<!-- PIN MODAL -->
+<div class="modal" id="pin-modal">
+  <h2>Enter PIN</h2>
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-key" data-k="1">1</button>
+    <button class="pin-key" data-k="2">2</button>
+    <button class="pin-key" data-k="3">3</button>
+    <button class="pin-key" data-k="4">4</button>
+    <button class="pin-key" data-k="5">5</button>
+    <button class="pin-key" data-k="6">6</button>
+    <button class="pin-key" data-k="7">7</button>
+    <button class="pin-key" data-k="8">8</button>
+    <button class="pin-key" data-k="9">9</button>
+    <button class="pin-key backspace" data-k="back">⌫</button>
+    <button class="pin-key" data-k="0">0</button>
+    <button class="pin-key" data-k="cancel" style="font-size:13px;font-weight:600;color:var(--danger)">✕</button>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<div id="undo-bar"><span id="undo-msg"></span><button id="undo-btn">Undo</button></div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   SHIVTRIX DASHBOARD PRO — ENGINE v3.0
+   Data source: services.js → window.SHIVTRIX_DATA
+   ══════════════════════════════════════════════════════ */
+
+/* ── LOAD DATA SOURCE ───────────────────────────────── */
+if (!window.SHIVTRIX_DATA) {
+  document.body.innerHTML = `
+    <div style="font-family:system-ui;padding:60px;text-align:center;color:#ff3b30;">
+      <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+      <h2>services.js not found</h2>
+      <p style="margin-top:8px;color:#888">Make sure <code>services.js</code> is in the same folder as <code>index.html</code></p>
+    </div>`;
+  throw new Error("SHIVTRIX_DATA not loaded. Place services.js next to index.html.");
+}
+
+const SOURCE_SERVICES = window.SHIVTRIX_DATA.services || [];
+const WA_NUMBER       = window.SHIVTRIX_DATA.whatsapp || "918424008055";
+
+/* ── CATEGORY ICONS ─────────────────────────────────── */
+const CATEGORY_ICONS = {
+  EPFO:          "🏛️",
+  Aadhaar:       "🪪",
+  PAN:           "💳",
+  PCC:           "👮",
+  Health:        "🩺",
+  Identity:      "🆔",
+  Finance:       "💰",
+  "Image Tools": "🖼️",
+  AI:            "🤖",
+  Train:         "🚆",
+  Transport:     "🚌",
+  Productivity:  "⚡",
+  Tools:         "🔧",
+  Education:     "📚",
+  Shopping:      "🛒",
+  Social:        "💬",
+  News:          "📰",
+  Other:         "🔗",
+};
+const getCatIcon = cat => CATEGORY_ICONS[cat] || "🔗";
+
+/* WhatsApp SVG logo */
+function waSVG(size = 16) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 0C7.163 0 0 7.163 0 16c0 2.822.737 5.469 2.027 7.77L0 32l8.469-2.002A15.93 15.93 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.29 13.29 0 01-6.782-1.858l-.487-.29-5.026 1.188 1.228-4.895-.318-.502A13.267 13.267 0 012.667 16C2.667 8.637 8.637 2.667 16 2.667S29.333 8.637 29.333 16 23.363 29.333 16 29.333z"/>
+    <path d="M23.387 19.76c-.37-.185-2.189-1.08-2.528-1.202-.34-.122-.587-.185-.834.185-.247.37-.956 1.202-1.172 1.45-.216.246-.432.277-.802.092-.37-.185-1.563-.576-2.977-1.836-1.1-.98-1.842-2.19-2.058-2.56-.216-.37-.023-.57.162-.754.167-.166.37-.432.556-.648.185-.216.247-.37.37-.617.123-.247.062-.463-.031-.648-.092-.185-.834-2.01-1.142-2.752-.3-.723-.607-.625-.834-.636l-.71-.012c-.247 0-.648.093-.988.463s-1.297 1.267-1.297 3.09 1.328 3.584 1.514 3.83c.185.247 2.614 3.99 6.333 5.595.885.382 1.575.61 2.113.78.888.283 1.696.243 2.335.147.712-.107 2.189-.895 2.498-1.759.308-.864.308-1.605.216-1.76-.092-.154-.34-.247-.71-.432z"/>
+  </svg>`;
+}
+
+/* ── HELPERS ─────────────────────────────────────────── */
+function uid()  { return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+function save(k,v) { localStorage.setItem(k, JSON.stringify(v)); }
+function load(k)   { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(()=>fn(...a), ms); }; }
+function toast(msg, emoji = "✅") {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.innerHTML = `<span>${emoji}</span><span>${msg}</span>`;
+  document.getElementById("toast-container").appendChild(el);
+  setTimeout(() => { el.classList.add("fade-out"); setTimeout(()=>el.remove(), 350); }, 2200);
+}
+
+/* ── STATE ──────────────────────────────────────────── */
+let services  = load("sx_services") || [];
+let favorites = load("sx_fav") || [];
+let settings  = load("sx_settings") || { dark: false, appView: false };
+let currentTab = "Favorites";
+let locked    = true;
+let lastDeleted = null, undoTimer = null;
+let pinBuffer = "", dragSrcId = null, editingId = null;
+
+/* Migration: assign IDs */
+services = services.map(s => s.id ? s : { ...s, id: uid() });
+
+/* Seed: if no source IDs found in storage → load from services.js */
+{
+  const storedIds = new Set(services.map(s => s.id));
+  const allMissing = SOURCE_SERVICES.every(d => !storedIds.has(d.id));
+  if (allMissing) {
+    services = JSON.parse(JSON.stringify(SOURCE_SERVICES));
+    toast("Services loaded from services.js", "📦");
+  }
+}
+save("sx_services", services);
+
+/* ── DARK ────────────────────────────────────────────── */
+function applyDark() { document.body.classList.toggle("dark", settings.dark); }
+applyDark();
+
+/* ── TABS ────────────────────────────────────────────── */
+function renderTabs() {
+  const cats = ["Favorites", "All", ...new Set(services.map(s => s.category))];
+  const el = document.getElementById("tabs");
+  el.innerHTML = "";
+  cats.forEach(cat => {
+    const btn = document.createElement("div");
+    btn.className = "tab" + (cat === currentTab ? " active" : "");
+    btn.textContent = cat;
+    btn.addEventListener("click", () => { currentTab = cat; render(); });
+    el.appendChild(btn);
+  });
+}
+
+/* ── FILTER ──────────────────────────────────────────── */
+function getFiltered() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  return services.filter(s => {
+    const matchTab = currentTab === "All"       ? true
+                   : currentTab === "Favorites" ? favorites.includes(s.id)
+                   : s.category === currentTab;
+    const matchQ = !q
+      || s.name.toLowerCase().includes(q)
+      || s.url.toLowerCase().includes(q)
+      || s.category.toLowerCase().includes(q);
+    return matchTab && matchQ;
+  });
+}
+
+/* ── RENDER ──────────────────────────────────────────── */
+function render() {
+  renderTabs();
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  grid.classList.toggle("app-view", settings.appView);
+
+  const list = getFiltered();
+  document.getElementById("count").textContent =
+    `${list.length} service${list.length !== 1 ? "s" : ""}`;
+
+  if (!list.length) {
+    const e = document.createElement("div");
+    e.className = "empty";
+    e.innerHTML = `<div class="empty-icon">${currentTab==="Favorites"?"⭐":"🔍"}</div>
+      <h3>${currentTab==="Favorites"?"No favorites yet":"Nothing found"}</h3>
+      <p>${currentTab==="Favorites"?"Star any service to pin it here.":"Try a different search or tab."}</p>`;
+    grid.appendChild(e);
+    return;
+  }
+
+  list.forEach(s => grid.appendChild(settings.appView ? buildAppCard(s) : buildCard(s)));
+}
+
+/* ── BUILD CARD ──────────────────────────────────────── */
+function buildCard(s) {
+  const isFav = favorites.includes(s.id);
+  const card  = document.createElement("div");
+  card.className = "card";
+  card.setAttribute("draggable", "true");
+  card.dataset.id = s.id;
+
+  /* Header row */
+  const header = document.createElement("div");
+  header.className = "card-header";
+
+  const badge = document.createElement("span");
+  badge.className = "cat-badge";
+  badge.textContent = s.category || "Other";
+  header.appendChild(badge);
+
+  const actions = document.createElement("div");
+  actions.className = "card-actions";
+
+  /* Drag handle */
+  const drag = document.createElement("span");
+  drag.className = "drag-handle";
+  drag.title = "Drag to reorder";
+  drag.textContent = "⠿";
+  actions.appendChild(drag);
+
+  /* WhatsApp button */
+  const _decUrl = window.SHIVTRIX_DATA.encrypted ? decryptData(s.url) : s.url;
+  const waMsg = encodeURIComponent(`Hi, I need help with: *${s.name}*\n${_decUrl}`);
+  const waBtn = document.createElement("a");
+  waBtn.className = "wa-btn";
+  waBtn.href = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
+  waBtn.target = "_blank";
+  waBtn.rel = "noopener noreferrer";
+  waBtn.title = "WhatsApp service request";
+  waBtn.innerHTML = waSVG(14);
+  actions.appendChild(waBtn);
+
+  /* Star */
+  const star = document.createElement("span");
+  star.className = "star-btn" + (isFav ? " active" : "");
+  star.title = isFav ? "Remove from favorites" : "Add to favorites";
+  star.textContent = "⭐";
+  star.addEventListener("click", () => toggleFav(s.id));
+  actions.appendChild(star);
+
+  /* Delete (unlocked only) */
+  if (!locked) {
+    const del = document.createElement("span");
+    del.className = "del-btn";
+    del.title = "Delete";
+    del.textContent = "🗑";
+    del.addEventListener("click", () => deleteService(s.id));
+    actions.appendChild(del);
+  }
+
+  header.appendChild(actions);
+  card.appendChild(header);
+
+  /* Category icon */
+  const icon = document.createElement("div");
+  icon.className = "cat-icon";
+  icon.textContent = getCatIcon(s.category);
+  card.appendChild(icon);
+
+  /* Name input */
+  const nameInp = document.createElement("input");
+  nameInp.type = "text"; nameInp.className = "field name-field";
+  nameInp.value = s.name; nameInp.disabled = locked;
+  nameInp.placeholder = "Service name";
+  nameInp.addEventListener("input", () => autoSaveService(s.id, "name", nameInp.value));
+  card.appendChild(nameInp);
+
+  /* URL input */
+  const urlInp = document.createElement("input");
+  urlInp.type = "text"; urlInp.className = "field url-field";
+  urlInp.value = s.url; urlInp.disabled = locked;
+  urlInp.placeholder = "https://…";
+  urlInp.addEventListener("input", () => autoSaveService(s.id, "url", urlInp.value));
+  card.appendChild(urlInp);
+
+  /* Open button */
+  const openBtn = document.createElement("a");
+  openBtn.href = window.SHIVTRIX_DATA.encrypted ? decryptData(s.url) : s.url; openBtn.target = "_blank"; openBtn.rel = "noopener noreferrer";
+  openBtn.className = "open-btn";
+  openBtn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Open`;
+  card.appendChild(openBtn);
+
+  /* Drag events */
+  card.addEventListener("dragstart", e => { dragSrcId = s.id; card.classList.add("dragging"); e.dataTransfer.effectAllowed="move"; });
+  card.addEventListener("dragend",   () => { card.classList.remove("dragging"); document.querySelectorAll(".drag-over").forEach(c=>c.classList.remove("drag-over")); });
+  card.addEventListener("dragover",  e => { e.preventDefault(); e.dataTransfer.dropEffect="move"; card.classList.add("drag-over"); });
+  card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+  card.addEventListener("drop",      e => { e.preventDefault(); card.classList.remove("drag-over"); if(dragSrcId && dragSrcId!==s.id) reorderServices(dragSrcId,s.id); });
+
+  return card;
+}
+
+/* ── BUILD APP CARD ──────────────────────────────────── */
+function buildAppCard(s) {
+  const isFav = favorites.includes(s.id);
+  const card  = document.createElement("div");
+  card.className = "card app-card";
+  card.dataset.id = s.id;
+
+  const icon = document.createElement("div");
+  icon.className = "cat-icon"; icon.textContent = getCatIcon(s.category);
+  card.appendChild(icon);
+
+  const name = document.createElement("div");
+  name.style.cssText = "font-size:12px;font-weight:600;word-break:break-word;width:100%;text-align:center;";
+  name.textContent = s.name;
+  card.appendChild(name);
+
+  /* WA + Star row */
+  const row = document.createElement("div");
+  row.style.cssText = "display:flex;gap:6px;align-items:center;justify-content:center;";
+
+  const _decUrlApp = window.SHIVTRIX_DATA.encrypted ? decryptData(s.url) : s.url;
+  const waMsg = encodeURIComponent(`Hi, I need help with: *${s.name}*\n${_decUrlApp}`);
+  const waBtn = document.createElement("a");
+  waBtn.className = "wa-btn";
+  waBtn.href = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
+  waBtn.target = "_blank"; waBtn.rel = "noopener noreferrer";
+  waBtn.title = "WhatsApp request"; waBtn.innerHTML = waSVG(12);
+  waBtn.style.width = "24px"; waBtn.style.height = "24px";
+  row.appendChild(waBtn);
+
+  const star = document.createElement("span");
+  star.className = "star-btn" + (isFav ? " active" : "");
+  star.textContent = "⭐"; star.style.fontSize = "14px";
+  star.addEventListener("click", () => toggleFav(s.id));
+  row.appendChild(star);
+  card.appendChild(row);
+
+  const openBtn = document.createElement("a");
+  openBtn.href = window.SHIVTRIX_DATA.encrypted ? decryptData(s.url) : s.url; openBtn.target = "_blank"; openBtn.rel = "noopener noreferrer";
+  openBtn.className = "app-open"; openBtn.textContent = "Open";
+  card.appendChild(openBtn);
+
+  return card;
+}
+
+/* ── FAVORITES ───────────────────────────────────────── */
+function toggleFav(id) {
+  favorites = favorites.includes(id) ? favorites.filter(f=>f!==id) : [...favorites, id];
+  save("sx_fav", favorites);
+  render();
+}
+
+/* ── AUTO-SAVE ───────────────────────────────────────── */
+const autoSaveService = debounce((id, key, val) => {
+  const s = services.find(s => s.id === id);
+  if (!s) return;
+  const trimmed = val.trim();
+  if (!trimmed) return;
+  s[key] = trimmed;
+  save("sx_services", services);
+  toast("Saved", "✅");
+}, 800);
+
+/* ── DELETE / UNDO ───────────────────────────────────── */
+function deleteService(id) {
+  const idx = services.findIndex(s => s.id === id);
+  if (idx === -1) return;
+  lastDeleted = { service: { ...services[idx] }, index: idx };
+  services.splice(idx, 1);
+  favorites = favorites.filter(f => f !== id);
+  save("sx_services", services); save("sx_fav", favorites);
+  render();
+  document.getElementById("undo-msg").textContent = `"${lastDeleted.service.name}" deleted`;
+  document.getElementById("undo-bar").classList.add("visible");
+  clearTimeout(undoTimer);
+  undoTimer = setTimeout(() => { document.getElementById("undo-bar").classList.remove("visible"); lastDeleted=null; }, 5000);
+}
+
+document.getElementById("undo-btn").addEventListener("click", () => {
+  if (!lastDeleted) return;
+  services.splice(lastDeleted.index, 0, lastDeleted.service);
+  save("sx_services", services);
+  render(); document.getElementById("undo-bar").classList.remove("visible");
+  lastDeleted = null; toast("Restored", "↩️");
+});
+
+/* ── DRAG REORDER ────────────────────────────────────── */
+function reorderServices(srcId, destId) {
+  const si = services.findIndex(s=>s.id===srcId), di = services.findIndex(s=>s.id===destId);
+  if (si===-1||di===-1) return;
+  const [m] = services.splice(si, 1);
+  services.splice(di, 0, m);
+  save("sx_services", services); render();
+}
+
+/* ── MODAL ───────────────────────────────────────────── */
+function openModal(editId=null) {
+  editingId = editId;
+  document.getElementById("modal-title").textContent = editId ? "Edit Service" : "Add Service";
+  if (editId) {
+    const s = services.find(s=>s.id===editId);
+    if (s) { document.getElementById("m-name").value=s.name; document.getElementById("m-url").value=s.url; document.getElementById("m-cat").value=s.category; }
+  } else {
+    document.getElementById("m-name").value=""; document.getElementById("m-url").value=""; document.getElementById("m-cat").value="";
+  }
+  document.getElementById("overlay").classList.add("active");
+  document.getElementById("modal").classList.add("active");
+  setTimeout(() => document.getElementById("m-name").focus(), 50);
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
+  editingId = null;
+}
+
+function saveModal() {
+  const name = document.getElementById("m-name").value.trim();
+  const url  = document.getElementById("m-url").value.trim();
+  const cat  = document.getElementById("m-cat").value.trim() || "Other";
+  if (!name) { document.getElementById("m-name").focus(); toast("Name is required","⚠️"); return; }
+  if (!url)  { document.getElementById("m-url").focus();  toast("URL is required","⚠️");  return; }
+  const finalUrl = url.startsWith("http") ? url : "https://" + url;
+  if (editingId) {
+    const s = services.find(s=>s.id===editingId);
+    if (s) { s.name=name; s.url=finalUrl; s.category=cat; }
+    toast("Updated","✏️");
+  } else {
+    services.push({ id: uid(), name, url: finalUrl, category: cat });
+    toast("Added","✅");
+  }
+  save("sx_services", services); closeModal(); render();
+}
+
+document.getElementById("modal-save").addEventListener("click", saveModal);
+document.getElementById("modal-cancel").addEventListener("click", closeModal);
+document.getElementById("overlay").addEventListener("click", () => { closeModal(); closePinModal(); });
+document.getElementById("btn-add").addEventListener("click", () => {
+  if (locked) { toast("Unlock first 🔒","⚠️"); return; }
+  openModal();
+});
+
+/* ── PIN / LOCK ──────────────────────────────────────── */
+function updateLockUI() {
+  const ind = document.getElementById("lock-indicator");
+  ind.textContent = locked ? "🔒" : "🔓";
+  ind.style.color = locked ? "var(--warn)" : "var(--success)";
+}
+function openPinModal()  {
+  pinBuffer = ""; updatePinDots();
+  document.getElementById("overlay").classList.add("active");
+  document.getElementById("pin-modal").classList.add("active");
+}
+function closePinModal() {
+  document.getElementById("pin-modal").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
+  pinBuffer = ""; updatePinDots();
+}
+function updatePinDots() {
+  for(let i=0;i<4;i++) document.getElementById("d"+i).classList.toggle("filled", i<pinBuffer.length);
+}
+
+document.querySelectorAll(".pin-key").forEach(key => {
+  key.addEventListener("click", () => {
+    const k = key.dataset.k;
+    if (k==="cancel") { closePinModal(); return; }
+    if (k==="back")   { pinBuffer=pinBuffer.slice(0,-1); updatePinDots(); return; }
+    if (pinBuffer.length>=4) return;
+    pinBuffer += k; updatePinDots();
+    if (pinBuffer.length===4) {
+      setTimeout(() => {
+        if (pinBuffer==="1234") {
+          locked=false; closePinModal(); render(); updateLockUI(); toast("Unlocked 🔓","🔓");
+        } else {
+          toast("Wrong PIN ❌","❌"); pinBuffer=""; updatePinDots();
+        }
+      }, 120);
+    }
+  });
+});
+
+document.getElementById("btn-lock").addEventListener("click", () => {
+  if (locked) { openPinModal(); }
+  else { locked=true; render(); updateLockUI(); toast("Locked 🔒","🔒"); }
+});
+
+/* ── VIEW / DARK ─────────────────────────────────────── */
+document.getElementById("btn-view").addEventListener("click", () => {
+  settings.appView = !settings.appView; save("sx_settings",settings);
+  document.getElementById("btn-view").textContent = settings.appView ? "☰" : "⊞";
+  render();
+});
+
+document.getElementById("btn-dark").addEventListener("click", () => {
+  settings.dark = !settings.dark; save("sx_settings",settings); applyDark();
+  document.getElementById("btn-dark").textContent = settings.dark ? "☀️" : "🌙";
+  toast(settings.dark?"Dark mode on":"Light mode on", settings.dark?"🌙":"☀️");
+});
+
+/* ── SEARCH ──────────────────────────────────────────── */
+document.getElementById("search").addEventListener("input", render);
+
+/* ── EXPORT ──────────────────────────────────────────── */
+document.getElementById("btn-export").addEventListener("click", () => {
+  const data = JSON.stringify({ services, favorites, version: 5 }, null, 2);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([data], { type:"application/json" }));
+  a.download = "shivtrix-backup.json";
+  a.click(); toast("Exported!","📦");
+});
+
+/* ── IMPORT ──────────────────────────────────────────── */
+document.getElementById("btn-import").addEventListener("click", () => {
+  if (locked) { toast("Unlock first 🔒","⚠️"); return; }
+  document.getElementById("import-file").click();
+});
+
+document.getElementById("import-file").addEventListener("change", e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data.services)) throw new Error();
+      services  = data.services.map(s => s.id ? s : { ...s, id: uid() });
+      favorites = data.favorites || [];
+      save("sx_services", services); save("sx_fav", favorites);
+      render(); toast("Imported!","📥");
+    } catch { toast("Invalid file ❌","❌"); }
+  };
+  reader.readAsText(file); e.target.value="";
+});
+
+/* ── KEYBOARD ────────────────────────────────────────── */
+document.addEventListener("keydown", e => {
+  if (e.key==="Escape") { closeModal(); closePinModal(); }
+  if ((e.metaKey||e.ctrlKey) && e.key==="k") { e.preventDefault(); document.getElementById("search").focus(); }
+});
+
+/* ── INIT ────────────────────────────────────────────── */
+updateLockUI();
+document.getElementById("btn-view").textContent = settings.appView ? "☰" : "⊞";
+document.getElementById("btn-dark").textContent = settings.dark    ? "☀️" : "🌙";
+render();
+</script>
+</body>
+</html>
