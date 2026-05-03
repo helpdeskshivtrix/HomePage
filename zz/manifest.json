@@ -10,6 +10,11 @@
 
   "icons": [
     {
+      "src": "./favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    },
+    {
       "src": "./shivtrix-logo.png",
       "sizes": "192x192",
       "type": "image/png",
