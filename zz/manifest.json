@@ -1,0 +1,18 @@
+{
+  "name": "Shivtrix Dashboard PRO",
+  "short_name": "Shivtrix",
+  "description": "Encrypted secure services dashboard",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#0a6cff",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "https://placehold.co/192x192/0a6cff/ffffff?text=SX", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "https://placehold.co/512x512/0a6cff/ffffff?text=SX", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    { "name": "Add Service", "url": "./index.html?action=add", "description": "Quickly add a new service" }
+  ]
+}

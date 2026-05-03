@@ -2,524 +2,247 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Shivtrix Dashboard PRO</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a6cff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="services.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
 /* ─── RESET & VARS ─────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f2f8;--surface:#ffffff;--surface2:#f7f8fc;--border:rgba(0,0,0,0.07);
+  --text:#0d0f14;--text2:#6b7080;--accent:#0a6cff;--accent2:#0050cc;
+  --accent-glow:rgba(10,108,255,0.18);--danger:#ff3b30;--success:#30d158;
+  --warn:#ff9f0a;--wa:#25d366;--wa-dark:#128c4a;--wa-glow:rgba(37,211,102,0.35);
+  --shadow:0 2px 16px rgba(0,0,0,0.07);--shadow-lg:0 8px 40px rgba(0,0,0,0.13);
+  --radius:18px;--radius-sm:10px;--transition:0.22s cubic-bezier(0.4,0,0.2,1);
+  --admin:#a855f7;--admin-glow:rgba(168,85,247,0.2);
+  --emergency:#ff6b35;--decoy:#10b981;
+}
+body.dark{
+  --bg:#0f1117;--surface:#1c1e26;--surface2:#252833;--border:rgba(255,255,255,0.07);
+  --text:#f0f2f8;--text2:#8a8fa8;--accent:#3d8bff;--accent2:#2272ff;
+  --accent-glow:rgba(61,139,255,0.2);--shadow:0 2px 16px rgba(0,0,0,0.35);
+  --shadow-lg:0 8px 40px rgba(0,0,0,0.5);--wa-glow:rgba(37,211,102,0.45);
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background var(--transition),color var(--transition)}
 
-:root {
-  --bg:         #f0f2f8;
-  --surface:    #ffffff;
-  --surface2:   #f7f8fc;
-  --border:     rgba(0,0,0,0.07);
-  --text:       #0d0f14;
-  --text2:      #6b7080;
-  --accent:     #0a6cff;
-  --accent2:    #0050cc;
-  --accent-glow:rgba(10,108,255,0.18);
-  --danger:     #ff3b30;
-  --success:    #30d158;
-  --warn:       #ff9f0a;
-  --wa:         #25d366;
-  --wa-dark:    #128c4a;
-  --wa-glow:    rgba(37,211,102,0.35);
-  --shadow:     0 2px 16px rgba(0,0,0,0.07);
-  --shadow-lg:  0 8px 40px rgba(0,0,0,0.13);
-  --radius:     18px;
-  --radius-sm:  10px;
-  --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
-}
+/* ─── TOPBAR ─────────────────────────────────────────── */
+.topbar{display:flex;align-items:center;gap:10px;padding:16px 20px 12px;position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);transition:background var(--transition)}
+.brand{font-size:17px;font-weight:700;letter-spacing:-0.5px;color:var(--accent);white-space:nowrap;flex-shrink:0;user-select:none}
+.brand span{color:var(--text);font-weight:300}
+.brand .mode-badge{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:6px;margin-left:4px;vertical-align:middle}
+.mode-badge.admin{background:var(--admin);color:#fff}
+.mode-badge.emergency{background:var(--emergency);color:#fff;animation:pulse-warn 1.5s infinite}
+.mode-badge.decoy{background:var(--decoy);color:#fff}
+@keyframes pulse-warn{0%,100%{opacity:1}50%{opacity:0.6}}
 
-body.dark {
-  --bg:         #0f1117;
-  --surface:    #1c1e26;
-  --surface2:   #252833;
-  --border:     rgba(255,255,255,0.07);
-  --text:       #f0f2f8;
-  --text2:      #8a8fa8;
-  --accent:     #3d8bff;
-  --accent2:    #2272ff;
-  --accent-glow:rgba(61,139,255,0.2);
-  --shadow:     0 2px 16px rgba(0,0,0,0.35);
-  --shadow-lg:  0 8px 40px rgba(0,0,0,0.5);
-  --wa-glow:    rgba(37,211,102,0.45);
-}
+.search-wrap{flex:1;position:relative}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text2);pointer-events:none}
+#search{width:100%;padding:9px 14px 9px 38px;border-radius:30px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color var(--transition),box-shadow var(--transition),background var(--transition)}
+#search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.btn-icon{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:16px;flex-shrink:0;transition:background var(--transition),transform var(--transition),border-color var(--transition);user-select:none}
+.btn-icon:hover{background:var(--surface2);transform:scale(1.05)}
+.btn-icon:active{transform:scale(0.95)}
+.btn-icon.accent{background:var(--accent);border-color:transparent;color:#fff;font-size:20px;font-weight:300}
+.btn-icon.accent:hover{background:var(--accent2)}
+.lock-indicator{font-size:11px;font-weight:600;color:var(--warn);white-space:nowrap}
 
-body {
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  transition: background var(--transition), color var(--transition);
-}
+/* ─── TABS ────────────────────────────────────────────── */
+.tabs-wrap{padding:12px 20px 0;overflow-x:auto;scrollbar-width:none}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tabs{display:flex;gap:8px;width:max-content}
+.tab{padding:7px 16px;border-radius:30px;font-size:13px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--text2);border:1.5px solid var(--border);transition:all var(--transition);white-space:nowrap;user-select:none}
+.tab:hover{color:var(--text);border-color:var(--accent)}
+.tab.active{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 4px 12px var(--accent-glow)}
 
-/* ─── TOPBAR ────────────────────────────────────────── */
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 20px 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-  transition: background var(--transition);
-}
+/* ─── TOOLBAR ─────────────────────────────────────────── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px}
+.count{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:0.5px;text-transform:uppercase}
+.toolbar-actions{display:flex;gap:8px}
+.btn-sm{font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:all var(--transition)}
+.btn-sm:hover{color:var(--accent);border-color:var(--accent)}
 
-.brand {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: var(--accent);
-  white-space: nowrap;
-  flex-shrink: 0;
-  user-select: none;
-}
-.brand span { color: var(--text); font-weight: 300; }
+/* ─── GRID ────────────────────────────────────────────── */
+#grid{padding:12px 20px 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+#grid.app-view{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
 
-.search-wrap {
-  flex: 1;
-  position: relative;
-}
-.search-wrap svg {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text2);
-  pointer-events: none;
-}
-#search {
-  width: 100%;
-  padding: 9px 14px 9px 38px;
-  border-radius: 30px;
-  border: 1.5px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
-}
-#search:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
+/* ─── CARD ────────────────────────────────────────────── */
+.card{background:var(--surface);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border:1.5px solid var(--border);display:flex;flex-direction:column;gap:10px;transition:box-shadow var(--transition),transform var(--transition),background var(--transition);animation:cardIn 0.28s cubic-bezier(0.4,0,0.2,1) both;position:relative}
+.card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.card.dragging{opacity:0.4;transform:scale(0.97)}
+.card.drag-over{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(0.97)}to{opacity:1;transform:none}}
+.card.app-card{align-items:center;text-align:center;padding:14px 8px;gap:6px}
+.card-header{display:flex;align-items:center;justify-content:space-between}
+.cat-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;padding:3px 8px;border-radius:20px;background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.card-actions{display:flex;gap:6px;align-items:center}
+.star-btn{font-size:17px;cursor:pointer;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);display:inline-block;user-select:none;filter:grayscale(1) opacity(0.45);line-height:1}
+.star-btn.active{filter:none;transform:scale(1.15)}
+.star-btn:hover{transform:scale(1.3);filter:none}
+.wa-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--wa);border:none;cursor:pointer;flex-shrink:0;text-decoration:none;transition:transform var(--transition),box-shadow var(--transition);box-shadow:0 0 0 0 var(--wa-glow);animation:waPulse 2.5s ease-in-out infinite}
+.wa-btn:hover{transform:scale(1.18);box-shadow:0 0 14px 4px var(--wa-glow);animation:none}
+.wa-btn:active{transform:scale(0.92)}
+.wa-btn svg{display:block}
+@keyframes waPulse{0%,100%{box-shadow:0 0 0 0 var(--wa-glow)}50%{box-shadow:0 0 10px 5px var(--wa-glow)}}
+.del-btn{font-size:14px;cursor:pointer;opacity:0.45;line-height:1;transition:opacity var(--transition),transform var(--transition);user-select:none}
+.del-btn:hover{opacity:1;transform:scale(1.2);color:var(--danger)}
+.drag-handle{font-size:13px;color:var(--text2);cursor:grab;opacity:0.3;transition:opacity var(--transition);user-select:none}
+.card:hover .drag-handle{opacity:0.7}
+.cat-icon{font-size:26px;line-height:1;margin:2px 0}
+.card input.field{font-family:'Outfit',sans-serif;font-size:13px;padding:7px 10px;border-radius:var(--radius-sm);border:1.5px solid transparent;background:var(--surface2);color:var(--text);width:100%;outline:none;transition:border-color var(--transition),background var(--transition)}
+.card input.field:not([disabled]):focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-glow)}
+.card input.field[disabled]{cursor:default;opacity:0.72}
+.card input.field.name-field{font-weight:600;font-size:14px}
+.card input.field.url-field{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)}
+.open-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--accent);color:#fff;padding:8px 12px;border-radius:var(--radius-sm);text-decoration:none;font-size:13px;font-weight:600;font-family:'Outfit',sans-serif;transition:background var(--transition),transform var(--transition),box-shadow var(--transition);box-shadow:0 4px 12px var(--accent-glow);border:none;cursor:pointer}
+.open-btn:hover{background:var(--accent2);transform:scale(1.02)}
+.open-btn:active{transform:scale(0.97)}
+.app-open{font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;background:var(--surface2);padding:5px 10px;border-radius:8px;transition:background var(--transition);border:none;font-family:'Outfit',sans-serif;cursor:pointer}
+.app-open:hover{background:var(--accent-glow)}
 
-.btn-icon {
-  display: flex; align-items: center; justify-content: center;
-  width: 38px; height: 38px;
-  border-radius: 12px;
-  border: 1.5px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  font-size: 16px;
-  flex-shrink: 0;
-  transition: background var(--transition), transform var(--transition), border-color var(--transition);
-  user-select: none;
-}
-.btn-icon:hover { background: var(--surface2); transform: scale(1.05); }
-.btn-icon:active { transform: scale(0.95); }
-.btn-icon.accent {
-  background: var(--accent); border-color: transparent; color: #fff;
-  font-size: 20px; font-weight: 300;
-}
-.btn-icon.accent:hover { background: var(--accent2); }
+/* ─── EMPTY STATE ──────────────────────────────────────── */
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text2);animation:cardIn 0.3s ease both}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty h3{font-size:18px;font-weight:600;margin-bottom:6px}
+.empty p{font-size:14px;opacity:0.7}
 
-.lock-indicator {
-  font-size: 11px; font-weight: 600;
-  color: var(--warn);
-  white-space: nowrap;
-}
+/* ─── OVERLAY & MODAL ──────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.25s ease}
+.overlay.active{opacity:1;pointer-events:all}
+.modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.92);background:var(--surface);border-radius:24px;padding:28px 24px;width:min(340px,calc(100vw - 32px));z-index:201;box-shadow:var(--shadow-lg);border:1.5px solid var(--border);opacity:0;pointer-events:none;transition:transform 0.28s cubic-bezier(0.34,1.2,0.64,1),opacity 0.22s ease}
+.modal.active{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:all}
+.modal h2{font-size:20px;font-weight:700;margin-bottom:20px;letter-spacing:-0.3px}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text2);margin-bottom:6px}
+.modal-field input,.modal-field select{width:100%;padding:10px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color var(--transition),box-shadow var(--transition)}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.btn-primary{flex:1;padding:11px;border-radius:var(--radius-sm);border:none;background:var(--accent);color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background var(--transition),transform var(--transition);box-shadow:0 4px 12px var(--accent-glow)}
+.btn-primary:hover{background:var(--accent2)}
+.btn-primary:active{transform:scale(0.97)}
+.btn-cancel{padding:11px 20px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all var(--transition)}
+.btn-cancel:hover{border-color:var(--danger);color:var(--danger)}
 
-/* ─── TABS ──────────────────────────────────────────── */
-.tabs-wrap {
-  padding: 12px 20px 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tabs-wrap::-webkit-scrollbar { display: none; }
-.tabs { display: flex; gap: 8px; width: max-content; }
+/* ─── TOAST ───────────────────────────────────────────── */
+#toast-container{position:fixed;bottom:28px;right:20px;z-index:999;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.toast{background:var(--surface);color:var(--text);padding:12px 18px;border-radius:14px;font-size:14px;font-weight:500;box-shadow:var(--shadow-lg);border:1.5px solid var(--border);animation:toastIn 0.3s cubic-bezier(0.34,1.3,0.64,1) both;display:flex;align-items:center;gap:8px;min-width:160px}
+.toast.fade-out{animation:toastOut 0.3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(0.9)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-10px) scale(0.95)}}
 
-.tab {
-  padding: 7px 16px;
-  border-radius: 30px;
-  font-size: 13px; font-weight: 500;
-  cursor: pointer;
-  background: var(--surface);
-  color: var(--text2);
-  border: 1.5px solid var(--border);
-  transition: all var(--transition);
-  white-space: nowrap;
-  user-select: none;
-}
-.tab:hover { color: var(--text); border-color: var(--accent); }
-.tab.active {
-  background: var(--accent); color: #fff;
-  border-color: transparent;
-  box-shadow: 0 4px 12px var(--accent-glow);
-}
+/* ─── UNDO BAR ────────────────────────────────────────── */
+#undo-bar{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#222;color:#fff;padding:12px 20px;border-radius:30px;font-size:14px;display:flex;align-items:center;gap:14px;z-index:500;opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.34,1.2,0.64,1);box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+#undo-bar.visible{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0)}
+#undo-bar button{background:var(--accent);color:#fff;border:none;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif}
 
-/* ─── TOOLBAR ───────────────────────────────────────── */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px 4px;
-}
-.count { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; }
-.toolbar-actions { display: flex; gap: 8px; }
-.btn-sm {
-  font-family: 'Outfit', sans-serif;
-  font-size: 12px; font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 8px;
-  border: 1.5px solid var(--border);
-  background: var(--surface);
-  color: var(--text2);
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.btn-sm:hover { color: var(--accent); border-color: var(--accent); }
+/* ─── PIN MODAL ───────────────────────────────────────── */
+.pin-modal-title{font-size:20px;font-weight:700;text-align:center;margin-bottom:4px}
+.pin-modal-sub{font-size:12px;color:var(--text2);text-align:center;margin-bottom:16px;min-height:18px}
+.pin-dots{display:flex;gap:12px;justify-content:center;margin:20px 0}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:background var(--transition),border-color var(--transition)}
+.pin-dot.filled{background:var(--accent);border-color:var(--accent)}
+.pin-dot.error{background:var(--danger);border-color:var(--danger)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pin-key{padding:14px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Outfit',sans-serif;font-size:20px;font-weight:600;cursor:pointer;transition:all var(--transition);text-align:center}
+.pin-key:hover{background:var(--accent);color:#fff;border-color:transparent}
+.pin-key:active{transform:scale(0.92)}
+.pin-key.backspace{font-size:18px}
+#lockout-msg{font-size:13px;font-weight:600;color:var(--danger);text-align:center;min-height:20px;margin-top:8px}
+.attempts-bar{display:flex;gap:4px;justify-content:center;margin:8px 0}
+.attempt-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background 0.3s}
+.attempt-dot.used{background:var(--danger)}
 
-/* ─── GRID ──────────────────────────────────────────── */
-#grid {
-  padding: 12px 20px 40px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
-}
-#grid.app-view {
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 12px;
-}
+/* ─── LOCKOUT SCREEN ──────────────────────────────────── */
+#lockout-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
+#lockout-screen.show{display:flex}
+.lockout-icon{font-size:64px;margin-bottom:16px;animation:pulse-warn 1s infinite}
+.lockout-title{font-size:24px;font-weight:700;margin-bottom:8px;color:var(--danger)}
+.lockout-sub{font-size:14px;color:var(--text2);margin-bottom:24px}
+#lockout-countdown{font-size:48px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--danger);letter-spacing:2px}
+.lockout-note{font-size:12px;color:var(--text2);margin-top:16px;opacity:0.7}
 
-/* ─── CARD ──────────────────────────────────────────── */
-.card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 14px;
-  box-shadow: var(--shadow);
-  border: 1.5px solid var(--border);
-  display: flex; flex-direction: column; gap: 10px;
-  transition: box-shadow var(--transition), transform var(--transition), background var(--transition);
-  animation: cardIn 0.28s cubic-bezier(0.4,0,0.2,1) both;
-  position: relative;
-}
-.card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-.card.dragging { opacity: 0.4; transform: scale(0.97); }
-.card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-@keyframes cardIn {
-  from { opacity:0; transform: translateY(10px) scale(0.97); }
-  to   { opacity:1; transform: none; }
-}
+/* ─── DECOY BANNER ────────────────────────────────────── */
+#decoy-banner{display:none;background:var(--decoy);color:#fff;text-align:center;padding:6px;font-size:12px;font-weight:600;letter-spacing:0.5px}
+#decoy-banner.show{display:block}
+#emergency-banner{display:none;background:var(--emergency);color:#fff;text-align:center;padding:6px;font-size:12px;font-weight:600;letter-spacing:0.5px}
+#emergency-banner.show{display:block}
 
-.card.app-card {
-  align-items: center; text-align: center;
-  padding: 14px 8px; gap: 6px;
-}
+/* ─── AUDIT / DEV PANEL ───────────────────────────────── */
+.panel-modal{position:fixed;inset:0;z-index:300;background:var(--bg);overflow:auto;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
+.panel-modal.active{transform:none}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1}
+.panel-header h2{font-size:18px;font-weight:700}
+.panel-body{padding:20px;max-width:900px;margin:0 auto}
+.panel-section{margin-bottom:24px}
+.panel-section h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text2);margin-bottom:12px}
+.audit-entry{display:flex;gap:12px;align-items:flex-start;padding:8px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;font-size:12px}
+.audit-time{color:var(--text2);white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:11px;flex-shrink:0}
+.audit-event{font-weight:600;flex-shrink:0}
+.audit-detail{color:var(--text2);word-break:break-all}
+.audit-event.login_ok{color:var(--success)}
+.audit-event.login_fail{color:var(--danger)}
+.audit-event.export{color:var(--accent)}
+.audit-event.import{color:var(--warn)}
+.audit-event.delete{color:var(--danger)}
+.audit-event.edit,.audit-event.add{color:var(--success)}
+.audit-event.restore{color:var(--admin)}
+.audit-event.lock{color:var(--text2)}
+.dev-raw{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;max-height:200px;overflow:auto;word-break:break-all;color:var(--text)}
+.backup-entry{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);margin-bottom:8px}
+.backup-info{font-size:13px}
+.backup-info strong{font-weight:600}
+.backup-info span{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace}
+.btn-restore{font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:background var(--transition)}
+.btn-restore:hover{background:var(--accent2)}
+.btn-danger{font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px;background:var(--danger);color:#fff;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:opacity var(--transition)}
+.btn-danger:hover{opacity:0.85}
 
-.card-header {
-  display: flex; align-items: center; justify-content: space-between;
-}
-.cat-badge {
-  font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.7px; padding: 3px 8px;
-  border-radius: 20px;
-  background: var(--surface2); color: var(--text2);
-  border: 1px solid var(--border);
-}
-.card-actions { display: flex; gap: 6px; align-items: center; }
+/* ─── URL WARN ────────────────────────────────────────── */
+.url-warn{font-size:11px;color:var(--warn);margin-top:4px;display:none}
+.url-warn.show{display:block}
 
-/* STAR */
-.star-btn {
-  font-size: 17px; cursor: pointer;
-  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  display: inline-block;
-  user-select: none;
-  filter: grayscale(1) opacity(0.45);
-  line-height: 1;
-}
-.star-btn.active { filter: none; transform: scale(1.15); }
-.star-btn:hover  { transform: scale(1.3); filter: none; }
+/* ─── SHORTCUTS HINT ──────────────────────────────────── */
+#kbd-hint{position:fixed;bottom:20px;left:20px;font-size:10px;font-weight:500;color:var(--text2);opacity:0;transition:opacity 0.3s;pointer-events:none;font-family:'JetBrains Mono',monospace;background:var(--surface);padding:6px 10px;border-radius:8px;border:1px solid var(--border);z-index:50}
+#kbd-hint.show{opacity:1}
 
-/* WHATSAPP BUTTON */
-.wa-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--wa);
-  border: none;
-  cursor: pointer;
-  flex-shrink: 0;
-  text-decoration: none;
-  transition: transform var(--transition), box-shadow var(--transition);
-  box-shadow: 0 0 0 0 var(--wa-glow);
-  animation: waPulse 2.5s ease-in-out infinite;
-}
-.wa-btn:hover {
-  transform: scale(1.18);
-  box-shadow: 0 0 14px 4px var(--wa-glow);
-  animation: none;
-}
-.wa-btn:active { transform: scale(0.92); }
+/* ─── SCROLLBAR ───────────────────────────────────────── */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-.wa-btn svg { display: block; }
-
-@keyframes waPulse {
-  0%,100% { box-shadow: 0 0 0 0 var(--wa-glow); }
-  50%      { box-shadow: 0 0 10px 5px var(--wa-glow); }
-}
-
-/* DELETE */
-.del-btn {
-  font-size: 14px; cursor: pointer;
-  opacity: 0.45; line-height: 1;
-  transition: opacity var(--transition), transform var(--transition);
-  user-select: none;
-}
-.del-btn:hover { opacity: 1; transform: scale(1.2); color: var(--danger); }
-
-.drag-handle {
-  font-size: 13px; color: var(--text2);
-  cursor: grab; opacity: 0.3;
-  transition: opacity var(--transition);
-  user-select: none;
-}
-.card:hover .drag-handle { opacity: 0.7; }
-
-.cat-icon { font-size: 26px; line-height: 1; margin: 2px 0; }
-
-/* INPUTS */
-.card input.field {
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid transparent;
-  background: var(--surface2);
-  color: var(--text);
-  width: 100%; outline: none;
-  transition: border-color var(--transition), background var(--transition);
-}
-.card input.field:not([disabled]):focus {
-  border-color: var(--accent);
-  background: var(--surface);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-.card input.field[disabled] { cursor: default; opacity: 0.72; }
-.card input.field.name-field { font-weight: 600; font-size: 14px; }
-.card input.field.url-field  { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); }
-
-/* OPEN BTN */
-.open-btn {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  background: var(--accent); color: #fff;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  font-size: 13px; font-weight: 600;
-  font-family: 'Outfit', sans-serif;
-  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-  box-shadow: 0 4px 12px var(--accent-glow);
-  border: none; cursor: pointer;
-}
-.open-btn:hover { background: var(--accent2); transform: scale(1.02); }
-.open-btn:active { transform: scale(0.97); }
-
-/* App view */
-.app-open {
-  font-size: 12px; font-weight: 600;
-  color: var(--accent);
-  text-decoration: none;
-  background: var(--surface2);
-  padding: 5px 10px;
-  border-radius: 8px;
-  transition: background var(--transition);
-  border: none; font-family: 'Outfit', sans-serif; cursor: pointer;
-}
-.app-open:hover { background: var(--accent-glow); }
-
-/* ─── EMPTY STATE ───────────────────────────────────── */
-.empty {
-  grid-column: 1/-1; text-align: center;
-  padding: 60px 20px; color: var(--text2);
-  animation: cardIn 0.3s ease both;
-}
-.empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty h3   { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
-.empty p    { font-size: 14px; opacity: 0.7; }
-
-/* ─── MODAL ─────────────────────────────────────────── */
-.overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(8px);
-  z-index: 200; opacity: 0; pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-.overlay.active { opacity: 1; pointer-events: all; }
-
-.modal {
-  position: fixed; top: 50%; left: 50%;
-  transform: translate(-50%,-50%) scale(0.92);
-  background: var(--surface);
-  border-radius: 24px;
-  padding: 28px 24px;
-  width: min(340px, calc(100vw - 32px));
-  z-index: 201;
-  box-shadow: var(--shadow-lg);
-  border: 1.5px solid var(--border);
-  opacity: 0; pointer-events: none;
-  transition: transform 0.28s cubic-bezier(0.34,1.2,0.64,1), opacity 0.22s ease;
-}
-.modal.active {
-  transform: translate(-50%,-50%) scale(1);
-  opacity: 1; pointer-events: all;
-}
-.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.3px; }
-
-.modal-field { margin-bottom: 14px; }
-.modal-field label {
-  display: block; font-size: 12px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.6px;
-  color: var(--text2); margin-bottom: 6px;
-}
-.modal-field input {
-  width: 100%; padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border);
-  background: var(--surface2); color: var(--text);
-  font-family: 'Outfit', sans-serif; font-size: 14px; outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-.modal-field input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-
-.btn-primary {
-  flex: 1; padding: 11px; border-radius: var(--radius-sm);
-  border: none; background: var(--accent); color: #fff;
-  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
-  cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
-  box-shadow: 0 4px 12px var(--accent-glow);
-}
-.btn-primary:hover  { background: var(--accent2); }
-.btn-primary:active { transform: scale(0.97); }
-
-.btn-cancel {
-  padding: 11px 20px; border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border); background: transparent;
-  color: var(--text2);
-  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
-  cursor: pointer; transition: all var(--transition);
-}
-.btn-cancel:hover { border-color: var(--danger); color: var(--danger); }
-
-/* ─── TOAST ─────────────────────────────────────────── */
-#toast-container {
-  position: fixed; bottom: 28px; right: 20px;
-  z-index: 999; display: flex; flex-direction: column;
-  gap: 10px; align-items: flex-end;
-}
-.toast {
-  background: var(--surface); color: var(--text);
-  padding: 12px 18px; border-radius: 14px;
-  font-size: 14px; font-weight: 500;
-  box-shadow: var(--shadow-lg); border: 1.5px solid var(--border);
-  animation: toastIn 0.3s cubic-bezier(0.34,1.3,0.64,1) both;
-  display: flex; align-items: center; gap: 8px; min-width: 160px;
-}
-.toast.fade-out { animation: toastOut 0.3s ease forwards; }
-@keyframes toastIn  { from { opacity:0; transform:translateY(20px) scale(0.9); } to { opacity:1; transform:none; } }
-@keyframes toastOut { to   { opacity:0; transform:translateY(-10px) scale(0.95); } }
-
-/* ─── UNDO BAR ──────────────────────────────────────── */
-#undo-bar {
-  position: fixed; bottom: 80px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: #222; color: #fff;
-  padding: 12px 20px; border-radius: 30px;
-  font-size: 14px;
-  display: flex; align-items: center; gap: 14px;
-  z-index: 500;
-  opacity: 0; pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.34,1.2,0.64,1);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
-}
-#undo-bar.visible { opacity:1; pointer-events:all; transform:translateX(-50%) translateY(0); }
-#undo-bar button {
-  background: var(--accent); color: #fff; border: none;
-  padding: 5px 14px; border-radius: 20px;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-}
-
-/* ─── PIN MODAL ─────────────────────────────────────── */
-.pin-dots { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
-.pin-dot {
-  width: 14px; height: 14px; border-radius: 50%;
-  border: 2px solid var(--border); background: transparent;
-  transition: background var(--transition), border-color var(--transition);
-}
-.pin-dot.filled { background: var(--accent); border-color: var(--accent); }
-.pin-pad { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-.pin-key {
-  padding: 14px; border-radius: 14px;
-  border: 1.5px solid var(--border); background: var(--surface2);
-  color: var(--text); font-family: 'Outfit', sans-serif;
-  font-size: 20px; font-weight: 600; cursor: pointer;
-  transition: all var(--transition); text-align: center;
-}
-.pin-key:hover  { background: var(--accent); color: #fff; border-color: transparent; }
-.pin-key:active { transform: scale(0.92); }
-.pin-key.backspace { font-size: 18px; }
-
-/* ─── SCROLLBAR ─────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-/* ─── RESPONSIVE ────────────────────────────────────── */
-@media (max-width: 520px) {
-  .brand { display: none; }
-  #grid  { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-  .topbar { padding: 12px 12px 10px; gap: 8px; }
-  #grid { padding: 10px 12px 40px; }
-  .tabs-wrap { padding: 10px 12px 0; }
+/* ─── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:520px){
+  .brand{display:none}
+  #grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .topbar{padding:12px 12px 10px;gap:8px}
+  #grid{padding:10px 12px 80px}
+  .tabs-wrap{padding:10px 12px 0}
 }
 </style>
 </head>
 <body>
 
+<!-- BANNERS -->
+<div id="decoy-banner">🎭 GUEST MODE — Demo Services Only</div>
+<div id="emergency-banner">🚨 EMERGENCY RECOVERY MODE — Restore from backup below</div>
+
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="brand">Shivtrix<span> PRO</span></div>
+  <div class="brand" id="brand-el">Shivtrix<span> PRO</span></div>
   <div class="search-wrap">
-    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
-    </svg>
-    <input type="search" id="search" placeholder="Search services…" autocomplete="off" spellcheck="false">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="search" id="search" placeholder="Search services… (Ctrl+K)" autocomplete="off" spellcheck="false">
   </div>
-  <div id="lock-indicator" class="lock-indicator" title="Locked">🔒</div>
-  <button class="btn-icon" id="btn-view" title="Toggle view">⊞</button>
+  <div id="lock-indicator" class="lock-indicator" title="Status">🔒</div>
+  <button class="btn-icon" id="btn-view" title="Toggle view (⊞/☰)">⊞</button>
   <button class="btn-icon" id="btn-dark" title="Toggle dark mode">🌙</button>
   <button class="btn-icon" id="btn-lock" title="Lock / Unlock">🔐</button>
-  <button class="btn-icon accent" id="btn-add" title="Add service">+</button>
+  <button class="btn-icon accent" id="btn-add" title="Add service (Ctrl+N)">+</button>
 </div>
 
 <!-- TABS -->
@@ -529,14 +252,23 @@ body {
 <div class="toolbar">
   <div class="count" id="count"></div>
   <div class="toolbar-actions">
-    <button class="btn-sm" id="btn-export">↑ Export</button>
+    <button class="btn-sm" id="btn-export" title="Ctrl+E">↑ Export</button>
     <button class="btn-sm" id="btn-import">↓ Import</button>
-    <input type="file" id="import-file" accept=".json,.js" style="display:none">
+    <input type="file" id="import-file" accept=".json" style="display:none">
   </div>
 </div>
 
 <!-- GRID -->
 <div id="grid"></div>
+
+<!-- LOCKOUT SCREEN -->
+<div id="lockout-screen">
+  <div class="lockout-icon">🔒</div>
+  <div class="lockout-title">Too Many Failed Attempts</div>
+  <div class="lockout-sub">Dashboard locked for security</div>
+  <div id="lockout-countdown">05:00</div>
+  <div class="lockout-note">All data is encrypted and protected</div>
+</div>
 
 <!-- OVERLAY -->
 <div class="overlay" id="overlay"></div>
@@ -551,10 +283,12 @@ body {
   <div class="modal-field">
     <label>URL</label>
     <input type="url" id="m-url" placeholder="https://…" autocomplete="off">
+    <div class="url-warn" id="url-warn">⚠️ Suspicious URL detected — verify before saving</div>
   </div>
   <div class="modal-field">
     <label>Category</label>
-    <input type="text" id="m-cat" placeholder="e.g. Productivity" autocomplete="off">
+    <input type="text" id="m-cat" placeholder="e.g. EPFO" autocomplete="off" list="cat-datalist">
+    <datalist id="cat-datalist"></datalist>
   </div>
   <div class="modal-actions">
     <button class="btn-cancel" id="modal-cancel">Cancel</button>
@@ -564,517 +298,1088 @@ body {
 
 <!-- PIN MODAL -->
 <div class="modal" id="pin-modal">
-  <h2>Enter PIN</h2>
+  <div class="pin-modal-title" id="pin-title">Enter PIN</div>
+  <div class="pin-modal-sub" id="pin-sub">Enter your access PIN</div>
   <div class="pin-dots" id="pin-dots">
-    <div class="pin-dot" id="d0"></div>
-    <div class="pin-dot" id="d1"></div>
-    <div class="pin-dot" id="d2"></div>
-    <div class="pin-dot" id="d3"></div>
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
   </div>
+  <div class="attempts-bar" id="attempts-bar"></div>
   <div class="pin-pad">
-    <button class="pin-key" data-k="1">1</button>
-    <button class="pin-key" data-k="2">2</button>
-    <button class="pin-key" data-k="3">3</button>
-    <button class="pin-key" data-k="4">4</button>
-    <button class="pin-key" data-k="5">5</button>
-    <button class="pin-key" data-k="6">6</button>
-    <button class="pin-key" data-k="7">7</button>
-    <button class="pin-key" data-k="8">8</button>
-    <button class="pin-key" data-k="9">9</button>
-    <button class="pin-key backspace" data-k="back">⌫</button>
-    <button class="pin-key" data-k="0">0</button>
+    <button class="pin-key" data-k="1">1</button><button class="pin-key" data-k="2">2</button><button class="pin-key" data-k="3">3</button>
+    <button class="pin-key" data-k="4">4</button><button class="pin-key" data-k="5">5</button><button class="pin-key" data-k="6">6</button>
+    <button class="pin-key" data-k="7">7</button><button class="pin-key" data-k="8">8</button><button class="pin-key" data-k="9">9</button>
+    <button class="pin-key backspace" data-k="back">⌫</button><button class="pin-key" data-k="0">0</button>
     <button class="pin-key" data-k="cancel" style="font-size:13px;font-weight:600;color:var(--danger)">✕</button>
+  </div>
+  <div id="lockout-msg"></div>
+</div>
+
+<!-- AUDIT LOG PANEL -->
+<div class="panel-modal" id="audit-panel">
+  <div class="panel-header">
+    <h2>📋 Audit Log</h2>
+    <button class="btn-icon" id="close-audit">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="margin:0">Recent Events</h3>
+        <button class="btn-sm" id="clear-audit">Clear Log</button>
+      </div>
+      <div id="audit-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DEV / BACKUP PANEL -->
+<div class="panel-modal" id="dev-panel">
+  <div class="panel-header">
+    <h2>🛠 Developer Panel</h2>
+    <button class="btn-icon" id="close-dev">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-section">
+      <h3>Backups (Last 5)</h3>
+      <div id="backup-list"></div>
+    </div>
+    <div class="panel-section">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="btn-sm" id="dev-force-backup">💾 Force Backup</button>
+        <button class="btn-sm" id="dev-audit-view">📋 View Audit</button>
+        <button class="btn-danger" id="dev-reset" style="font-size:12px;padding:5px 12px">⚠️ Factory Reset</button>
+      </div>
+    </div>
+    <div class="panel-section">
+      <h3>Encryption Diagnostics</h3>
+      <div class="dev-raw" id="dev-diag"></div>
+    </div>
+    <div class="panel-section">
+      <h3>Raw Encrypted Storage (Keys)</h3>
+      <div class="dev-raw" id="dev-raw"></div>
+    </div>
+    <div class="panel-section" style="border-top:1px solid var(--border);padding-top:16px">
+      <h3>☁️ Cloud Sync (Ready — Not Connected)</h3>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7">
+        Architecture prepared for: <strong>Firebase</strong> · <strong>Supabase</strong> · <strong>GitHub Gist</strong><br>
+        All data is pre-encrypted before upload. Hook <code style="font-family:'JetBrains Mono',monospace;font-size:11px">CLOUD.push()</code> / <code style="font-family:'JetBrains Mono',monospace;font-size:11px">CLOUD.pull()</code> to your provider.<br>
+        <span style="font-size:11px;opacity:0.7">Storage key: <code style="font-family:'JetBrains Mono',monospace">sx_data</code> (AES-256 ciphertext — safe to sync)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EMERGENCY PANEL -->
+<div style="display:none" id="emergency-panel-wrap">
+  <div style="background:rgba(255,107,53,0.08);border:1.5px solid var(--emergency);border-radius:14px;padding:16px;margin:12px 20px">
+    <div style="font-weight:700;color:var(--emergency);margin-bottom:8px">🚨 Emergency Recovery</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Select a backup below or export a safe copy before resetting.</div>
+    <div id="emergency-backup-list"></div>
   </div>
 </div>
 
 <div id="toast-container"></div>
 <div id="undo-bar"><span id="undo-msg"></span><button id="undo-btn">Undo</button></div>
+<div id="kbd-hint"></div>
 
 <script>
-/* ══════════════════════════════════════════════════════
-   SHIVTRIX DASHBOARD PRO — ENGINE v3.0
-   Data source: services.js → window.SHIVTRIX_DATA
-   ══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   SHIVTRIX DASHBOARD PRO — ULTRA v5.0
+   Real AES-256 Encryption · Multi-PIN · Brute-Force Protection
+   Audit Log · Auto-Backup · Decoy Mode · PWA · Dev Panel
+   ══════════════════════════════════════════════════════════════ */
 
-/* ── LOAD DATA SOURCE ───────────────────────────────── */
-if (!window.SHIVTRIX_DATA) {
-  document.body.innerHTML = `
-    <div style="font-family:system-ui;padding:60px;text-align:center;color:#ff3b30;">
-      <div style="font-size:48px;margin-bottom:16px">⚠️</div>
-      <h2>services.js not found</h2>
-      <p style="margin-top:8px;color:#888">Make sure <code>services.js</code> is in the same folder as <code>index.html</code></p>
-    </div>`;
-  throw new Error("SHIVTRIX_DATA not loaded. Place services.js next to index.html.");
+/* ── 0. GUARD: services.js loaded? ──────────────────────────── */
+if (!window.SHIVTRIX_DATA || typeof CryptoJS === 'undefined') {
+  document.body.innerHTML = `<div style="font-family:system-ui;padding:60px;text-align:center;color:#ff3b30;"><div style="font-size:48px">⚠️</div><h2 style="margin:16px 0 8px">Missing dependency</h2><p style="color:#888">Make sure <code>services.js</code> and CryptoJS are loaded before <code>index.html</code></p></div>`;
+  throw new Error('Dependency missing');
 }
 
-const SOURCE_SERVICES = window.SHIVTRIX_DATA.services || [];
-const WA_NUMBER       = window.SHIVTRIX_DATA.whatsapp || "918424008055";
+/* ── 1. PIN CONFIGURATION ───────────────────────────────────── */
+/* ⚠️  CHANGE THESE TO YOUR OWN PINs — 4 digits each           */
+const PINS = Object.freeze({
+  normal:    "8055",   // Browse-only access
+  admin:     "9999",   // Full CRUD + import/export
+  emergency: "0000",   // Recovery access + restore tools
+  decoy:     "5678",   // Fake dashboard (harmless data)
+});
+const CFG = Object.freeze({ maxAttempts:5, lockoutMs:5*60*1000, maxBackups:5, maxAudit:200 });
 
-/* ── CATEGORY ICONS ─────────────────────────────────── */
-const CATEGORY_ICONS = {
-  EPFO:          "🏛️",
-  Aadhaar:       "🪪",
-  PAN:           "💳",
-  PCC:           "👮",
-  Health:        "🩺",
-  Identity:      "🆔",
-  Finance:       "💰",
-  "Image Tools": "🖼️",
-  AI:            "🤖",
-  Train:         "🚆",
-  Transport:     "🚌",
-  Productivity:  "⚡",
-  Tools:         "🔧",
-  Education:     "📚",
-  Shopping:      "🛒",
-  Social:        "💬",
-  News:          "📰",
-  Other:         "🔗",
+/* ── 2. CRYPTO ENGINE (Real AES-256-CBC + PBKDF2) ───────────── */
+const SEC = {
+  KDF_ITERS: 1000,
+  KDF_SALT:  'shivtrix_v5_kdf_2024_prod',  // static salt for key-wrap only
+
+  // PBKDF2 key from PIN (for wrapping master key)
+  _pbk(pin) {
+    return CryptoJS.PBKDF2(pin, this.KDF_SALT, { keySize: 8, iterations: this.KDF_ITERS });
+  },
+
+  // AES-256-CBC encrypt any string → packed JSON string
+  _aesEnc(plain, key) {
+    const iv  = CryptoJS.lib.WordArray.random(16);
+    const ct  = CryptoJS.AES.encrypt(plain, key, { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+    return JSON.stringify({ iv: iv.toString(CryptoJS.enc.Hex), ct: ct.toString(), v: 5 });
+  },
+
+  // AES-256-CBC decrypt packed JSON string → original string | null
+  _aesDec(packed, key) {
+    try {
+      const { iv, ct } = JSON.parse(packed);
+      const raw = CryptoJS.AES.decrypt(ct, key, { iv: CryptoJS.enc.Hex.parse(iv), mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+      const s = raw.toString(CryptoJS.enc.Utf8);
+      return s.length ? s : null;
+    } catch { return null; }
+  },
+
+  // Wrap master key string with PIN-derived key
+  wrap(mk, pin)   { return this._aesEnc(mk, this._pbk(pin)); },
+
+  // Unwrap master key string with PIN → mk string | null
+  unwrap(packed, pin) { return this._aesDec(packed, this._pbk(pin)); },
+
+  // Encrypt arbitrary data with master key (WordArray from hex)
+  encrypt(data, mk) {
+    const iv  = CryptoJS.lib.WordArray.random(16);
+    const key = CryptoJS.enc.Hex.parse(mk);
+    const ct  = CryptoJS.AES.encrypt(JSON.stringify(data), key, { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+    return JSON.stringify({ iv: iv.toString(CryptoJS.enc.Hex), ct: ct.toString(), v: 5 });
+  },
+
+  // Decrypt data with master key → parsed object | null
+  decrypt(packed, mk) {
+    try {
+      const { iv, ct } = JSON.parse(packed);
+      const key = CryptoJS.enc.Hex.parse(mk);
+      const raw = CryptoJS.AES.decrypt(ct, key, { iv: CryptoJS.enc.Hex.parse(iv), mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+      return JSON.parse(raw.toString(CryptoJS.enc.Utf8));
+    } catch { return null; }
+  },
+
+  // Generate 256-bit random master key as hex string
+  genMK() { return CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex); },
+
+  // Init: create master key slots if not exist (first-run setup)
+  initSlots() {
+    if (localStorage.getItem('sx_mk_n')) return; // already initialised
+    const mk  = this.genMK();
+    const dmk = this.genMK();  // separate master key for decoy
+    localStorage.setItem('sx_mk_n', this.wrap(mk,  PINS.normal));
+    localStorage.setItem('sx_mk_a', this.wrap(mk,  PINS.admin));
+    localStorage.setItem('sx_mk_e', this.wrap(mk,  PINS.emergency));
+    localStorage.setItem('sx_mk_d', this.wrap(dmk, PINS.decoy));
+  },
+
+  // Get master key for a given PIN → { mk, mode } | null
+  auth(pin) {
+    const MAP = {
+      [PINS.normal]:    { slot:'sx_mk_n', mode:'normal'    },
+      [PINS.admin]:     { slot:'sx_mk_a', mode:'admin'     },
+      [PINS.emergency]: { slot:'sx_mk_e', mode:'emergency' },
+      [PINS.decoy]:     { slot:'sx_mk_d', mode:'decoy'     },
+    };
+    const entry = MAP[pin];
+    if (!entry) return null;
+    const packed = localStorage.getItem(entry.slot);
+    if (!packed) return null;
+    const mk = this.unwrap(packed, pin);
+    return mk ? { mk, mode: entry.mode } : null;
+  }
 };
-const getCatIcon = cat => CATEGORY_ICONS[cat] || "🔗";
 
-/* WhatsApp SVG logo */
-function waSVG(size = 16) {
-  return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg">
-    <path d="M16 0C7.163 0 0 7.163 0 16c0 2.822.737 5.469 2.027 7.77L0 32l8.469-2.002A15.93 15.93 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.29 13.29 0 01-6.782-1.858l-.487-.29-5.026 1.188 1.228-4.895-.318-.502A13.267 13.267 0 012.667 16C2.667 8.637 8.637 2.667 16 2.667S29.333 8.637 29.333 16 23.363 29.333 16 29.333z"/>
-    <path d="M23.387 19.76c-.37-.185-2.189-1.08-2.528-1.202-.34-.122-.587-.185-.834.185-.247.37-.956 1.202-1.172 1.45-.216.246-.432.277-.802.092-.37-.185-1.563-.576-2.977-1.836-1.1-.98-1.842-2.19-2.058-2.56-.216-.37-.023-.57.162-.754.167-.166.37-.432.556-.648.185-.216.247-.37.37-.617.123-.247.062-.463-.031-.648-.092-.185-.834-2.01-1.142-2.752-.3-.723-.607-.625-.834-.636l-.71-.012c-.247 0-.648.093-.988.463s-1.297 1.267-1.297 3.09 1.328 3.584 1.514 3.83c.185.247 2.614 3.99 6.333 5.595.885.382 1.575.61 2.113.78.888.283 1.696.243 2.335.147.712-.107 2.189-.895 2.498-1.759.308-.864.308-1.605.216-1.76-.092-.154-.34-.247-.71-.432z"/>
-  </svg>`;
-}
+/* ── 3. ENCRYPTED STORE ─────────────────────────────────────── */
+const STORE = {
+  // Decrypt and return data object, auto-repair if corrupted
+  loadData(mk) {
+    const raw = localStorage.getItem('sx_data');
+    if (!raw) return this._defaults();
+    const data = SEC.decrypt(raw, mk);
+    if (!data) return BACKUP.repairFromLatest(mk) || this._defaults();
+    // Schema migration / fill missing keys
+    return { ...this._defaults(), ...data };
+  },
 
-/* ── HELPERS ─────────────────────────────────────────── */
+  saveData(mk, data) {
+    localStorage.setItem('sx_data', SEC.encrypt(data, mk));
+  },
+
+  loadDecoy(mk) {
+    const raw = localStorage.getItem('sx_decoy');
+    if (!raw) return { services: DECOY_SERVICES, favorites: [] };
+    return SEC.decrypt(raw, mk) || { services: DECOY_SERVICES, favorites: [] };
+  },
+
+  saveDecoy(mk, data) {
+    localStorage.setItem('sx_decoy', SEC.encrypt(data, mk));
+  },
+
+  _defaults() {
+    return { services: [], favorites: [], settings: { dark: false, appView: false }, backups: [] };
+  }
+};
+
+/* ── 4. AUTH / BRUTE-FORCE PROTECTION ───────────────────────── */
+const AUTH = {
+  _getAtt()  { try { return JSON.parse(localStorage.getItem('sx_att') || '{"c":0,"t":0}'); } catch { return {c:0,t:0}; } },
+  _setAtt(c,t) { localStorage.setItem('sx_att', JSON.stringify({c,t})); },
+
+  // Returns remaining lockout seconds (0 = not locked)
+  lockoutSecs() {
+    const {c,t} = this._getAtt();
+    if (c < CFG.maxAttempts) return 0;
+    const rem = CFG.lockoutMs - (Date.now() - t);
+    if (rem <= 0) { this._setAtt(0,0); return 0; }
+    return Math.ceil(rem / 1000);
+  },
+
+  attempt(pin) {
+    const secs = this.lockoutSecs();
+    if (secs > 0) return { ok: false, locked: true, secs };
+    const result = SEC.auth(pin);
+    if (!result) {
+      const {c} = this._getAtt();
+      const nc = c + 1;
+      this._setAtt(nc, nc >= CFG.maxAttempts ? Date.now() : 0);
+      AUDIT.log('login_fail', { attempts: nc });
+      return { ok: false, remaining: CFG.maxAttempts - nc };
+    }
+    this._setAtt(0, 0);
+    AUDIT.log('login_ok', { mode: result.mode });
+    return { ok: true, ...result };
+  },
+
+  getAttemptCount() { return this._getAtt().c; }
+};
+
+/* ── 5. BACKUP MODULE ───────────────────────────────────────── */
+const BACKUP = {
+  // Store encrypted snapshot inside data.backups (max CFG.maxBackups)
+  save(mk, data) {
+    const snap = { ts: Date.now(), services: data.services, favorites: data.favorites };
+    const existing = (data.backups || []).slice(-(CFG.maxBackups - 1));
+    return [...existing, snap];
+  },
+
+  // Restore latest valid backup from data.backups
+  repairFromLatest(mk) {
+    // Read raw; try each backup slot
+    const raw = localStorage.getItem('sx_data');
+    if (!raw) return null;
+    // Attempt partial JSON parse to extract backups
+    try {
+      // Can't fully decrypt (that's why we're here) — check sx_bk_ slots
+      for (let i = CFG.maxBackups - 1; i >= 0; i--) {
+        const bk = localStorage.getItem(`sx_bk_${i}`);
+        if (!bk) continue;
+        const d = SEC.decrypt(bk, mk);
+        if (d && Array.isArray(d.services)) {
+          AUDIT.log('restore', { slot: i, ts: d.ts });
+          toast('Auto-repaired from backup 🔧', '🛠');
+          return { ...STORE._defaults(), services: d.services, favorites: d.favorites || [] };
+        }
+      }
+    } catch {}
+    return null;
+  },
+
+  // Persist rolling individual backup slots for recovery
+  persistSlots(mk, backups) {
+    backups.forEach((b,i) => localStorage.setItem(`sx_bk_${i}`, SEC.encrypt(b, mk)));
+  },
+
+  getList(data) { return (data.backups || []).slice().reverse(); }
+};
+
+/* ── 6. AUDIT LOG ───────────────────────────────────────────── */
+const AUDIT = {
+  _log: [],  // in-memory, flushed to encrypted storage on save
+
+  load(mk) {
+    const raw = localStorage.getItem('sx_audit');
+    if (!raw) { this._log = []; return; }
+    this._log = SEC.decrypt(raw, mk) || [];
+    if (!Array.isArray(this._log)) this._log = [];
+  },
+
+  flush(mk) {
+    if (!mk) return;
+    const trimmed = this._log.slice(-CFG.maxAudit);
+    localStorage.setItem('sx_audit', SEC.encrypt(trimmed, mk));
+    this._log = trimmed;
+  },
+
+  log(event, detail = {}) {
+    this._log.push({ ts: Date.now(), event, detail });
+    // Flush immediately if mk available
+    if (APP.mk) this.flush(APP.mk);
+  },
+
+  clear(mk) { this._log = []; localStorage.removeItem('sx_audit'); AUDIT.log('audit_cleared', {}); }
+};
+
+/* ── 7. URL VALIDATOR ───────────────────────────────────────── */
+const VALIDATE = {
+  SUSPICIOUS_PATTERNS: [/javascript:/i, /data:/i, /vbscript:/i, /\.tk$/i, /\.ml$/i, /bit\.ly\//i, /goo\.gl\//i, /tinyurl/i, /ip-\d+/i, /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/],
+  KNOWN_SAFE: ['gov.in', 'uidai.gov.in', 'epfindia.gov.in', 'incometax.gov.in', 'proteantech.in', 'abdm.gov.in', 'esic.gov.in', 'indianrail.gov.in', 'mahaonline.gov.in', 'remove.bg', 'pi7.org', 'notegpt.io', 'whatsapp.com', 'wa.me'],
+
+  url(raw) {
+    if (!raw || !raw.trim()) return { valid: false, warn: false };
+    const u = raw.trim();
+    // Must start with http/https
+    if (!/^https?:\/\/.+/i.test(u)) return { valid: false, warn: false, msg: 'URL must start with https://' };
+    // Check suspicious patterns
+    const suspicious = this.SUSPICIOUS_PATTERNS.some(p => p.test(u));
+    if (suspicious) return { valid: true, warn: true, msg: 'Suspicious URL pattern detected' };
+    return { valid: true, warn: false };
+  },
+
+  // Import schema validator
+  importData(raw) {
+    try {
+      const d = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (!d || typeof d !== 'object') return null;
+      // Support both encrypted export and legacy plain JSON
+      if (d._enc === true && typeof d.payload === 'string') return d; // encrypted, handle separately
+      if (!Array.isArray(d.services)) return null;
+      // Sanitize each service
+      const clean = d.services
+        .filter(s => s && typeof s.name === 'string' && typeof s.url === 'string')
+        .map(s => ({
+          id:       typeof s.id === 'string' ? s.id.replace(/[^a-zA-Z0-9_-]/g,'').slice(0,40) : uid(),
+          name:     String(s.name).slice(0,100).replace(/[<>]/g,''),
+          url:      String(s.url).slice(0,500),
+          category: String(s.category || 'Other').slice(0,50).replace(/[<>]/g,''),
+        }))
+        .filter(s => this.url(s.url).valid);
+      if (!clean.length) return null;
+      return { services: clean, favorites: Array.isArray(d.favorites) ? d.favorites : [] };
+    } catch { return null; }
+  }
+};
+
+/* ── 8. CLOUD SYNC STUB (ready for Firebase/Supabase/Gist) ──── */
+const CLOUD = {
+  _provider: null, // Set to 'firebase' | 'supabase' | 'gist' to enable
+
+  async push(mk) {
+    // All data in sx_data is already encrypted AES-256 — safe to push directly
+    if (!this._provider) return;
+    const payload = localStorage.getItem('sx_data');
+    // TODO: implement per-provider upload logic here
+    // e.g. firebase: await setDoc(doc(db,'shivtrix',uid), {d:payload,t:Date.now()})
+  },
+
+  async pull(mk) {
+    if (!this._provider) return null;
+    // TODO: fetch from provider, set localStorage.setItem('sx_data', fetched), reload
+    return null;
+  }
+};
+
+/* ── 9. APP STATE ───────────────────────────────────────────── */
+const APP = {
+  mk:         null,
+  mode:       null,    // 'normal' | 'admin' | 'emergency' | 'decoy'
+  services:   [],
+  favorites:  [],
+  settings:   { dark: false, appView: false },
+  backups:    [],
+  locked:     true,
+  currentTab: 'Favorites',
+  lastDeleted: null,
+  undoTimer:   null,
+  pinBuffer:   '',
+  dragSrcId:   null,
+  editingId:   null,
+
+  isAdmin()    { return ['admin','emergency'].includes(this.mode); },
+  isDecoy()    { return this.mode === 'decoy'; },
+  isEmergency(){ return this.mode === 'emergency'; },
+};
+
+/* ── 10. CONSTANTS ──────────────────────────────────────────── */
+const SOURCE_SERVICES = window.SHIVTRIX_DATA.services || [];
+const WA_NUMBER       = window.SHIVTRIX_DATA.whatsapp  || '918424008055';
+
+const DECOY_SERVICES = [
+  {id:'dc1',name:'Gmail',          url:'https://gmail.com',              category:'Email'},
+  {id:'dc2',name:'YouTube',        url:'https://youtube.com',            category:'Media'},
+  {id:'dc3',name:'WhatsApp Web',   url:'https://web.whatsapp.com',       category:'Social'},
+  {id:'dc4',name:'Google Drive',   url:'https://drive.google.com',       category:'Storage'},
+  {id:'dc5',name:'Paytm',          url:'https://paytm.com',              category:'Finance'},
+  {id:'dc6',name:'Amazon India',   url:'https://amazon.in',              category:'Shopping'},
+  {id:'dc7',name:'IRCTC',          url:'https://irctc.co.in',            category:'Train'},
+  {id:'dc8',name:'Zomato',         url:'https://zomato.com',             category:'Food'},
+  {id:'dc9',name:'Flipkart',       url:'https://flipkart.com',           category:'Shopping'},
+  {id:'dc10',name:'PhonePe',       url:'https://phonepe.com',            category:'Finance'},
+];
+
+const CATEGORY_ICONS = {
+  EPFO:'🏛️',Aadhaar:'🪪',PAN:'💳',PCC:'👮',Health:'🩺',Identity:'🆔',
+  Finance:'💰','Image Tools':'🖼️',AI:'🤖',Train:'🚆',Transport:'🚌',
+  Productivity:'⚡',Tools:'🔧',Education:'📚',Shopping:'🛒',Social:'💬',
+  News:'📰',Email:'📧',Media:'🎬',Storage:'☁️',Food:'🍔',Other:'🔗',
+};
+const getCatIcon = c => CATEGORY_ICONS[c] || '🔗';
+
+/* ── 11. HELPERS ────────────────────────────────────────────── */
 function uid()  { return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
-function save(k,v) { localStorage.setItem(k, JSON.stringify(v)); }
-function load(k)   { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(()=>fn(...a), ms); }; }
-function toast(msg, emoji = "✅") {
-  const el = document.createElement("div");
-  el.className = "toast";
+
+function toast(msg, emoji='✅') {
+  const el = document.createElement('div');
+  el.className = 'toast';
   el.innerHTML = `<span>${emoji}</span><span>${msg}</span>`;
-  document.getElementById("toast-container").appendChild(el);
-  setTimeout(() => { el.classList.add("fade-out"); setTimeout(()=>el.remove(), 350); }, 2200);
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => { el.classList.add('fade-out'); setTimeout(()=>el.remove(),350); }, 2600);
 }
 
-/* ── STATE ──────────────────────────────────────────── */
-let services  = load("sx_services") || [];
-let favorites = load("sx_fav") || [];
-let settings  = load("sx_settings") || { dark: false, appView: false };
-let currentTab = "Favorites";
-let locked    = true;
-let lastDeleted = null, undoTimer = null;
-let pinBuffer = "", dragSrcId = null, editingId = null;
-
-/* Migration: assign IDs */
-services = services.map(s => s.id ? s : { ...s, id: uid() });
-
-/* Seed: if no source IDs found in storage → load from services.js */
-{
-  const storedIds = new Set(services.map(s => s.id));
-  const allMissing = SOURCE_SERVICES.every(d => !storedIds.has(d.id));
-  if (allMissing) {
-    services = JSON.parse(JSON.stringify(SOURCE_SERVICES));
-    toast("Services loaded from services.js", "📦");
-  }
-}
-save("sx_services", services);
-
-/* ── DARK ────────────────────────────────────────────── */
-function applyDark() { document.body.classList.toggle("dark", settings.dark); }
-applyDark();
-
-/* ── TABS ────────────────────────────────────────────── */
-function renderTabs() {
-  const cats = ["Favorites", "All", ...new Set(services.map(s => s.category))];
-  const el = document.getElementById("tabs");
-  el.innerHTML = "";
-  cats.forEach(cat => {
-    const btn = document.createElement("div");
-    btn.className = "tab" + (cat === currentTab ? " active" : "");
-    btn.textContent = cat;
-    btn.addEventListener("click", () => { currentTab = cat; render(); });
-    el.appendChild(btn);
-  });
+function waSVG(size=16) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.822.737 5.469 2.027 7.77L0 32l8.469-2.002A15.93 15.93 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.29 13.29 0 01-6.782-1.858l-.487-.29-5.026 1.188 1.228-4.895-.318-.502A13.267 13.267 0 012.667 16C2.667 8.637 8.637 2.667 16 2.667S29.333 8.637 29.333 16 23.363 29.333 16 29.333z"/><path d="M23.387 19.76c-.37-.185-2.189-1.08-2.528-1.202-.34-.122-.587-.185-.834.185-.247.37-.956 1.202-1.172 1.45-.216.246-.432.277-.802.092-.37-.185-1.563-.576-2.977-1.836-1.1-.98-1.842-2.19-2.058-2.56-.216-.37-.023-.57.162-.754.167-.166.37-.432.556-.648.185-.216.247-.37.37-.617.123-.247.062-.463-.031-.648-.092-.185-.834-2.01-1.142-2.752-.3-.723-.607-.625-.834-.636l-.71-.012c-.247 0-.648.093-.988.463s-1.297 1.267-1.297 3.09 1.328 3.584 1.514 3.83c.185.247 2.614 3.99 6.333 5.595.885.382 1.575.61 2.113.78.888.283 1.696.243 2.335.147.712-.107 2.189-.895 2.498-1.759.308-.864.308-1.605.216-1.76-.092-.154-.34-.247-.71-.432z"/></svg>`;
 }
 
-/* ── FILTER ──────────────────────────────────────────── */
-function getFiltered() {
-  const q = document.getElementById("search").value.toLowerCase().trim();
-  return services.filter(s => {
-    const matchTab = currentTab === "All"       ? true
-                   : currentTab === "Favorites" ? favorites.includes(s.id)
-                   : s.category === currentTab;
-    const matchQ = !q
-      || s.name.toLowerCase().includes(q)
-      || s.url.toLowerCase().includes(q)
-      || s.category.toLowerCase().includes(q);
-    return matchTab && matchQ;
-  });
+/* ── 12. PERSIST / LOAD ─────────────────────────────────────── */
+function persistAll() {
+  if (!APP.mk || APP.isDecoy()) return;
+  // Auto-backup before save
+  APP.backups = BACKUP.save(APP.mk, { services: APP.services, favorites: APP.favorites, backups: APP.backups });
+  BACKUP.persistSlots(APP.mk, APP.backups);
+  STORE.saveData(APP.mk, { services: APP.services, favorites: APP.favorites, settings: APP.settings, backups: APP.backups });
+  CLOUD.push(APP.mk).catch(()=>{});
 }
 
-/* ── RENDER ──────────────────────────────────────────── */
-function render() {
-  renderTabs();
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-  grid.classList.toggle("app-view", settings.appView);
-
-  const list = getFiltered();
-  document.getElementById("count").textContent =
-    `${list.length} service${list.length !== 1 ? "s" : ""}`;
-
-  if (!list.length) {
-    const e = document.createElement("div");
-    e.className = "empty";
-    e.innerHTML = `<div class="empty-icon">${currentTab==="Favorites"?"⭐":"🔍"}</div>
-      <h3>${currentTab==="Favorites"?"No favorites yet":"Nothing found"}</h3>
-      <p>${currentTab==="Favorites"?"Star any service to pin it here.":"Try a different search or tab."}</p>`;
-    grid.appendChild(e);
-    return;
-  }
-
-  list.forEach(s => grid.appendChild(settings.appView ? buildAppCard(s) : buildCard(s)));
+function persistDecoy() {
+  if (!APP.mk || !APP.isDecoy()) return;
+  STORE.saveDecoy(APP.mk, { services: APP.services, favorites: APP.favorites });
 }
 
-/* ── BUILD CARD ──────────────────────────────────────── */
-function buildCard(s) {
-  const isFav = favorites.includes(s.id);
-  const card  = document.createElement("div");
-  card.className = "card";
-  card.setAttribute("draggable", "true");
-  card.dataset.id = s.id;
+function loadAfterAuth(mk, mode) {
+  APP.mk   = mk;
+  APP.mode = mode;
 
-  /* Header row */
-  const header = document.createElement("div");
-  header.className = "card-header";
-
-  const badge = document.createElement("span");
-  badge.className = "cat-badge";
-  badge.textContent = s.category || "Other";
-  header.appendChild(badge);
-
-  const actions = document.createElement("div");
-  actions.className = "card-actions";
-
-  /* Drag handle */
-  const drag = document.createElement("span");
-  drag.className = "drag-handle";
-  drag.title = "Drag to reorder";
-  drag.textContent = "⠿";
-  actions.appendChild(drag);
-
-  /* WhatsApp button */
-  const waMsg = encodeURIComponent(`Hi, I need help with: *${s.name}*\n${s.url}`);
-  const waBtn = document.createElement("a");
-  waBtn.className = "wa-btn";
-  waBtn.href = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
-  waBtn.target = "_blank";
-  waBtn.rel = "noopener noreferrer";
-  waBtn.title = "WhatsApp service request";
-  waBtn.innerHTML = waSVG(14);
-  actions.appendChild(waBtn);
-
-  /* Star */
-  const star = document.createElement("span");
-  star.className = "star-btn" + (isFav ? " active" : "");
-  star.title = isFav ? "Remove from favorites" : "Add to favorites";
-  star.textContent = "⭐";
-  star.addEventListener("click", () => toggleFav(s.id));
-  actions.appendChild(star);
-
-  /* Delete (unlocked only) */
-  if (!locked) {
-    const del = document.createElement("span");
-    del.className = "del-btn";
-    del.title = "Delete";
-    del.textContent = "🗑";
-    del.addEventListener("click", () => deleteService(s.id));
-    actions.appendChild(del);
-  }
-
-  header.appendChild(actions);
-  card.appendChild(header);
-
-  /* Category icon */
-  const icon = document.createElement("div");
-  icon.className = "cat-icon";
-  icon.textContent = getCatIcon(s.category);
-  card.appendChild(icon);
-
-  /* Name input */
-  const nameInp = document.createElement("input");
-  nameInp.type = "text"; nameInp.className = "field name-field";
-  nameInp.value = s.name; nameInp.disabled = locked;
-  nameInp.placeholder = "Service name";
-  nameInp.addEventListener("input", () => autoSaveService(s.id, "name", nameInp.value));
-  card.appendChild(nameInp);
-
-  /* URL input */
-  const urlInp = document.createElement("input");
-  urlInp.type = "text"; urlInp.className = "field url-field";
-  urlInp.value = s.url; urlInp.disabled = locked;
-  urlInp.placeholder = "https://…";
-  urlInp.addEventListener("input", () => autoSaveService(s.id, "url", urlInp.value));
-  card.appendChild(urlInp);
-
-  /* Open button */
-  const openBtn = document.createElement("a");
-  openBtn.href = s.url; openBtn.target = "_blank"; openBtn.rel = "noopener noreferrer";
-  openBtn.className = "open-btn";
-  openBtn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Open`;
-  card.appendChild(openBtn);
-
-  /* Drag events */
-  card.addEventListener("dragstart", e => { dragSrcId = s.id; card.classList.add("dragging"); e.dataTransfer.effectAllowed="move"; });
-  card.addEventListener("dragend",   () => { card.classList.remove("dragging"); document.querySelectorAll(".drag-over").forEach(c=>c.classList.remove("drag-over")); });
-  card.addEventListener("dragover",  e => { e.preventDefault(); e.dataTransfer.dropEffect="move"; card.classList.add("drag-over"); });
-  card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
-  card.addEventListener("drop",      e => { e.preventDefault(); card.classList.remove("drag-over"); if(dragSrcId && dragSrcId!==s.id) reorderServices(dragSrcId,s.id); });
-
-  return card;
-}
-
-/* ── BUILD APP CARD ──────────────────────────────────── */
-function buildAppCard(s) {
-  const isFav = favorites.includes(s.id);
-  const card  = document.createElement("div");
-  card.className = "card app-card";
-  card.dataset.id = s.id;
-
-  const icon = document.createElement("div");
-  icon.className = "cat-icon"; icon.textContent = getCatIcon(s.category);
-  card.appendChild(icon);
-
-  const name = document.createElement("div");
-  name.style.cssText = "font-size:12px;font-weight:600;word-break:break-word;width:100%;text-align:center;";
-  name.textContent = s.name;
-  card.appendChild(name);
-
-  /* WA + Star row */
-  const row = document.createElement("div");
-  row.style.cssText = "display:flex;gap:6px;align-items:center;justify-content:center;";
-
-  const waMsg = encodeURIComponent(`Hi, I need help with: *${s.name}*\n${s.url}`);
-  const waBtn = document.createElement("a");
-  waBtn.className = "wa-btn";
-  waBtn.href = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
-  waBtn.target = "_blank"; waBtn.rel = "noopener noreferrer";
-  waBtn.title = "WhatsApp request"; waBtn.innerHTML = waSVG(12);
-  waBtn.style.width = "24px"; waBtn.style.height = "24px";
-  row.appendChild(waBtn);
-
-  const star = document.createElement("span");
-  star.className = "star-btn" + (isFav ? " active" : "");
-  star.textContent = "⭐"; star.style.fontSize = "14px";
-  star.addEventListener("click", () => toggleFav(s.id));
-  row.appendChild(star);
-  card.appendChild(row);
-
-  const openBtn = document.createElement("a");
-  openBtn.href = s.url; openBtn.target = "_blank"; openBtn.rel = "noopener noreferrer";
-  openBtn.className = "app-open"; openBtn.textContent = "Open";
-  card.appendChild(openBtn);
-
-  return card;
-}
-
-/* ── FAVORITES ───────────────────────────────────────── */
-function toggleFav(id) {
-  favorites = favorites.includes(id) ? favorites.filter(f=>f!==id) : [...favorites, id];
-  save("sx_fav", favorites);
-  render();
-}
-
-/* ── AUTO-SAVE ───────────────────────────────────────── */
-const autoSaveService = debounce((id, key, val) => {
-  const s = services.find(s => s.id === id);
-  if (!s) return;
-  const trimmed = val.trim();
-  if (!trimmed) return;
-  s[key] = trimmed;
-  save("sx_services", services);
-  toast("Saved", "✅");
-}, 800);
-
-/* ── DELETE / UNDO ───────────────────────────────────── */
-function deleteService(id) {
-  const idx = services.findIndex(s => s.id === id);
-  if (idx === -1) return;
-  lastDeleted = { service: { ...services[idx] }, index: idx };
-  services.splice(idx, 1);
-  favorites = favorites.filter(f => f !== id);
-  save("sx_services", services); save("sx_fav", favorites);
-  render();
-  document.getElementById("undo-msg").textContent = `"${lastDeleted.service.name}" deleted`;
-  document.getElementById("undo-bar").classList.add("visible");
-  clearTimeout(undoTimer);
-  undoTimer = setTimeout(() => { document.getElementById("undo-bar").classList.remove("visible"); lastDeleted=null; }, 5000);
-}
-
-document.getElementById("undo-btn").addEventListener("click", () => {
-  if (!lastDeleted) return;
-  services.splice(lastDeleted.index, 0, lastDeleted.service);
-  save("sx_services", services);
-  render(); document.getElementById("undo-bar").classList.remove("visible");
-  lastDeleted = null; toast("Restored", "↩️");
-});
-
-/* ── DRAG REORDER ────────────────────────────────────── */
-function reorderServices(srcId, destId) {
-  const si = services.findIndex(s=>s.id===srcId), di = services.findIndex(s=>s.id===destId);
-  if (si===-1||di===-1) return;
-  const [m] = services.splice(si, 1);
-  services.splice(di, 0, m);
-  save("sx_services", services); render();
-}
-
-/* ── MODAL ───────────────────────────────────────────── */
-function openModal(editId=null) {
-  editingId = editId;
-  document.getElementById("modal-title").textContent = editId ? "Edit Service" : "Add Service";
-  if (editId) {
-    const s = services.find(s=>s.id===editId);
-    if (s) { document.getElementById("m-name").value=s.name; document.getElementById("m-url").value=s.url; document.getElementById("m-cat").value=s.category; }
+  if (mode === 'decoy') {
+    const d = STORE.loadDecoy(mk);
+    APP.services  = d.services;
+    APP.favorites = d.favorites || [];
+    APP.settings  = { dark: false, appView: false };
+    APP.backups   = [];
   } else {
-    document.getElementById("m-name").value=""; document.getElementById("m-url").value=""; document.getElementById("m-cat").value="";
+    const d = STORE.loadData(mk);
+    APP.services  = d.services;
+    APP.favorites = d.favorites || [];
+    APP.settings  = d.settings  || { dark: false, appView: false };
+    APP.backups   = d.backups   || [];
+    // Seed from services.js on very first run
+    if (!APP.services.length) {
+      APP.services = JSON.parse(JSON.stringify(SOURCE_SERVICES));
+      persistAll();
+    }
   }
-  document.getElementById("overlay").classList.add("active");
-  document.getElementById("modal").classList.add("active");
-  setTimeout(() => document.getElementById("m-name").focus(), 50);
+
+  AUDIT.load(mk);
+  APP.locked = false;
+  applyDark();
+  updateLockUI();
+  showBanners();
+  render();
+  updateCatDatalist();
+  if (mode === 'emergency') showEmergencyPanel();
 }
 
-function closeModal() {
-  document.getElementById("modal").classList.remove("active");
-  document.getElementById("overlay").classList.remove("active");
-  editingId = null;
+/* ── 13. DARK MODE ──────────────────────────────────────────── */
+function applyDark() {
+  document.body.classList.toggle('dark', !!APP.settings.dark);
 }
 
-function saveModal() {
-  const name = document.getElementById("m-name").value.trim();
-  const url  = document.getElementById("m-url").value.trim();
-  const cat  = document.getElementById("m-cat").value.trim() || "Other";
-  if (!name) { document.getElementById("m-name").focus(); toast("Name is required","⚠️"); return; }
-  if (!url)  { document.getElementById("m-url").focus();  toast("URL is required","⚠️");  return; }
-  const finalUrl = url.startsWith("http") ? url : "https://" + url;
-  if (editingId) {
-    const s = services.find(s=>s.id===editingId);
-    if (s) { s.name=name; s.url=finalUrl; s.category=cat; }
-    toast("Updated","✏️");
-  } else {
-    services.push({ id: uid(), name, url: finalUrl, category: cat });
-    toast("Added","✅");
+/* ── 14. BANNERS & MODE UI ──────────────────────────────────── */
+function showBanners() {
+  document.getElementById('decoy-banner').classList.toggle('show', APP.isDecoy());
+  document.getElementById('emergency-banner').classList.toggle('show', APP.isEmergency());
+  // Mode badge in brand
+  const brand = document.getElementById('brand-el');
+  brand.innerHTML = `Shivtrix<span> PRO</span>`;
+  if (APP.mode && APP.mode !== 'normal') {
+    const b = document.createElement('span');
+    b.className = `mode-badge ${APP.mode}`;
+    b.textContent = APP.mode.toUpperCase();
+    brand.appendChild(b);
   }
-  save("sx_services", services); closeModal(); render();
 }
 
-document.getElementById("modal-save").addEventListener("click", saveModal);
-document.getElementById("modal-cancel").addEventListener("click", closeModal);
-document.getElementById("overlay").addEventListener("click", () => { closeModal(); closePinModal(); });
-document.getElementById("btn-add").addEventListener("click", () => {
-  if (locked) { toast("Unlock first 🔒","⚠️"); return; }
-  openModal();
-});
+function showEmergencyPanel() {
+  const wrap = document.getElementById('emergency-panel-wrap');
+  wrap.style.display = 'block';
+  renderBackupList('emergency-backup-list');
+}
 
-/* ── PIN / LOCK ──────────────────────────────────────── */
+/* ── 15. LOCK / UNLOCK UI ───────────────────────────────────── */
 function updateLockUI() {
-  const ind = document.getElementById("lock-indicator");
-  ind.textContent = locked ? "🔒" : "🔓";
-  ind.style.color = locked ? "var(--warn)" : "var(--success)";
+  const ind = document.getElementById('lock-indicator');
+  ind.textContent = APP.locked ? '🔒' : '🔓';
+  ind.style.color = APP.locked ? 'var(--warn)' : 'var(--success)';
 }
-function openPinModal()  {
-  pinBuffer = ""; updatePinDots();
-  document.getElementById("overlay").classList.add("active");
-  document.getElementById("pin-modal").classList.add("active");
+
+function doLock() {
+  APP.mk = null; APP.mode = null;
+  APP.services = []; APP.favorites = []; APP.settings = { dark: false, appView: false };
+  APP.locked = true;
+  AUDIT.log('lock', {});
+  updateLockUI();
+  showBanners();
+  document.getElementById('decoy-banner').classList.remove('show');
+  document.getElementById('emergency-banner').classList.remove('show');
+  document.getElementById('emergency-panel-wrap').style.display = 'none';
+  document.getElementById('grid').innerHTML = '';
+  document.getElementById('tabs').innerHTML = '';
+  document.getElementById('count').textContent = '';
+  toast('Locked 🔒', '🔒');
+}
+
+/* ── 16. PIN MODAL ──────────────────────────────────────────── */
+let _lockoutInterval = null;
+
+function openPinModal() {
+  APP.pinBuffer = '';
+  updatePinDots();
+  updateAttemptsDots();
+  document.getElementById('lockout-msg').textContent = '';
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById('pin-modal').classList.add('active');
+  checkLockoutUI();
 }
 function closePinModal() {
-  document.getElementById("pin-modal").classList.remove("active");
-  document.getElementById("overlay").classList.remove("active");
-  pinBuffer = ""; updatePinDots();
+  document.getElementById('pin-modal').classList.remove('active');
+  document.getElementById('overlay').classList.remove('active');
+  APP.pinBuffer = ''; updatePinDots();
+  clearInterval(_lockoutInterval);
 }
-function updatePinDots() {
-  for(let i=0;i<4;i++) document.getElementById("d"+i).classList.toggle("filled", i<pinBuffer.length);
+function updatePinDots(state) {
+  for (let i=0;i<4;i++) {
+    const d = document.getElementById('d'+i);
+    d.classList.toggle('filled', i < APP.pinBuffer.length);
+    d.classList.toggle('error', state === 'error');
+  }
+}
+function updateAttemptsDots() {
+  const bar = document.getElementById('attempts-bar');
+  bar.innerHTML = '';
+  for (let i=0;i<CFG.maxAttempts;i++) {
+    const d = document.createElement('div');
+    d.className = 'attempt-dot' + (i < AUTH.getAttemptCount() ? ' used' : '');
+    bar.appendChild(d);
+  }
+}
+function checkLockoutUI() {
+  const secs = AUTH.lockoutSecs();
+  if (secs > 0) {
+    showLockoutScreen(secs);
+    closePinModal();
+    return true;
+  }
+  return false;
+}
+function showLockoutScreen(secs) {
+  const screen = document.getElementById('lockout-screen');
+  screen.classList.add('show');
+  let rem = secs;
+  const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  document.getElementById('lockout-countdown').textContent = fmt(rem);
+  clearInterval(_lockoutInterval);
+  _lockoutInterval = setInterval(() => {
+    rem--;
+    document.getElementById('lockout-countdown').textContent = fmt(rem);
+    if (rem <= 0) {
+      clearInterval(_lockoutInterval);
+      screen.classList.remove('show');
+      openPinModal();
+    }
+  }, 1000);
 }
 
-document.querySelectorAll(".pin-key").forEach(key => {
-  key.addEventListener("click", () => {
+document.querySelectorAll('.pin-key').forEach(key => {
+  key.addEventListener('click', () => {
     const k = key.dataset.k;
-    if (k==="cancel") { closePinModal(); return; }
-    if (k==="back")   { pinBuffer=pinBuffer.slice(0,-1); updatePinDots(); return; }
-    if (pinBuffer.length>=4) return;
-    pinBuffer += k; updatePinDots();
-    if (pinBuffer.length===4) {
+    if (k === 'cancel') { closePinModal(); return; }
+    if (k === 'back')   { APP.pinBuffer = APP.pinBuffer.slice(0,-1); updatePinDots(); return; }
+    if (APP.pinBuffer.length >= 4) return;
+    APP.pinBuffer += k;
+    updatePinDots();
+    if (APP.pinBuffer.length === 4) {
       setTimeout(() => {
-        if (pinBuffer==="1234") {
-          locked=false; closePinModal(); render(); updateLockUI(); toast("Unlocked 🔓","🔓");
-        } else {
-          toast("Wrong PIN ❌","❌"); pinBuffer=""; updatePinDots();
+        const res = AUTH.attempt(APP.pinBuffer);
+        if (res.locked) {
+          updatePinDots('error');
+          setTimeout(() => { APP.pinBuffer=''; updatePinDots(); checkLockoutUI(); }, 400);
+          return;
         }
+        if (!res.ok) {
+          updatePinDots('error');
+          const rem = res.remaining;
+          document.getElementById('lockout-msg').textContent =
+            rem > 0 ? `Wrong PIN — ${rem} attempt${rem!==1?'s':''} remaining` : 'Locked!';
+          document.getElementById('pin-modal').style.animation = 'pinShake 0.4s';
+          setTimeout(() => { document.getElementById('pin-modal').style.animation=''; }, 400);
+          setTimeout(() => { APP.pinBuffer=''; updatePinDots(); updateAttemptsDots(); document.getElementById('lockout-msg').textContent=''; }, 600);
+          toast(`Wrong PIN — ${rem} attempt${rem!==1?'s':''} left`, '❌');
+          return;
+        }
+        // SUCCESS
+        closePinModal();
+        loadAfterAuth(res.mk, res.mode);
+        toast(`Unlocked — ${res.mode.toUpperCase()} mode 🔓`, '🔓');
       }, 120);
     }
   });
 });
 
-document.getElementById("btn-lock").addEventListener("click", () => {
-  if (locked) { openPinModal(); }
-  else { locked=true; render(); updateLockUI(); toast("Locked 🔒","🔒"); }
+/* ── 17. TABS ─────────────────────────────────────────────── */
+function renderTabs() {
+  const cats = ['Favorites', 'All', ...new Set(APP.services.map(s=>s.category))];
+  const el = document.getElementById('tabs');
+  el.innerHTML = '';
+  cats.forEach(cat => {
+    const btn = document.createElement('div');
+    btn.className = 'tab' + (cat === APP.currentTab ? ' active' : '');
+    btn.textContent = cat;
+    btn.addEventListener('click', () => { APP.currentTab = cat; render(); });
+    el.appendChild(btn);
+  });
+}
+
+/* ── 18. FILTER ─────────────────────────────────────────────── */
+function getFiltered() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  return APP.services.filter(s => {
+    const matchTab = APP.currentTab==='All'       ? true
+                   : APP.currentTab==='Favorites' ? APP.favorites.includes(s.id)
+                   : s.category === APP.currentTab;
+    const matchQ = !q || s.name.toLowerCase().includes(q) || s.url.toLowerCase().includes(q) || s.category.toLowerCase().includes(q);
+    return matchTab && matchQ;
+  });
+}
+
+/* ── 19. RENDER ─────────────────────────────────────────────── */
+function render() {
+  if (APP.locked) return;
+  renderTabs();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  grid.classList.toggle('app-view', APP.settings.appView);
+  const list = getFiltered();
+  document.getElementById('count').textContent = `${list.length} service${list.length!==1?'s':''}`;
+  if (!list.length) {
+    const e = document.createElement('div'); e.className = 'empty';
+    e.innerHTML = `<div class="empty-icon">${APP.currentTab==='Favorites'?'⭐':'🔍'}</div><h3>${APP.currentTab==='Favorites'?'No favorites yet':'Nothing found'}</h3><p>${APP.currentTab==='Favorites'?'Star any service to pin it here.':'Try a different search or tab.'}</p>`;
+    grid.appendChild(e); return;
+  }
+  list.forEach(s => grid.appendChild(APP.settings.appView ? buildAppCard(s) : buildCard(s)));
+}
+
+/* ── 20. BUILD CARD ─────────────────────────────────────────── */
+function buildCard(s) {
+  const isFav = APP.favorites.includes(s.id);
+  const card  = document.createElement('div');
+  card.className = 'card'; card.setAttribute('draggable','true'); card.dataset.id = s.id;
+
+  const header = document.createElement('div'); header.className = 'card-header';
+  const badge  = document.createElement('span'); badge.className = 'cat-badge'; badge.textContent = s.category || 'Other';
+  header.appendChild(badge);
+
+  const actions = document.createElement('div'); actions.className = 'card-actions';
+
+  const drag = document.createElement('span'); drag.className = 'drag-handle'; drag.title='Drag to reorder'; drag.textContent='⠿';
+  actions.appendChild(drag);
+
+  const waMsg = encodeURIComponent(`Hi, I need help with: *${s.name}*\n${s.url}`);
+  const waBtn = document.createElement('a'); waBtn.className='wa-btn'; waBtn.href=`https://wa.me/${WA_NUMBER}?text=${waMsg}`; waBtn.target='_blank'; waBtn.rel='noopener noreferrer'; waBtn.title='WhatsApp service request'; waBtn.innerHTML=waSVG(14);
+  actions.appendChild(waBtn);
+
+  const star = document.createElement('span'); star.className='star-btn'+(isFav?' active':''); star.title=isFav?'Remove favorite':'Add favorite'; star.textContent='⭐';
+  star.addEventListener('click',()=>toggleFav(s.id));
+  actions.appendChild(star);
+
+  if (APP.isAdmin()) {
+    const del = document.createElement('span'); del.className='del-btn'; del.title='Delete'; del.textContent='🗑';
+    del.addEventListener('click',()=>deleteService(s.id));
+    actions.appendChild(del);
+  }
+  header.appendChild(actions); card.appendChild(header);
+
+  const icon = document.createElement('div'); icon.className='cat-icon'; icon.textContent=getCatIcon(s.category);
+  card.appendChild(icon);
+
+  const nameInp = document.createElement('input'); nameInp.type='text'; nameInp.className='field name-field'; nameInp.value=s.name; nameInp.disabled=!APP.isAdmin(); nameInp.placeholder='Service name';
+  nameInp.addEventListener('input',()=>autoSaveService(s.id,'name',nameInp.value));
+  card.appendChild(nameInp);
+
+  const urlInp = document.createElement('input'); urlInp.type='text'; urlInp.className='field url-field'; urlInp.value=s.url; urlInp.disabled=!APP.isAdmin(); urlInp.placeholder='https://…';
+  urlInp.addEventListener('input',()=>autoSaveService(s.id,'url',urlInp.value));
+  card.appendChild(urlInp);
+
+  const openBtn = document.createElement('a'); openBtn.href=s.url; openBtn.target='_blank'; openBtn.rel='noopener noreferrer'; openBtn.className='open-btn';
+  openBtn.innerHTML=`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Open`;
+  card.appendChild(openBtn);
+
+  // Drag events
+  card.addEventListener('dragstart', e=>{ APP.dragSrcId=s.id; card.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+  card.addEventListener('dragend',   ()=>{ card.classList.remove('dragging'); document.querySelectorAll('.drag-over').forEach(c=>c.classList.remove('drag-over')); });
+  card.addEventListener('dragover',  e=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; card.classList.add('drag-over'); });
+  card.addEventListener('dragleave', ()=>card.classList.remove('drag-over'));
+  card.addEventListener('drop',      e=>{ e.preventDefault(); card.classList.remove('drag-over'); if(APP.dragSrcId&&APP.dragSrcId!==s.id) reorderServices(APP.dragSrcId,s.id); });
+
+  return card;
+}
+
+/* ── 21. BUILD APP CARD ─────────────────────────────────────── */
+function buildAppCard(s) {
+  const isFav = APP.favorites.includes(s.id);
+  const card  = document.createElement('div'); card.className='card app-card'; card.dataset.id=s.id;
+  const icon  = document.createElement('div'); icon.className='cat-icon'; icon.textContent=getCatIcon(s.category); card.appendChild(icon);
+  const name  = document.createElement('div'); name.style.cssText='font-size:12px;font-weight:600;word-break:break-word;width:100%;text-align:center;'; name.textContent=s.name; card.appendChild(name);
+  const row   = document.createElement('div'); row.style.cssText='display:flex;gap:6px;align-items:center;justify-content:center;';
+  const waMsg = encodeURIComponent(`Hi, I need help with: *${s.name}*\n${s.url}`);
+  const waBtn = document.createElement('a'); waBtn.className='wa-btn'; waBtn.href=`https://wa.me/${WA_NUMBER}?text=${waMsg}`; waBtn.target='_blank'; waBtn.rel='noopener noreferrer'; waBtn.title='WhatsApp'; waBtn.innerHTML=waSVG(12); waBtn.style.cssText='width:24px;height:24px;'; row.appendChild(waBtn);
+  const star  = document.createElement('span'); star.className='star-btn'+(isFav?' active':''); star.textContent='⭐'; star.style.fontSize='14px'; star.addEventListener('click',()=>toggleFav(s.id)); row.appendChild(star);
+  card.appendChild(row);
+  const openBtn = document.createElement('a'); openBtn.href=s.url; openBtn.target='_blank'; openBtn.rel='noopener noreferrer'; openBtn.className='app-open'; openBtn.textContent='Open'; card.appendChild(openBtn);
+  return card;
+}
+
+/* ── 22. FAVORITES ──────────────────────────────────────────── */
+function toggleFav(id) {
+  APP.favorites = APP.favorites.includes(id) ? APP.favorites.filter(f=>f!==id) : [...APP.favorites,id];
+  if (APP.isDecoy()) persistDecoy(); else persistAll();
+  render();
+}
+
+/* ── 23. AUTO-SAVE (debounced) ──────────────────────────────── */
+const autoSaveService = debounce((id, key, val) => {
+  const s = APP.services.find(s=>s.id===id); if (!s) return;
+  const trimmed = val.trim(); if (!trimmed) return;
+  if (key==='url') { const v=VALIDATE.url(trimmed); if (!v.valid) return; }
+  s[key] = trimmed;
+  if (APP.isDecoy()) persistDecoy(); else persistAll();
+  AUDIT.log('edit', { id, key });
+  toast('Saved','✅');
+}, 800);
+
+/* ── 24. DELETE / UNDO ──────────────────────────────────────── */
+function deleteService(id) {
+  const idx = APP.services.findIndex(s=>s.id===id); if (idx===-1) return;
+  APP.lastDeleted = { service: {...APP.services[idx]}, index: idx };
+  AUDIT.log('delete', { name: APP.services[idx].name });
+  APP.services.splice(idx,1);
+  APP.favorites = APP.favorites.filter(f=>f!==id);
+  if (APP.isDecoy()) persistDecoy(); else persistAll();
+  render();
+  document.getElementById('undo-msg').textContent = `"${APP.lastDeleted.service.name}" deleted`;
+  document.getElementById('undo-bar').classList.add('visible');
+  clearTimeout(APP.undoTimer);
+  APP.undoTimer = setTimeout(()=>{ document.getElementById('undo-bar').classList.remove('visible'); APP.lastDeleted=null; }, 5000);
+}
+
+document.getElementById('undo-btn').addEventListener('click', () => {
+  if (!APP.lastDeleted) return;
+  APP.services.splice(APP.lastDeleted.index, 0, APP.lastDeleted.service);
+  if (APP.isDecoy()) persistDecoy(); else persistAll();
+  render(); document.getElementById('undo-bar').classList.remove('visible'); APP.lastDeleted=null; toast('Restored','↩️');
 });
 
-/* ── VIEW / DARK ─────────────────────────────────────── */
-document.getElementById("btn-view").addEventListener("click", () => {
-  settings.appView = !settings.appView; save("sx_settings",settings);
-  document.getElementById("btn-view").textContent = settings.appView ? "☰" : "⊞";
+/* ── 25. DRAG REORDER ───────────────────────────────────────── */
+function reorderServices(srcId, destId) {
+  const si=APP.services.findIndex(s=>s.id===srcId), di=APP.services.findIndex(s=>s.id===destId);
+  if (si===-1||di===-1) return;
+  const [m]=APP.services.splice(si,1); APP.services.splice(di,0,m);
+  if (APP.isDecoy()) persistDecoy(); else persistAll();
+  render();
+}
+
+/* ── 26. ADD / EDIT MODAL ───────────────────────────────────── */
+function updateCatDatalist() {
+  const dl = document.getElementById('cat-datalist');
+  dl.innerHTML = '';
+  [...new Set(APP.services.map(s=>s.category))].forEach(cat=>{ const o=document.createElement('option'); o.value=cat; dl.appendChild(o); });
+}
+
+function openModal(editId=null) {
+  if (!APP.isAdmin()) { toast('Admin access required 🔒','⚠️'); return; }
+  APP.editingId = editId;
+  document.getElementById('modal-title').textContent = editId ? 'Edit Service' : 'Add Service';
+  if (editId) {
+    const s=APP.services.find(s=>s.id===editId);
+    if (s) { document.getElementById('m-name').value=s.name; document.getElementById('m-url').value=s.url; document.getElementById('m-cat').value=s.category; }
+  } else {
+    document.getElementById('m-name').value=''; document.getElementById('m-url').value=''; document.getElementById('m-cat').value='';
+  }
+  document.getElementById('url-warn').classList.remove('show');
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById('modal').classList.add('active');
+  setTimeout(()=>document.getElementById('m-name').focus(),50);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  document.getElementById('overlay').classList.remove('active');
+  APP.editingId = null;
+}
+
+function saveModal() {
+  const name = document.getElementById('m-name').value.trim();
+  const rawUrl= document.getElementById('m-url').value.trim();
+  const cat   = document.getElementById('m-cat').value.trim() || 'Other';
+  if (!name) { document.getElementById('m-name').focus(); toast('Name is required','⚠️'); return; }
+  if (!rawUrl){ document.getElementById('m-url').focus();  toast('URL is required','⚠️'); return; }
+  const url = rawUrl.startsWith('http') ? rawUrl : 'https://' + rawUrl;
+  const vr  = VALIDATE.url(url);
+  if (!vr.valid) { toast(vr.msg || 'Invalid URL','❌'); return; }
+  if (vr.warn)   { document.getElementById('url-warn').classList.add('show'); if (!confirm('Suspicious URL detected. Save anyway?')) return; }
+
+  if (APP.editingId) {
+    const s=APP.services.find(s=>s.id===APP.editingId);
+    if (s) { s.name=name; s.url=url; s.category=cat; }
+    AUDIT.log('edit',{name});
+    toast('Updated','✏️');
+  } else {
+    APP.services.push({ id:uid(), name, url, category:cat });
+    AUDIT.log('add',{name});
+    toast('Added','✅');
+  }
+  if (APP.isDecoy()) persistDecoy(); else persistAll();
+  updateCatDatalist();
+  closeModal(); render();
+}
+
+document.getElementById('modal-save').addEventListener('click', saveModal);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+document.getElementById('m-url').addEventListener('input', () => {
+  const v = VALIDATE.url(document.getElementById('m-url').value.trim());
+  document.getElementById('url-warn').classList.toggle('show', v.warn);
+});
+document.getElementById('overlay').addEventListener('click', ()=>{ closeModal(); if (!APP.locked) return; closePinModal(); });
+document.getElementById('btn-add').addEventListener('click', () => {
+  if (APP.locked) { toast('Unlock first 🔒','⚠️'); return; }
+  openModal();
+});
+
+/* ── 27. LOCK BUTTON ────────────────────────────────────────── */
+document.getElementById('btn-lock').addEventListener('click', () => {
+  if (APP.locked) { openPinModal(); }
+  else { doLock(); }
+});
+
+/* ── 28. VIEW TOGGLE ────────────────────────────────────────── */
+document.getElementById('btn-view').addEventListener('click', ()=>{
+  APP.settings.appView = !APP.settings.appView;
+  if (!APP.isDecoy()) persistAll();
+  document.getElementById('btn-view').textContent = APP.settings.appView ? '☰' : '⊞';
   render();
 });
 
-document.getElementById("btn-dark").addEventListener("click", () => {
-  settings.dark = !settings.dark; save("sx_settings",settings); applyDark();
-  document.getElementById("btn-dark").textContent = settings.dark ? "☀️" : "🌙";
-  toast(settings.dark?"Dark mode on":"Light mode on", settings.dark?"🌙":"☀️");
+/* ── 29. DARK MODE ──────────────────────────────────────────── */
+document.getElementById('btn-dark').addEventListener('click', ()=>{
+  APP.settings.dark = !APP.settings.dark;
+  if (!APP.isDecoy()) persistAll();
+  applyDark();
+  document.getElementById('btn-dark').textContent = APP.settings.dark ? '☀️' : '🌙';
+  toast(APP.settings.dark?'Dark mode on':'Light mode on', APP.settings.dark?'🌙':'☀️');
 });
 
-/* ── SEARCH ──────────────────────────────────────────── */
-document.getElementById("search").addEventListener("input", render);
+/* ── 30. SEARCH ─────────────────────────────────────────────── */
+document.getElementById('search').addEventListener('input', render);
 
-/* ── EXPORT ──────────────────────────────────────────── */
-document.getElementById("btn-export").addEventListener("click", () => {
-  const data = JSON.stringify({ services, favorites, version: 5 }, null, 2);
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([data], { type:"application/json" }));
-  a.download = "shivtrix-backup.json";
-  a.click(); toast("Exported!","📦");
+/* ── 31. ENCRYPTED EXPORT ───────────────────────────────────── */
+document.getElementById('btn-export').addEventListener('click', () => {
+  if (APP.locked) { toast('Unlock first 🔒','⚠️'); return; }
+  if (!APP.isAdmin()) { toast('Admin access required for export','⚠️'); return; }
+  // Export as AES-256 encrypted JSON — payload is ciphertext
+  const payload = SEC.encrypt({ services: APP.services, favorites: APP.favorites, version: 5 }, APP.mk);
+  const out = JSON.stringify({ _enc: true, _app: 'shivtrix_v5', payload, ts: Date.now() }, null, 2);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([out], { type:'application/json' }));
+  a.download = `shivtrix-enc-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  AUDIT.log('export', { services: APP.services.length });
+  toast('Encrypted export done!','📦');
 });
 
-/* ── IMPORT ──────────────────────────────────────────── */
-document.getElementById("btn-import").addEventListener("click", () => {
-  if (locked) { toast("Unlock first 🔒","⚠️"); return; }
-  document.getElementById("import-file").click();
+/* ── 32. ENCRYPTED IMPORT ───────────────────────────────────── */
+document.getElementById('btn-import').addEventListener('click', () => {
+  if (APP.locked) { toast('Unlock first 🔒','⚠️'); return; }
+  if (!APP.isAdmin()) { toast('Admin access required for import','⚠️'); return; }
+  document.getElementById('import-file').click();
 });
 
-document.getElementById("import-file").addEventListener("change", e => {
+document.getElementById('import-file').addEventListener('change', e => {
   const file = e.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
     try {
-      const data = JSON.parse(ev.target.result);
-      if (!Array.isArray(data.services)) throw new Error();
-      services  = data.services.map(s => s.id ? s : { ...s, id: uid() });
-      favorites = data.favorites || [];
-      save("sx_services", services); save("sx_fav", favorites);
-      render(); toast("Imported!","📥");
-    } catch { toast("Invalid file ❌","❌"); }
+      const raw = JSON.parse(ev.target.result);
+      let parsed;
+      // Encrypted import
+      if (raw._enc === true && raw.payload) {
+        parsed = SEC.decrypt(raw.payload, APP.mk);
+        if (!parsed) { toast('Cannot decrypt — wrong key or corrupted','❌'); return; }
+      } else {
+        // Legacy plain JSON import
+        parsed = raw;
+      }
+      const clean = VALIDATE.importData(parsed);
+      if (!clean) { toast('Invalid or empty import file ❌','❌'); return; }
+      APP.services  = clean.services;
+      APP.favorites = clean.favorites;
+      persistAll();
+      render(); updateCatDatalist();
+      AUDIT.log('import', { count: clean.services.length });
+      toast(`Imported ${clean.services.length} services!`,'📥');
+    } catch { toast('Import failed — invalid file ❌','❌'); }
+    e.target.value = '';
   };
-  reader.readAsText(file); e.target.value="";
+  reader.readAsText(file);
 });
 
-/* ── KEYBOARD ────────────────────────────────────────── */
-document.addEventListener("keydown", e => {
-  if (e.key==="Escape") { closeModal(); closePinModal(); }
-  if ((e.metaKey||e.ctrlKey) && e.key==="k") { e.preventDefault(); document.getElementById("search").focus(); }
+/* ── 33. BACKUP LIST RENDERER ───────────────────────────────── */
+function renderBackupList(targetId) {
+  const el = document.getElementById(targetId); if (!el) return;
+  const list = BACKUP.getList({ backups: APP.backups });
+  el.innerHTML = '';
+  if (!list.length) { el.innerHTML = '<div style="font-size:13px;color:var(--text2)">No backups yet — make an edit first.</div>'; return; }
+  list.forEach((bk, i) => {
+    const row = document.createElement('div'); row.className = 'backup-entry';
+    const info = document.createElement('div'); info.className = 'backup-info';
+    info.innerHTML = `<strong>Backup ${list.length - i}</strong><br><span>${new Date(bk.ts).toLocaleString()} — ${bk.services?.length||0} services</span>`;
+    const btn = document.createElement('button'); btn.className = 'btn-restore'; btn.textContent = 'Restore';
+    btn.addEventListener('click', () => {
+      if (!confirm(`Restore backup from ${new Date(bk.ts).toLocaleString()}?`)) return;
+      APP.services  = JSON.parse(JSON.stringify(bk.services || []));
+      APP.favorites = JSON.parse(JSON.stringify(bk.favorites || []));
+      persistAll(); render(); updateCatDatalist();
+      AUDIT.log('restore', { ts: bk.ts });
+      toast('Backup restored!','↩️');
+    });
+    row.appendChild(info); row.appendChild(btn); el.appendChild(row);
+  });
+}
+
+/* ── 34. AUDIT PANEL ────────────────────────────────────────── */
+function openAuditPanel() {
+  const list = document.getElementById('audit-list');
+  list.innerHTML = '';
+  const entries = [...AUDIT._log].reverse().slice(0, 100);
+  if (!entries.length) { list.innerHTML = '<div style="font-size:13px;color:var(--text2)">No audit entries yet.</div>'; }
+  entries.forEach(e => {
+    const row = document.createElement('div'); row.className = 'audit-entry';
+    const t   = document.createElement('div'); t.className = 'audit-time'; t.textContent = new Date(e.ts).toLocaleTimeString();
+    const ev  = document.createElement('div'); ev.className = `audit-event ${e.event}`; ev.textContent = e.event;
+    const det = document.createElement('div'); det.className = 'audit-detail'; det.textContent = JSON.stringify(e.detail);
+    row.appendChild(t); row.appendChild(ev); row.appendChild(det); list.appendChild(row);
+  });
+  document.getElementById('audit-panel').classList.add('active');
+}
+document.getElementById('close-audit').addEventListener('click',()=>document.getElementById('audit-panel').classList.remove('active'));
+document.getElementById('clear-audit').addEventListener('click',()=>{ if(confirm('Clear all audit logs?')){ AUDIT.clear(APP.mk); openAuditPanel(); toast('Audit cleared','🗑'); } });
+
+/* ── 35. DEV PANEL ──────────────────────────────────────────── */
+function openDevPanel() {
+  if (!APP.isAdmin()) { toast('Admin access required','⚠️'); return; }
+  // Render diagnostics
+  const diag = {
+    mode:    APP.mode,
+    services:APP.services.length,
+    backups: APP.backups.length,
+    auditLog:AUDIT._log.length,
+    mk_n:    !!localStorage.getItem('sx_mk_n'),
+    mk_a:    !!localStorage.getItem('sx_mk_a'),
+    mk_e:    !!localStorage.getItem('sx_mk_e'),
+    mk_d:    !!localStorage.getItem('sx_mk_d'),
+    sx_data: !!localStorage.getItem('sx_data'),
+    sx_audit:!!localStorage.getItem('sx_audit'),
+  };
+  document.getElementById('dev-diag').textContent = JSON.stringify(diag, null, 2);
+  // Raw keys
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith('sx_'));
+  document.getElementById('dev-raw').textContent = keys.map(k=>`${k}: ${(localStorage.getItem(k)||'').slice(0,60)}…`).join('\n');
+  // Backup list
+  renderBackupList('backup-list');
+  document.getElementById('dev-panel').classList.add('active');
+}
+document.getElementById('close-dev').addEventListener('click',()=>document.getElementById('dev-panel').classList.remove('active'));
+document.getElementById('dev-force-backup').addEventListener('click',()=>{ persistAll(); renderBackupList('backup-list'); toast('Backup saved','💾'); });
+document.getElementById('dev-audit-view').addEventListener('click',()=>{ openAuditPanel(); });
+document.getElementById('dev-reset').addEventListener('click',()=>{
+  if (!confirm('⚠️ FACTORY RESET — this deletes ALL data permanently. Are you absolutely sure?')) return;
+  if (!confirm('Second confirmation — this CANNOT be undone!')) return;
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith('sx_'));
+  keys.forEach(k=>localStorage.removeItem(k));
+  AUDIT.log('factory_reset',{});
+  toast('Factory reset done — reload to set up','🗑');
+  setTimeout(()=>location.reload(), 1500);
 });
 
-/* ── INIT ────────────────────────────────────────────── */
-updateLockUI();
-document.getElementById("btn-view").textContent = settings.appView ? "☰" : "⊞";
-document.getElementById("btn-dark").textContent = settings.dark    ? "☀️" : "🌙";
-render();
+/* ── 36. KEYBOARD SHORTCUTS ─────────────────────────────────── */
+let _kbdHintTimer;
+function showKbdHint(msg) {
+  const el = document.getElementById('kbd-hint');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_kbdHintTimer);
+  _kbdHintTimer = setTimeout(()=>el.classList.remove('show'), 2000);
+}
+
+document.addEventListener('keydown', e => {
+  const ctrl = e.ctrlKey || e.metaKey;
+  // Escape — close any open modal/panel
+  if (e.key === 'Escape') {
+    closeModal(); closePinModal();
+    document.getElementById('audit-panel').classList.remove('active');
+    document.getElementById('dev-panel').classList.remove('active');
+    return;
+  }
+  // Ctrl+K — focus search
+  if (ctrl && e.key === 'k') { e.preventDefault(); document.getElementById('search').focus(); showKbdHint('Ctrl+K → Search'); return; }
+  // Ctrl+N — add service
+  if (ctrl && e.key === 'n') { e.preventDefault(); if (APP.locked) return; openModal(); showKbdHint('Ctrl+N → Add Service'); return; }
+  // Ctrl+E — export
+  if (ctrl && e.key === 'e') { e.preventDefault(); document.getElementById('btn-export').click(); showKbdHint('Ctrl+E → Export'); return; }
+  // Ctrl+Shift+L — lock
+  if (ctrl && e.shiftKey && e.key === 'L') { e.preventDefault(); if (!APP.locked) doLock(); showKbdHint('Ctrl+Shift+L → Locked'); return; }
+  // Ctrl+Shift+D — dev mode
+  if (ctrl && e.shiftKey && e.key === 'D') { e.preventDefault(); openDevPanel(); showKbdHint('Ctrl+Shift+D → Dev Panel'); return; }
+  // Ctrl+Shift+A — audit log
+  if (ctrl && e.shiftKey && e.key === 'A') { e.preventDefault(); openAuditPanel(); showKbdHint('Ctrl+Shift+A → Audit Log'); return; }
+  // Enter in modal
+  if (e.key === 'Enter' && document.getElementById('modal').classList.contains('active')) { saveModal(); return; }
+});
+
+/* ── 37. PIN SHAKE ANIMATION ─────────────────────────────────── */
+const pinShakeStyle = document.createElement('style');
+pinShakeStyle.textContent = `@keyframes pinShake{0%,100%{transform:translate(-50%,-50%) scale(1)}15%,45%,75%{transform:translate(calc(-50% - 8px),-50%) scale(1)}30%,60%,90%{transform:translate(calc(-50% + 8px),-50%) scale(1)}}`;
+document.head.appendChild(pinShakeStyle);
+
+/* ── 38. PWA SERVICE WORKER ─────────────────────────────────── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .catch(()=>{/* SW optional, app works without it */});
+  });
+}
+
+/* ── 39. INIT ───────────────────────────────────────────────── */
+(function init() {
+  SEC.initSlots();       // Ensure master key slots exist
+  applyDark();           // Apply last known dark/light (fallback)
+  updateLockUI();        // Show lock icon
+  document.getElementById('btn-dark').textContent = '🌙';
+  document.getElementById('btn-view').textContent = '⊞';
+
+  // Check if immediately locked out
+  if (AUTH.lockoutSecs() > 0) {
+    showLockoutScreen(AUTH.lockoutSecs());
+    return;
+  }
+
+  // Auto-open PIN on load
+  openPinModal();
+})();
 </script>
 </body>
 </html>
