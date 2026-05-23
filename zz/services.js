@@ -48,8 +48,8 @@ window.SHIVTRIX_DATA = {
     },
     {
       "id": "gov006",
-      "name": "Aadhaar Validity Check",
-      "url": "https://myaadhaar.uidai.gov.in/check-aadhaar-validity/en",
+      "name": "Dbt",
+      "url": "https://base.npci.org.in/base/homepage",
       "category": "Aadhaar"
     },
     {
