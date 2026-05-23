@@ -210,6 +210,12 @@ window.SHIVTRIX_DATA = {
       "url": "https://unifiedportal-mem.epfindia.gov.in/memberinterface/no-auth/forgotPasswordNew/home?_HDIV_STATE_=3-5-84A0825716AF4379E5267ACC60BFC792",
       "category": "EPFO"
     }
+    {
+  "id": "gov017",
+  "name": "DBT NPCI Mapper",
+  "url": "https://base.npci.org.in/base/homepage",
+  "category": "Aadhaar"
+}
 
   ]
 };
