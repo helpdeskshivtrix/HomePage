@@ -214,7 +214,7 @@ window.SHIVTRIX_DATA = {
   "id": "gov017",
   "name": "DBT NPCI Mapper",
   "url": "https://base.npci.org.in/base/homepage",
-  "category": "DBT"
+  "category": "Aadhaar"
 }
 
   ]
