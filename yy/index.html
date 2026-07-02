@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IR-PAS Announcer Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --accent: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --led-green: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .console {
+            background-color: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            border-top: 6px solid var(--accent);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            margin: 0 0 5px 0;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            color: var(--accent);
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .led-display {
+            background-color: #020617;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: var(--led-green);
+            text-align: center;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            background-color: #0b1329;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            padding: 12px;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        select {
+            width: 100%;
+            background-color: #0b1329;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .tweak-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            background-color: #111827;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .slider-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slider-wrap div {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+        }
+
+        .options-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .checkbox-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .checkbox-wrap input {
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+        }
+
+        .broadcast-btn {
+            background-color: var(--accent);
+            color: #111827;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .quick-presets {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+
+        .preset-badge {
+            background-color: #334155;
+            color: var(--text-main);
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="console">
+    <h1>PAS Announcement Console</h1>
+    <div class="subtitle">Progressive Web App Mode</div>
+
+    <div id="statusLed" class="led-display">SYSTEM STATUS: ONLINE / READY</div>
+
+    <div class="form-group">
+        <label for="textInput">Announcement Transcript</label>
+        <textarea id="textInput">कृपया ध्यान दीजिए... गाड़ी संख्या १ २ ३ ० १... प्लेटफार्म नंबर ४... पर आ रही है।</textarea>
+        
+        <div class="quick-presets">
+            <span class="preset-badge" onclick="loadPreset('hi')">🇮🇳 Hindi Voice Preset</span>
+            <span class="preset-badge" onclick="loadPreset('en')">🇬🇧 English Voice Preset</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="voiceSelect">Target Voice Profile</label>
+        <select id="voiceSelect"><option value="">Loading system voice profiles...</option></select>
+    </div>
+
+    <div class="tweak-grid">
+        <div class="slider-wrap">
+            <div><span>Acoustic Pitch</span><span id="pitchVal">1.05x</span></div>
+            <input type="range" id="pitch" min="0.5" max="1.5" value="1.05" step="0.05">
+        </div>
+        <div class="slider-wrap">
+            <div><span>Speech Rate (Speed)</span><span id="rateVal">0.80x</span></div>
+            <input type="range" id="rate" min="0.5" max="1.5" value="0.80" step="0.05">
+        </div>
+    </div>
+
+    <div class="options-row">
+        <label class="checkbox-wrap">
+            <input type="checkbox" id="chimeToggle" checked>
+            Play Pre-Announcement Chime Bell
+        </label>
+    </div>
+
+    <button class="broadcast-btn" id="actionBtn" onclick="toggleBroadcast()">📢 Start Announcement</button>
+</div>
+
+<script>
+    const synth = window.speechSynthesis;
+    const textInput = document.getElementById('textInput');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const statusLed = document.getElementById('statusLed');
+    const actionBtn = document.getElementById('actionBtn');
+    const pitch = document.getElementById('pitch');
+    const rate = document.getElementById('rate');
+    const pitchVal = document.getElementById('pitchVal');
+    const rateVal = document.getElementById('rateVal');
+    const chimeToggle = document.getElementById('chimeToggle');
+
+    let systemVoices = [];
+
+    function playStationChime(callback) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [440, 554, 659, 880]; 
+        const duration = 0.25;
+
+        notes.forEach((freq, index) => {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * duration));
+            gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime + (index * duration));
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (index * duration) + duration);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + (index * duration));
+            osc.stop(audioCtx.currentTime + (index * duration) + duration);
+        });
+        setTimeout(callback, notes.length * duration * 1000 + 200);
+    }
+
+    function initVoiceInventory() {
+        systemVoices = synth.getVoices();
+        voiceSelect.innerHTML = '';
+        systemVoices.sort((a, b) => b.lang.includes('hi') - a.lang.includes('hi'));
+
+        systemVoices.forEach((voice) => {
+            const option = document.createElement('option');
+            option.textContent = `${voice.name} [${voice.lang}]`;
+            option.value = voice.name;
+            voiceSelect.appendChild(option);
+        });
+    }
+
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = initVoiceInventory;
+    }
+    initVoiceInventory();
+
+    pitch.addEventListener('input', () => pitchVal.innerText = pitch.value + 'x');
+    rate.addEventListener('input', () => rateVal.innerText = rate.value + 'x');
+
+    function toggleBroadcast() {
+        if (synth.speaking) {
+            synth.cancel();
+            resetConsoleState();
+            return;
+        }
+        if (!textInput.value.trim()) return;
+
+        actionBtn.innerText = "🛑 Abort Broadcast";
+        actionBtn.style.backgroundColor = "#ef4444";
+        actionBtn.style.color = "#ffffff";
+
+        if (chimeToggle.checked) {
+            statusLed.innerText = "TRANSMITTER: RINGING CHIME...";
+            playStationChime(() => startVoiceSynthesis());
+        } else {
+            startVoiceSynthesis();
+        }
+    }
+
+    function startVoiceSynthesis() {
+        if (actionBtn.innerText === "📢 START ANNOUNCEMENT") return;
+        const utterThis = new SpeechSynthesisUtterance(textInput.value);
+        const matchingVoice = systemVoices.find(v => v.name === voiceSelect.value);
+        if (matchingVoice) utterThis.voice = matchingVoice;
+
+        utterThis.pitch = parseFloat(pitch.value);
+        utterThis.rate = parseFloat(rate.value);
+
+        utterThis.onstart = () => {
+            statusLed.innerText = "TRANSMITTER: ON AIR (BROADCASTING)";
+            statusLed.style.color = "#22c55e";
+        };
+        utterThis.onend = resetConsoleState;
+        utterThis.onerror = resetConsoleState;
+        synth.speak(utterThis);
+    }
+
+    function resetConsoleState() {
+        statusLed.innerText = "SYSTEM STATUS: READY";
+        statusLed.style.color = "#10b981";
+        actionBtn.innerText = "📢 Start Announcement";
+        actionBtn.style.backgroundColor = "#f59e0b";
+        actionBtn.style.color = "#111827";
+    }
+
+    function loadPreset(lang) {
+        if (lang === 'hi') {
+            textInput.value = "कृपया ध्यान दीजिए... गाड़ी संख्या १ २ ४ २ ४... नई दिल्ली से डिब्रूगढ़ जाने वाली राजधानी एक्सप्रेस... कुछ ही समय में प्लेटफार्म नंबर १ पर आ रही है।";
+            rate.value = 0.80; pitch.value = 1.05;
+        } else {
+            textInput.value = "May I have your attention please... Train number 1 2 4 2 4... from New Delhi to Dibrugarh... Rajdhani Express... is arriving shortly at platform number 1.";
+            rate.value = 0.85; pitch.value = 1.00;
+        }
+        rateVal.innerText = rate.value + 'x';
+        pitchVal.innerText = pitch.value + 'x';
+    }
+
+    // PWA Service Worker Registration script
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker Registered Setup Complete'))
+                .catch(err => console.log('Service Worker Registration Failed', err));
+        });
+    }
+</script>
+</body>
+</html>
