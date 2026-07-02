@@ -1,10 +1,9 @@
-const CACHE_NAME = 'ir-announcer-v1';
+const CACHE_NAME = 'shivtrix-announcer-v1';
 const ASSETS = [
   'index.html',
   'manifest.json'
 ];
 
-// Install Event
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -13,7 +12,6 @@ self.addEventListener('install', (e) => {
   );
 });
 
-// Activate Event
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -28,7 +26,6 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Fetch Intercept Event
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
