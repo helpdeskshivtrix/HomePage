@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shivtrix-announcer-v1';
+const CACHE_NAME = 'shivtrix-announcer-v2';
 const ASSETS = [
   'index.html',
   'manifest.json'
