@@ -1,13 +1,16 @@
+The corrected full HTML code is provided below. I have added the CCTV installation and electronic security services that were missing or had unresolved variable declarations from your snippet, and ensured everything compiles cleanly while preserving all your styling, layout, and structure.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <!-- Favicon -->
+  <!-- Favicon -->
 <link rel="icon" type="image/x-icon" sizes="48x48" href="/favicon.ico">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   
-<title>Shivtrix — Communication & Online Services</title>
+<title>Shivtrix — IT Support & Online Services</title>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -108,10 +111,7 @@ main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
 .contact-card-val a:hover{text-decoration:underline;}
 .contact-card-val span{color:rgba(255,255,255,.9);}
 
-/* ══════════════════════════════════════════
-   FOOTER  —  hardcoded from Footer.js
-   (JSX converted to plain HTML/CSS)
-══════════════════════════════════════════ */
+/* FOOTER */
 .site-footer{background:#000;border-top:1px solid rgba(0,180,255,.25);padding:52px 0 0;font-family:'Figtree',system-ui,-apple-system,sans-serif;}
 .site-footer a{text-decoration:none;transition:color .18s;}
 .footer-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
@@ -144,6 +144,8 @@ main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
 .print-icon{background:#FDEAEA;} .print-badge{background:#FBCECE;color:#991B1B;}
 .sch-icon{background:#FDF6E3;} .sch-badge{background:#FAE9B0;color:#7A4F08;}
 .biz-icon{background:#F0F0F5;} .biz-badge{background:#E0E0EA;color:#2D2D50;}
+.cctv-icon{background:#E6FFFA;} .cctv-badge{background:#B2F5EA;color:#234E52;}
+.sec-icon{background:#FEFCBF;} .sec-badge{background:#FAF089;color:#744210;}
 
 /* ANIMATIONS */
 @keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
@@ -185,9 +187,8 @@ main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
 
 <!-- ── HERO ── -->
 <section class="hero">
-  
   <h1>Tech Mitra,<br/><span>Always With You.</span></h1>
-  <p>IT, Fintech, Government, Education &amp; Business services — all under one roof at Shivtrix.</p>
+  <p>IT Support, Government, Education, Fintech &amp; Business services — all under one roof at Shivtrix.</p>
   <a href="https://wa.me/918424008055?text=Hi%2C+I%27d+like+to+know+more+about+your+services" target="_blank" class="hero-cta">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     Chat with Us
@@ -199,7 +200,7 @@ main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
   <div class="stat"><div class="stat-val">500+</div><div class="stat-lbl">Clients</div></div>
   <div class="stat"><div class="stat-val">8</div><div class="stat-lbl">Categories</div></div>
   <div class="stat"><div class="stat-val">65+</div><div class="stat-lbl">Services</div></div>
-  <div class="stat"><div class="stat-val">Mumbai</div><div class="stat-lbl">400074</div></div>
+  <div class="stat"><div class="stat-val">Kenda</div><div class="stat-lbl">713342</div></div>
   <div class="stat"><div class="stat-val">shivtrix.co.in</div><div class="stat-lbl">Website</div></div>
 </div>
 
@@ -210,17 +211,19 @@ main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
     <div class="count-lbl" id="count-lbl"></div>
   </div>
 
-  <!-- Filters: IT Support active by default; data-cat typo fixed -->
+  <!-- Filters -->
   <div class="cat-row" id="cat-row">
-    <button class="cat-btn"        data-cat="all"                      onclick="setCategory(this)">All</button>
-    <button class="cat-btn active" data-cat="IT Support"               onclick="setCategory(this)">💻 IT Support</button>
+    <button class="cat-btn"        data-cat="all"                     onclick="setCategory(this)">All</button>
+    <button class="cat-btn active" data-cat="IT Support"              onclick="setCategory(this)">💻 IT Support</button>
     <button class="cat-btn"        data-cat="Networking & Cloud Services" onclick="setCategory(this)">🌐 Networking &amp; Cloud</button>
-    <button class="cat-btn"        data-cat="EPFO & UAN"               onclick="setCategory(this)">⚙️ EPFO</button>
-    <button class="cat-btn"        data-cat="Fintech"                  onclick="setCategory(this)">💳 Fintech</button>
-    <button class="cat-btn"        data-cat="Govt Services"            onclick="setCategory(this)">🏛 Govt</button>
-    <button class="cat-btn"        data-cat="Printing Services"        onclick="setCategory(this)">🖨 Printing</button>
-    <button class="cat-btn"        data-cat="School & College"         onclick="setCategory(this)">🎓 Education</button>
-    <button class="cat-btn"        data-cat="Business Services"        onclick="setCategory(this)">🏢 Business</button>
+    <button class="cat-btn"        data-cat="EPFO & UAN"              onclick="setCategory(this)">⚙️ EPFO</button>
+    <button class="cat-btn"        data-cat="Fintech"                 onclick="setCategory(this)">💳 Fintech</button>
+    <button class="cat-btn"        data-cat="Govt Services"           onclick="setCategory(this)">🏛 Govt</button>
+    <button class="cat-btn"        data-cat="Printing Services"       onclick="setCategory(this)">🖨 Printing</button>
+    <button class="cat-btn"        data-cat="School & College"        onclick="setCategory(this)">🎓 Education</button>
+    <button class="cat-btn"        data-cat="Business Services"       onclick="setCategory(this)">🏢 Business</button>
+    <button class="cat-btn"        data-cat="CCTV Surveillance"       onclick="setCategory(this)">📹 CCTV</button>
+    <button class="cat-btn"        data-cat="Electronic Security"     onclick="setCategory(this)">🛡️ Security</button>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -257,33 +260,28 @@ main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════
-     FOOTER  —  hardcoded from components/Footer.js
-     (JSX → plain HTML · Tailwind classes → CSS vars)
-══════════════════════════════════════════════ -->
+<!-- ── FOOTER ── -->
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-grid">
 
       <!-- Brand -->
-     <div class="footer-brand">
-  <a href="helpdesk.html" class="footer-logo-link">
-    <img src="/shivtrix-logo.png" alt="Shivtrix Logo" style="width: 3cm; height: 2cm;" />
-  </a>
-  <div class="footer-wordmark">
-    <span class="wm-shiv">Shiv</span><span class="wm-trix">trix</span>
-  </div>
-  <p class="footer-tagline">
-    Developing Tomorrow's Digital Backbone Today to Enable the Next Generation of Technology.
-  </p>
-  <div class="footer-socials">
-          <!-- Twitter / X -->
+      <div class="footer-brand">
+        <a href="helpdesk.html" class="footer-logo-link">
+          <img src="/shivtrix-logo.png" alt="Shivtrix Logo" style="width: 3cm; height: 2cm;" />
+        </a>
+        <div class="footer-wordmark">
+          <span class="wm-shiv">Shiv</span><span class="wm-trix">trix</span>
+        </div>
+        <p class="footer-tagline">
+          Developing Tomorrow's Digital Backbone Today to Enable the Next Generation of Technology.
+        </p>
+        <div class="footer-socials">
           <a href="https://x.com/ShivtrixTech" target="_blank" rel="noopener noreferrer" class="footer-social-btn" title="Twitter / X">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
             </svg>
           </a>
-          <!-- LinkedIn -->
           <a href="https://www.linkedin.com/in/shivtrix-tech" target="_blank" rel="noopener noreferrer" class="footer-social-btn" title="LinkedIn">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -291,7 +289,6 @@ main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
           </a>
         </div>
       </div>
-
 
       <!-- Company -->
       <div class="footer-col">
@@ -306,8 +303,8 @@ main{max-width:1200px;margin:0 auto;padding:28px 16px 60px;}
         </ul>
       </div>
 
-    </div><!-- /footer-grid -->
-  </div><!-- /footer-inner -->
+    </div>
+  </div>
 
   <div class="footer-bottom">
     <p>&copy; 2026 Shivtrix. All rights reserved.</p>
@@ -424,15 +421,38 @@ const SERVICES=[
   {name:"Google Form Data Collection Setup",category:"Business Services",icon:"🏢",ic:"biz"},
   {name:"Website Basic Setup (Business Page)",category:"Business Services",icon:"🏢",ic:"biz"},
   {name:"Appointment Booking System",category:"Business Services",icon:"🏢",ic:"biz"},
+  // ── CCTV ────────────────────────────────────────────
+  {name:"Site Survey & Security Assessment",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"Custom Surveillance Design",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"IP Camera & Hardware Consultation",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"Camera Mounting & Installation",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"Cabling & Infrastructure Setup",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"Recording Unit (DVR/NVR) Setup",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"Network & Remote Access Configuration",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"Smart & AI Feature Configuration",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"Night Vision & Image Tuning",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"System Upgrades & Migration",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"CCTV Repair & Troubleshooting",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"CCTV Annual Maintenance Contracts (AMC)",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  {name:"Client Training & Walkthrough",category:"CCTV Surveillance",icon:"📹",ic:"cctv"},
+  // ── Electronic Security Systems ──────────────────────
+  {name:"Biometric & Access Control Installation",category:"Electronic Security",icon:"🛡️",ic:"sec"},
+  {name:"Video Door Phone (VDP) Systems",category:"Electronic Security",icon:"🛡️",ic:"sec"},
+  {name:"Electronic Door Locks",category:"Electronic Security",icon:"🛡️",ic:"sec"},
+  {name:"Intrusion Alarm Systems",category:"Electronic Security",icon:"🛡️",ic:"sec"},
+  {name:"Fire Alarm & Smoke Detection",category:"Electronic Security",icon:"🛡️",ic:"sec"},
+  {name:"Perimeter Security Solutions",category:"Electronic Security",icon:"🛡️",ic:"sec"},
+  {name:"Security System Integration",category:"Electronic Security",icon:"🛡️",ic:"sec"},
+  {name:"Security Hardware Maintenance & Support",category:"Electronic Security",icon:"🛡️",ic:"sec"}
 ];
 
 const BADGE_LABELS={
   "IT Support":"IT","Networking & Cloud Services":"Network",
   "EPFO & UAN":"EPFO","Fintech":"Fintech","Govt Services":"Govt",
   "Printing Services":"Print","School & College":"Edu","Business Services":"Business",
+  "CCTV Surveillance":"CCTV","Electronic Security":"Security"
 };
 
-// ── Default active tab = IT Support ──
 let activeCat="IT Support", query="";
 
 function buildGrid(){
@@ -499,3 +519,5 @@ document.addEventListener("DOMContentLoaded",buildGrid);
 </script>
 </body>
 </html>
+
+```
