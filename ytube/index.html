@@ -1383,6 +1383,13 @@
 .player-modal.minimized .pl-artist{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .player-modal.minimized .pl-right,.player-modal.minimized .player-toggles,.player-modal.minimized #btnShuffle,.player-modal.minimized #btnRepeat{display:none}
 .player-modal.minimized .player-controls{padding:0;gap:4px}
+
+.thumb-actions{position:absolute;top:6px;right:6px;z-index:5;display:flex;flex-direction:column;gap:6px;opacity:1}
+.ta-btn{width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);color:#fff;font-size:15px;cursor:pointer;display:grid;place-items:center}
+.ta-btn:hover{background:rgba(0,120,255,.85)}
+.ta-btn.liked{color:#ff4268}
+@media(hover:hover){.thumb-actions{opacity:0;transition:opacity .15s}.card:hover .thumb-actions,.thumb-actions:focus-within{opacity:1}}
+#btnLike.active{color:#ff4268}
 </style>
 </head>
 
@@ -1939,6 +1946,7 @@
                     <button id="btnPlayPause" class="icon-btn big" onclick="togglePlayPause()" title="Play / Pause">⏸</button>
                     <button class="icon-btn" onclick="playNext(false)" title="Next">⏭</button>
                     <button id="btnRepeat" class="icon-btn" onclick="cycleRepeat()" title="Repeat">↻</button>
+                    <button id="btnLike" class="icon-btn" onclick="likeCurrent()" title="Like">♡</button>
                 </div>
                 <div class="player-toggles">
                     <label class="opt"><input id="optAutoNext" type="checkbox" onchange="setAutoNext(this.checked)"> Auto-play next</label>
@@ -4304,6 +4312,7 @@ loadCurrent = function () {
     const it = queue[queueIndex];
     if (it) played.add(it.videoId);
     _loadCurrent();
+    refreshLike();
     topUp();
 };
 
@@ -4415,12 +4424,60 @@ renderQueue = function () {
 const _videoCard = videoCard;
 videoCard = function (video) {
     const id = jsSafe(video.videoId);
-    const btns = `
-        <button class="icon-btn" title="Send to radio" onclick="sendToRadio('${id}')">📻</button>
-        <button class="icon-btn" title="Play next" onclick="addToQueue('${id}',true)">⏭</button>
-        <button class="icon-btn" title="Add to queue" onclick="addToQueue('${id}',false)">☰</button>`;
-    return _videoCard(video).replace('<div class="card-actions">', '<div class="card-actions">' + btns);
+    const v = vault.find(x => x.videoId === video.videoId);
+    const liked = v && v.favorite;
+    const inVault = currentMode !== "search";
+    const ta = `
+        <div class="thumb-actions" onclick="event.stopPropagation()">
+            <button class="ta-btn ${liked ? "liked" : ""}" title="${liked ? "Unlike" : "Like"}" onclick="likeVideo('${id}')">${liked ? "♥" : "♡"}</button>
+            <button class="ta-btn" title="Play next" onclick="addToQueue('${id}',true)">⏭</button>
+            <button class="ta-btn" title="Add to queue" onclick="addToQueue('${id}',false)">☰</button>
+            <button class="ta-btn" title="Send to radio" onclick="sendToRadio('${id}')">📻</button>
+            ${inVault ? `<button class="ta-btn" title="Remove from vault" onclick="deleteVideo('${id}')">🗑</button>` : ""}
+        </div>`;
+    return _videoCard(video)
+        .replace(/(<div class="thumb"[^>]*>)/, '$1' + ta);
 };
+
+/* like = favorite; saves search results to the vault first */
+function likeVideo(id) {
+    if (!vault.some(v => v.videoId === id)) {
+        const r = searchResults.find(x => x.videoId === id);
+        if (!r) return;
+        vault.unshift({
+            id: uid(), videoId: r.videoId,
+            url: "https://www.youtube.com/watch?v=" + r.videoId,
+            title: r.title, artist: r.artist, channel: r.artist,
+            channelUrl: r.channelUrl || "", genre: "",
+            uploadDate: r.uploadDate || "", duration: r.duration || "",
+            views: r.views || "", tags: "", description: r.description || "",
+            thumbnail: thumbnailUrl(r.videoId), favorite: true,
+            addedAt: new Date().toISOString()
+        });
+        saveVault(); render(); showToast("Liked and saved to your vault.");
+    } else {
+        toggleFavorite(id);
+    }
+    refreshLike();
+}
+
+function likeCurrent() {
+    const it = queue[queueIndex];
+    if (!it) return;
+    if (!vault.some(v => v.videoId === it.videoId)) {
+        searchResults.push({ videoId: it.videoId, title: it.title, artist: it.artist });
+    }
+    likeVideo(it.videoId);
+}
+
+function refreshLike() {
+    const it = queue[queueIndex];
+    const v = it && vault.find(x => x.videoId === it.videoId);
+    const b = $("btnLike");
+    if (!b) return;
+    b.textContent = v && v.favorite ? "♥" : "♡";
+    b.classList.toggle("active", Boolean(v && v.favorite));
+}
 
 const _refreshToggles = refreshToggles;
 refreshToggles = function () {
