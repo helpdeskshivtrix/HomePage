@@ -133,7 +133,7 @@ body.tv .pll{overflow:hidden}body.tv .pll h2,body.tv .pll .mut{display:none}
  <button class="ib" id="menuBtn" onclick="document.body.classList.toggle('menu')" style="display:none">☰</button>
  <div class="brand"><div class="logo">▶</div><span>ShivTrix<b>YouTube</b></span></div>
  <input id="q" type="search" placeholder="Search songs, artists, albums" autocomplete="off">
- <button class="ib" onclick="showCast()" title="Cast to device">📡</button>
+ <button class="ib" id="castBtn" onclick="showCast()" title="Cast to device">📡</button>
 </header>
 
 <nav id="side">
@@ -325,7 +325,7 @@ function ytLoad(id,t){loadYT().then(()=>{
  if(!yt){const v={autoplay:1,playsinline:1,rel:0,modestbranding:1,enablejsapi:1,start:Math.floor(t||0)};if(/^https?:$/.test(location.protocol))v.origin=location.origin;
   yt=new YT.Player("ytp",{width:"100%",height:"100%",videoId:id,playerVars:v,events:{onReady:()=>{ytReady=true;if(pend){yt.loadVideoById({videoId:pend.id,startSeconds:pend.t});pend=null}},onStateChange:onState,onError:onErr}})}
  else if(!ytReady)pend={id,t:t||0};else yt.loadVideoById({videoId:id,startSeconds:t||0})}).catch(()=>toast("Couldn't load the YouTube player"))}
-function playAt(i){if(!LIST[i])return;Q=LIST.slice();qi=i;from=SRC;played.clear();rmod="";openPl();loadCur()}
+function playAt(i){if(!LIST[i])return;follow=false;document.body.classList.remove("follow");Q=LIST.slice();qi=i;from=SRC;played.clear();rmod="";openPl();loadCur()}
 function loadCur(start){
  const it=Q[qi];if(!it)return;played.add(it.videoId);userPaused=false;
  $("plT").textContent=it.title;$("plA").textContent=it.artist;$("plF").textContent=from;
@@ -348,17 +348,17 @@ function time(){try{const it=Q[qi];return it&&it.off?au.currentTime:(yt&&ytReady
 function dur(){try{const it=Q[qi];return it&&it.off?au.duration||0:(yt&&ytReady?yt.getDuration():0)||0}catch(e){return 0}}
 function seekTo(s){const it=Q[qi];if(it&&it.off)au.currentTime=s;else try{yt.seekTo(s,true)}catch(e){}}
 function playing(){const it=Q[qi];if(it&&it.off)return!au.paused;try{const s=yt.getPlayerState();return s===1||s===3}catch(e){return false}}
-function togglePlay(){if(follow&&up)return up(JSON.stringify({t:"cmd",c:"toggle"}));
+function togglePlay(){if(follow&&room)return cmd("toggle");
  if(playing()){userPaused=true;const it=Q[qi];if(it&&it.off)au.pause();else yt.pauseVideo()}else{userPaused=false;resume()}}
 function ui(p){$("bPP").textContent=p?"⏸":"▶";$("mPP").textContent=p?"⏸":"▶";try{navigator.mediaSession.playbackState=p?"playing":"paused"}catch(e){}}
 function nextIdx(){if(!Q.length)return-1;
  if(shuf&&Q.length>1){let i;do{i=Math.random()*Q.length|0}while(i===qi);return i}
  if(qi+1<Q.length)return qi+1;return rep===1?0:-1}
 async function next(auto){
- if(follow&&up)return up(JSON.stringify({t:"cmd",c:"next"}));
+ if(follow&&room)return cmd("next");
  if(nextIdx()===-1&&Q.length&&!(Q[qi]&&Q[qi].off)){toast("Finding related songs…");await topUp(true)}
  const i=nextIdx();if(i===-1){if(auto)ui(false);return}qi=i;loadCur()}
-function prev(){if(follow&&up)return up(JSON.stringify({t:"cmd",c:"prev"}));
+function prev(){if(follow&&room)return cmd("prev");
  if(time()>5){seekTo(0);return}if(!Q.length)return;qi=qi>0?qi-1:(rep===1?Q.length-1:0);loadCur()}
 function jump(i){qi=i;loadCur()}
 function togShuf(){shuf=!shuf;$("bSh").classList.toggle("on",shuf)}
@@ -406,7 +406,7 @@ function closePl(){try{if(yt&&ytReady)yt.stopVideo()}catch(e){}au.pause();Q=[];q
 setInterval(()=>{if(!Q.length)return;const t=time(),d=dur();
  if(!drag&&d){$("seek").value=t/d*1000}$("t1").textContent=sec(t)||"0:00";$("t2").textContent=sec(d)||"0:00";
  try{if(document.hidden&&!userPaused&&!follow&&yt&&ytReady&&!(Q[qi]||{}).off&&yt.getPlayerState()===2)yt.playVideo()}catch(e){}},500);
-setInterval(()=>{const it=Q[qi];if(!follow&&it&&!it.off)bc({t:"s",p:playing(),c:time(),id:it.videoId})},4000);
+setInterval(()=>{const it=Q[qi];if(!follow&&it&&!it.off)bc({t:"s",p:playing(),c:time(),id:it.videoId})},8000);
 $("seek").addEventListener("input",()=>drag=true);
 $("seek").addEventListener("change",e=>{drag=false;const d=dur();if(d)seekTo(e.target.value/1000*d)});
 
@@ -423,52 +423,52 @@ if("mediaSession" in navigator){const h={play:()=>{userPaused=false;resume()},pa
  for(const k in h)try{navigator.mediaSession.setActionHandler(k,h[k])}catch(e){}}
 document.addEventListener("pointerdown",()=>{if(Q.length&&!userPaused)keepOn()},{passive:true});
 
-/* ---------- cast / multi-device ---------- */
-const sinks=[];
-function bc(o){const s=JSON.stringify(o);sinks.forEach(f=>{try{f(s)}catch(e){}})}
-function sendLoad(){const it=Q[qi];if(it&&!it.off&&sinks.length)bc({t:"load",it,from,c:time()})}
-function hostIn(raw){let m;try{m=JSON.parse(raw)}catch(e){return}
- if(m.t==="cmd"){if(m.c==="toggle")togglePlay();else if(m.c==="next")next(false);else if(m.c==="prev")prev()}}
-function hostMsg(raw){let m;try{m=JSON.parse(raw)}catch(e){return}
+/* ---------- rooms: multi-device play over the free ntfy.sh relay ---------- */
+const me=Math.random().toString(36).slice(2,8),NT="https://ntfy.sh/stxy-",AB="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+let room=null,es=null;
+function post(s){if(room)fetch(NT+room,{method:"POST",body:s}).catch(()=>{})}
+function bc(o){if(!room)return;o.f=me;post(JSON.stringify(o))}
+function cmd(c){bc({t:"cmd",c})}
+function sendLoad(){const it=Q[qi];if(room&&it&&!it.off)bc({t:"load",it,from,c:time()})}
+function onRoom(raw){let m;try{m=JSON.parse(raw)}catch(e){return}if(!m||m.f===me)return;
  if(m.t==="load"){follow=true;document.body.classList.add("follow");Q=[m.it];qi=0;from=m.from;openPl();loadCur(m.c)}
- else if(m.t==="s"&&Q[qi]&&Q[qi].videoId===m.id&&yt&&ytReady){
-  try{if(Math.abs(yt.getCurrentTime()-m.c)>2.5)yt.seekTo(m.c,true);if(m.p)yt.playVideo();else yt.pauseVideo()}catch(e){}}
- else if(m.t==="x"){try{yt.stopVideo()}catch(e){}ui(false)}}
-function loadJs(src){return new Promise((ok,no)=>{if(window.Peer)return ok();const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
-const PEER="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";
+ else if(m.t==="s"){if(follow&&Q[qi]&&Q[qi].videoId===m.id&&yt&&ytReady)try{if(Math.abs(yt.getCurrentTime()-m.c)>2.5)yt.seekTo(m.c,true);if(m.p)yt.playVideo();else yt.pauseVideo()}catch(e){}}
+ else if(m.t==="x"){if(follow){try{yt.stopVideo()}catch(e){}ui(false)}}
+ else if(m.t==="hi"){if(!follow)sendLoad()}
+ else if(m.t==="cmd"){if(!follow&&Q.length){if(m.c==="toggle")togglePlay();else if(m.c==="next")next(false);else if(m.c==="prev")prev()}}}
+function enterRoom(id,creator){leaveRoom(true);room=id;
+ es=new EventSource(NT+id+"/sse");let first=true;
+ es.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.event==="message")onRoom(d.message)}catch(x){}};
+ es.onopen=()=>{if(first){first=false;bc({t:"hi"});if(creator)sendLoad()}};
+ try{history.replaceState(null,"","#room="+id)}catch(e){}
+ $("castBtn").classList.add("on")}
+function leaveRoom(quiet){if(es)es.close();es=null;
+ if(room&&!quiet)toast("Left room "+room);
+ room=null;follow=false;document.body.classList.remove("follow");$("castBtn").classList.remove("on");
+ try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}
+function createRoom(){let id="";for(let i=0;i<8;i++)id+=AB[Math.random()*AB.length|0];
+ enterRoom(id,true);showCast();toast("Room created")}
+function joinRoom(){const id=($("jc").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+ if(id.length!==8)return toast("Room ID has 8 letters/numbers");
+ enterRoom(id,false);closeDlg();toast("Joined room "+id)}
+function copyRoom(){navigator.clipboard.writeText(room).then(()=>toast("Room ID copied")).catch(()=>toast("Copy failed"))}
+function shareRoom(){const url=location.href.split("#")[0]+"#room="+room;
+ if(navigator.share)navigator.share({title:"Join my ShivTrixYouTube room",text:"Room ID: "+room,url}).catch(()=>{});
+ else navigator.clipboard.writeText(url).then(()=>toast("Invite link copied")).catch(()=>toast(url))}
 function showCast(){
- dlg(`<h3>Cast to device</h3><p class="mut" style="font-size:13px;line-height:1.6;margin:0">Play the same song on more than one device, or send it to a TV or Chromecast.</p>
- ${window.PresentationRequest?'<button class="btn pri" onclick="toScreen()">📺 Cast to a TV / screen</button>':""}
- <button class="btn" onclick="hostRoom()">📡 Share my music with other devices</button>
- <input id="jc" inputmode="numeric" placeholder="Enter 6-digit code from another device">
- <button class="btn" onclick="joinRoom()">🔗 Join this code</button>
- <p class="mut" style="font-size:12px;line-height:1.6">Tip: on Android Chrome, the ⋮ menu → Cast also mirrors this tab to a TV.</p>`)}
-function toScreen(){
- try{const r=new PresentationRequest([location.href.split("#")[0]+"#tv"]);
-  r.start().then(c=>{sinks.push(s=>c.send(s));c.onmessage=e=>hostIn(e.data);closeDlg();toast("Casting to screen");sendLoad()}).catch(()=>toast("No screen found. Use Chrome ⋮ → Cast instead."))}
- catch(e){toast("Cast isn't supported in this browser")}}
-function hostRoom(){loadJs(PEER).then(()=>{
- const code=String(Math.random()*9e5+1e5|0),p=new Peer("stxy-"+code);
- p.on("open",()=>dlg(`<h3>Your room code</h3><div class="code">${code}</div><p class="mut" style="font-size:13px;line-height:1.6">On the other device open ShivTrixYouTube → 📡 → enter this code. Songs you play here will play there too.</p><button class="btn" onclick="closeDlg()">Done</button>`));
- p.on("connection",c=>{let f=null;c.on("open",()=>{f=s=>c.send(s);sinks.push(f);toast("Device connected");sendLoad()});
-  c.on("data",hostIn);c.on("close",()=>{const k=sinks.indexOf(f);if(k>=0)sinks.splice(k,1);toast("Device disconnected")})});
- p.on("error",()=>toast("Couldn't start the room. Try again."))}).catch(()=>toast("Couldn't reach the pairing service"))}
-function joinRoom(){const code=($("jc").value||"").replace(/\D/g,"");if(code.length!==6)return toast("Enter the 6-digit code");
- loadJs(PEER).then(()=>{const p=new Peer(),c0=()=>{};
-  p.on("open",()=>{const c=p.connect("stxy-"+code,{reliable:true});
-   c.on("open",()=>{follow=true;document.body.classList.add("follow");up=s=>c.send(s);closeDlg();toast("Connected — waiting for the host to play a song")});
-   c.on("data",hostMsg);c.on("close",()=>{follow=false;up=null;document.body.classList.remove("follow");toast("Host disconnected")})});
-  p.on("error",()=>toast("Couldn't join. Check the code."))}).catch(()=>toast("Couldn't reach the pairing service"))}
-/* receiver page on a Cast screen */
-if(location.hash==="#tv"&&navigator.presentation&&navigator.presentation.receiver){
- document.body.classList.add("tv");follow=true;
- navigator.presentation.receiver.connectionList.then(l=>{const h=c=>{c.onmessage=e=>hostMsg(e.data);up=s=>c.send(s)};l.connections.forEach(h);l.onconnectionavailable=e=>h(e.connection)})}
+ if(room){dlg(`<h3>You’re in a room</h3><div class="code">${room}</div><p class="mut" style="font-size:13px;line-height:1.6;margin:0 0 6px">Every device that enters this Room ID plays the same song in sync. Play a song on any device to make it the leader. Next, previous and pause from the other devices control the leader.</p><button class="btn pri" onclick="shareRoom()">🔗 Share invite link</button><button class="btn" onclick="copyRoom()">⧉ Copy Room ID</button><button class="btn" onclick="leaveRoom();closeDlg()">⏏ Leave room</button>`);return}
+ dlg(`<h3>Cast to device</h3><p class="mut" style="font-size:13px;line-height:1.6;margin:0">Create a room, then enter its Room ID on your other devices. They all play the same song together.</p>
+ <button class="btn pri" onclick="createRoom()">＋ Create room</button>
+ <input id="jc" placeholder="Room ID" autocapitalize="characters" autocomplete="off" maxlength="12">
+ <button class="btn" onclick="joinRoom()">🔗 Join room</button>
+ <p class="mut" style="font-size:12px;line-height:1.6">To show it on the Mi TV: in Chrome use ⋮ → Cast → your TV.</p>`)}
 
 /* ---------- init ---------- */
 function resize(){$("menuBtn").style.display=innerWidth<=900?"grid":"none"}
 addEventListener("resize",resize);resize();
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if($("dlg").classList.contains("open"))closeDlg();else if($("pl").classList.contains("open"))minPl()}});
-if(!document.body.classList.contains("tv")){load();paint()}
+load();paint();
+const rm=/#room=([A-Z0-9]{8})/.exec(location.hash);if(rm){enterRoom(rm[1],false);toast("Joined room "+rm[1])}
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
 </script>
 </body>
