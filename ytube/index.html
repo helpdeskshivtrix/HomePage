@@ -2,6092 +2,2235 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover">
-
-<meta name="theme-color" content="#0f0f0f">
-
-<meta name="description"
-      content="TrixTube - Personal YouTube Video Vault">
-
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TrixTube">
-
-<title>TrixTube</title>
-
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<title>Music Library</title>
 
 <style>
-/* =========================================================
-   TRIXTUBE
-   YOUTUBE-STYLE UI
-   BLUE ACCENT LOCKED
-========================================================= */
-
-:root {
-    --blue: #3ea6ff;
-    --blue-dark: #065fd4;
-    --blue-soft: rgba(62,166,255,.14);
-
-    --bg: #0f0f0f;
-    --bg2: #181818;
-    --bg3: #212121;
-    --panel: #181818;
-    --panel2: #272727;
-
-    --line: #303030;
-    --line2: #3d3d3d;
-
-    --text: #f1f1f1;
-    --muted: #aaa;
-    --muted2: #717171;
-
-    --danger: #ff4e64;
-    --success: #21e6a0;
-
-    --radius: 12px;
-
-    --header-height: 60px;
-    --sidebar-width: 235px;
-
-    --shadow:
-        0 12px 40px rgba(0,0,0,.45);
-}
-
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html {
-    background: var(--bg);
-    scroll-behavior: smooth;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-
-    background: var(--bg);
-
-    color: var(--text);
-
-    font-family:
-        Roboto,
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    overflow-x: hidden;
-}
-
-button,
-input,
-textarea,
-select {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.header {
-    position: sticky;
-    top: 0;
-
-    height: var(--header-height);
-
-    z-index: 1000;
-
-    background: rgba(15,15,15,.97);
-
-    border-bottom: 1px solid #202020;
-}
-
-.header-inner {
-    height: 100%;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 18px;
-
-    gap: 18px;
-}
-
-.menu-btn {
-    width: 40px;
-    height: 40px;
-
-    border: 0;
-    border-radius: 50%;
-
-    background: transparent;
-    color: white;
-
-    font-size: 21px;
-}
-
-.menu-btn:hover {
-    background: #272727;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    min-width: 180px;
-
-    font-weight: 900;
-}
-
-.brand-icon {
-    width: 34px;
-    height: 24px;
-
-    border-radius: 7px;
-
-    display: grid;
-    place-items: center;
-
-    color: white;
-
-    background: #ff0033;
-
-    font-size: 14px;
-}
-
-.brand-text {
-    font-size: 19px;
-    letter-spacing: -0.7px;
-}
-
-.brand-text span {
-    color: var(--blue);
-}
-
-.search-wrap {
-    display: flex;
-
-    flex: 1;
-
-    max-width: 720px;
-
-    margin: auto;
-}
-
-.search-box {
-    height: 40px;
-
-    display: flex;
-    align-items: center;
-
-    width: 100%;
-}
-
-.search {
-    height: 40px;
-
-    width: 100%;
-
-    padding: 0 16px;
-
-    border-radius: 20px 0 0 20px;
-
-    border: 1px solid #303030;
-
-    outline: none;
-
-    background: #121212;
-
-    color: white;
-}
-
-.search:focus {
-    border-color: #3d3d3d;
-
-    box-shadow:
-        inset 1px 0 0 #3d3d3d;
-}
-
-.search::placeholder {
-    color: #888;
-}
-
-.search-btn {
-    width: 64px;
-    height: 40px;
-
-    border-radius: 0 20px 20px 0;
-
-    border: 1px solid #303030;
-    border-left: 0;
-
-    background: #222;
-
-    color: white;
-
-    font-size: 18px;
-}
-
-.search-btn:hover {
-    background: #303030;
-}
-
-.voice-btn {
-    width: 40px;
-    height: 40px;
-
-    margin-left: 8px;
-
-    border: 0;
-    border-radius: 50%;
-
-    background: #181818;
-
-    color: white;
-}
-
-.voice-btn:hover {
-    background: #272727;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.header-icon {
-    width: 40px;
-    height: 40px;
-
-    border: 0;
-    border-radius: 50%;
-
-    background: transparent;
-
-    color: white;
-
-    font-size: 18px;
-}
-
-.header-icon:hover {
-    background: #272727;
-}
-
-.avatar {
-    width: 32px;
-    height: 32px;
-
-    margin-left: 5px;
-
-    border-radius: 50%;
-
-    display: grid;
-    place-items: center;
-
-    background:
-        linear-gradient(
-            135deg,
-            #005eff,
-            #00a8ff
-        );
-
-    color: white;
-
-    font-weight: 900;
-}
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
-
-.sidebar {
-    position: fixed;
-
-    top: var(--header-height);
-    left: 0;
-    bottom: 0;
-
-    width: var(--sidebar-width);
-
-    padding: 14px 10px;
-
-    background: #0f0f0f;
-
-    overflow-y: auto;
-
-    z-index: 900;
-
-    transition: .2s;
-}
-
-.sidebar-section {
-    padding-bottom: 14px;
-
-    border-bottom: 1px solid #303030;
-
-    margin-bottom: 14px;
-}
-
-.sidebar-title {
-    padding: 8px 12px;
-
-    color: #aaa;
-
-    font-size: 12px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-}
-
-.side-item {
-    width: 100%;
-
-    height: 42px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 22px;
-
-    padding: 0 13px;
-
-    border: 0;
-    border-radius: 10px;
-
-    background: transparent;
-
-    color: #f1f1f1;
-
-    text-align: left;
-
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.side-item:hover {
-    background: #272727;
-}
-
-.side-item.active {
-    background: #272727;
-    font-weight: 700;
-}
-
-.side-icon {
-    width: 20px;
-
-    text-align: center;
-
-    font-size: 17px;
-}
-
-.sidebar-footer {
-    padding: 10px 13px;
-
-    color: #717171;
-
-    font-size: 11px;
-
-    line-height: 1.6;
-}
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-main {
-    margin-left: var(--sidebar-width);
-
-    padding:
-        18px
-        24px
-        70px;
-
-    transition: .2s;
-}
-
-/* =========================================================
-   TOP CATEGORY BAR
-========================================================= */
-
-.category-bar {
-    position: sticky;
-
-    top: var(--header-height);
-
-    z-index: 50;
-
-    display: flex;
-
-    gap: 10px;
-
-    overflow-x: auto;
-
-    padding:
-        4px
-        0
-        18px;
-
-    margin-bottom: 10px;
-
-    background: var(--bg);
-
-    scrollbar-width: none;
-}
-
-.category-bar::-webkit-scrollbar {
-    display: none;
-}
-
-.chip {
-    flex: none;
-
-    padding: 9px 14px;
-
-    border-radius: 8px;
-
-    border: 0;
-
-    background: #272727;
-
-    color: white;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    white-space: nowrap;
-}
-
-.chip:hover {
-    background: #3a3a3a;
-}
-
-.chip.active {
-    background: white;
-    color: #0f0f0f;
-}
-
-/* =========================================================
-   HERO
-========================================================= */
-
-.hero {
-    padding: 25px 0 20px;
-}
-
-.eyebrow {
-    display: inline-flex;
-
-    padding: 6px 10px;
-
-    border-radius: 6px;
-
-    background: var(--blue-soft);
-
-    color: var(--blue);
-
-    font-size: 11px;
-    font-weight: 800;
-
-    text-transform: uppercase;
-}
-
-.hero h1 {
-    margin: 13px 0 8px;
-
-    font-size:
-        clamp(28px,4vw,48px);
-
-    line-height: 1;
-
-    letter-spacing: -1.5px;
-}
-
-.hero h1 span {
-    color: var(--blue);
-}
-
-.hero p {
-    max-width: 780px;
-
-    margin: 0;
-
-    color: var(--muted);
-
-    line-height: 1.6;
-
-    font-size: 14px;
-}
-
-/* =========================================================
-   STATS
-========================================================= */
-
-.stats {
-    display: grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
-    gap: 12px;
-
-    margin-bottom: 25px;
-}
-
-.stat {
-    padding: 16px;
-
-    border-radius: 10px;
-
-    background: #181818;
-
-    border: 1px solid #252525;
-}
-
-.stat-label {
-    color: #aaa;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-}
-
-.stat-value {
-    margin-top: 6px;
-
-    color: white;
-
-    font-size: 25px;
-    font-weight: 900;
-}
-
-/* =========================================================
-   TOOLBAR
-========================================================= */
-
-.toolbar {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 12px;
-
-    margin-bottom: 14px;
-}
-
-.modes {
-    display: flex;
-
-    gap: 8px;
-
-    flex-wrap: wrap;
-}
-
-.mode {
-    height: 36px;
-
-    padding: 0 14px;
-
-    border-radius: 8px;
-
-    border: 0;
-
-    background: #272727;
-
-    color: #ddd;
-
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.mode:hover {
-    background: #383838;
-}
-
-.mode.active {
-    background: white;
-
-    color: #111;
-}
-
-/* =========================================================
-   SECTION
-========================================================= */
-
-.section-title {
-    margin: 20px 0 14px;
-
-    font-size: 20px;
-
-    font-weight: 800;
-
-    letter-spacing: -.4px;
-}
-
-/* =========================================================
-   GRID
-========================================================= */
-
-.grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fill,
-            minmax(260px,1fr)
-        );
-
-    gap: 22px 16px;
-}
-
-/* =========================================================
-   CARD
-========================================================= */
-
-.card {
-    min-width: 0;
-
-    background: transparent;
-
-    border: 0;
-
-    transition: .18s;
-}
-
-.thumb {
-    position: relative;
-
-    width: 100%;
-
-    aspect-ratio: 16/9;
-
-    overflow: hidden;
-
-    border-radius: 11px;
-
-    background: #181818;
-
-    cursor: pointer;
-}
-
-.thumb img {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    object-fit: cover;
-
-    transition: .25s;
-}
-
-.card:hover .thumb img {
-    transform: scale(1.025);
-}
-
-.duration {
-    position: absolute;
-
-    right: 7px;
-    bottom: 7px;
-
-    padding: 3px 5px;
-
-    border-radius: 4px;
-
-    background: rgba(0,0,0,.85);
-
-    color: white;
-
-    font-size: 11px;
-    font-weight: 800;
-}
-
-.play-overlay {
-    position: absolute;
-
-    inset: 0;
-
-    display: grid;
-    place-items: center;
-
-    background: transparent;
-
-    transition: .18s;
-}
-
-.play-circle {
-    width: 52px;
-    height: 52px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 50%;
-
-    opacity: 0;
-
-    transform: scale(.85);
-
-    background:
-        rgba(0,0,0,.75);
-
-    color: white;
-
-    transition: .18s;
-
-    font-size: 20px;
-}
-
-.card:hover .play-overlay {
-    background: rgba(0,0,0,.15);
-}
-
-.card:hover .play-circle {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.card-body {
-    display: grid;
-
-    grid-template-columns: 1fr;
-
-    padding-top: 10px;
-}
-
-.card-title {
-    min-height: 40px;
-
-    color: #f1f1f1;
-
-    font-size: 14px;
-    font-weight: 700;
-
-    line-height: 1.4;
-
-    display: -webkit-box;
-
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-
-    overflow: hidden;
-}
-
-.channel {
-    margin-top: 5px;
-
-    color: #aaa;
-
-    font-size: 12px;
-}
-
-.meta {
-    display: flex;
-
-    gap: 7px;
-
-    margin-top: 4px;
-
-    color: #777;
-
-    font-size: 11px;
-}
-
-.card-footer {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    margin-top: 9px;
-}
-
-.card-actions {
-    display: flex;
-
-    gap: 4px;
-}
-
-.btn {
-    height: 36px;
-
-    padding: 0 13px;
-
-    border: 0;
-
-    border-radius: 8px;
-
-    background: #272727;
-
-    color: #f1f1f1;
-
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.btn:hover {
-    background: #383838;
-}
-
-.btn-primary {
-    background: var(--blue);
-
-    color: white;
-}
-
-.btn-primary:hover {
-    background: #65b7ff;
-}
-
-.icon-btn {
-    width: 34px;
-    height: 34px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 50%;
-
-    border: 0;
-
-    background: transparent;
-
-    color: #aaa;
-}
-
-.icon-btn:hover {
-    background: #272727;
-    color: white;
-}
-
-.icon-btn.favorite,
-.icon-btn.active {
-    color: #ff4268;
-}
-
-/* =========================================================
-   THUMB ACTIONS
-========================================================= */
-
-.thumb-actions {
-    position: absolute;
-
-    top: 8px;
-    right: 8px;
-
-    z-index: 10;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 5px;
-}
-
-.ta-btn {
-    width: 34px;
-    height: 34px;
-
-    border-radius: 50%;
-
-    border: 0;
-
-    background: rgba(0,0,0,.78);
-
-    color: white;
-
-    display: grid;
-    place-items: center;
-
-    backdrop-filter: blur(8px);
-
-    font-size: 14px;
-}
-
-.ta-btn:hover {
-    background: var(--blue);
-}
-
-.ta-btn.liked {
-    color: #ff4268;
-}
-
-/* =========================================================
-   EMPTY / SEARCH
-========================================================= */
-
-.empty,
-.status-box {
-    grid-column: 1/-1;
-
-    padding: 70px 20px;
-
-    text-align: center;
-
-    border-radius: 12px;
-
-    background: #181818;
-
-    border: 1px solid #303030;
-
-    color: #aaa;
-}
-
-.empty-icon {
-    margin-bottom: 10px;
-
-    font-size: 42px;
-}
-
-.empty h3,
-.status-box h3 {
-    margin: 0 0 8px;
-
-    color: white;
-}
-
-.empty p {
-    margin: 0;
-}
-
-.yt-prompt {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 8px;
-
-    margin-bottom: 14px;
-}
-
-.spinner {
-    width: 30px;
-    height: 30px;
-
-    margin: 0 auto 14px;
-
-    border-radius: 50%;
-
-    border: 3px solid #303030;
-
-    border-top-color: var(--blue);
-
-    animation: spin .8s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.load-more-wrap {
-    grid-column: 1/-1;
-
-    text-align: center;
-
-    padding: 10px 0 30px;
-}
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 2000;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 18px;
-
-    background: rgba(0,0,0,.82);
-
-    backdrop-filter: blur(6px);
-}
-
-.modal.open {
-    display: flex;
-}
-
-.modal-box {
-    width: min(760px,100%);
-
-    max-height: 92vh;
-
-    overflow-y: auto;
-
-    border-radius: 14px;
-
-    background: #212121;
-
-    border: 1px solid #3a3a3a;
-
-    box-shadow: var(--shadow);
-}
-
-.modal-header {
-    min-height: 58px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 12px;
-
-    padding: 0 18px;
-
-    border-bottom: 1px solid #303030;
-}
-
-.modal-header h2 {
-    margin: 0;
-
-    min-width: 0;
-
-    color: white;
-
-    font-size: 18px;
-}
-
-.header-btns {
-    display: flex;
-
-    gap: 6px;
-}
-
-.close {
-    width: 38px;
-    height: 38px;
-
-    border: 0;
-
-    border-radius: 50%;
-
-    background: transparent;
-
-    color: white;
-
-    font-size: 21px;
-}
-
-.close:hover {
-    background: #303030;
-}
-
-.modal-content {
-    padding: 20px;
-}
-
-.form-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(2,minmax(0,1fr));
-
-    gap: 14px;
-}
-
-.field {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 7px;
-}
-
-.field.full {
-    grid-column: 1/-1;
-}
-
-.field label {
-    color: #aaa;
-
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.field input,
-.field textarea,
-.field select {
-    width: 100%;
-
-    padding: 11px 12px;
-
-    border-radius: 6px;
-
-    border: 1px solid #404040;
-
-    outline: none;
-
-    background: #121212;
-
-    color: white;
-}
-
-.field input:focus,
-.field textarea:focus,
-.field select:focus {
-    border-color: var(--blue);
-}
-
-.field textarea {
-    min-height: 100px;
-
-    resize: vertical;
-}
-
-.modal-footer {
-    display: flex;
-
-    justify-content: flex-end;
-
-    gap: 8px;
-
-    padding: 15px 20px;
-
-    border-top: 1px solid #303030;
-}
-
-/* =========================================================
-   PLAYER
-========================================================= */
-
-.player-modal .modal-box {
-    width: min(1400px,100%);
-
-    max-height: 96vh;
-
-    background: #0f0f0f;
-}
-
-.pl-body {
-    display: grid;
-
-    grid-template-columns:
-        minmax(0,1fr)
-        360px;
-
-    gap: 18px;
-
-    padding: 16px;
-}
-
-.pl-left {
-    min-width: 0;
-}
-
-.player {
-    position: relative;
-
-    width: 100%;
-
-    aspect-ratio: 16/9;
-
-    background: black;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-}
-
-.player iframe,
-.player > div {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-}
-
-.pl-info {
-    padding: 12px 0;
-}
-
-.pl-title {
-    color: white;
-
-    font-size: 18px;
-
-    font-weight: 800;
-
-    line-height: 1.35;
-}
-
-.pl-artist {
-    margin-top: 4px;
-
-    color: #aaa;
-
-    font-size: 13px;
-}
-
-.player-controls {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: flex-start;
-
-    gap: 5px;
-
-    padding: 4px 0 10px;
-}
-
-.player-controls .icon-btn {
-    width: 42px;
-    height: 42px;
-
-    font-size: 16px;
-}
-
-.player-controls .big {
-    width: 50px;
-    height: 50px;
-
-    background: #272727;
-
-    color: white;
-}
-
-.player-controls .big:hover {
-    background: #383838;
-}
-
-.player-toggles {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 8px 18px;
-
-    padding: 4px 0;
-}
-
-.opt {
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-
-    color: #aaa;
-
-    font-size: 12px;
-}
-
-.opt input {
-    accent-color: var(--blue);
-}
-
-/* =========================================================
-   PREMIUM PLAYER CONTROLS
-========================================================= */
-
-.premium-tools {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 7px;
-
-    padding: 10px 0;
-
-    border-top: 1px solid #252525;
-}
-
-.premium-btn {
-    height: 34px;
-
-    padding: 0 11px;
-
-    border-radius: 7px;
-
-    border: 1px solid #303030;
-
-    background: #181818;
-
-    color: #ccc;
-
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.premium-btn:hover,
-.premium-btn.active {
-    border-color: var(--blue);
-
-    color: white;
-
-    background: var(--blue-soft);
-}
-
-.equalizer {
-    display: none;
-
-    margin-top: 8px;
-
-    padding: 14px;
-
-    border-radius: 10px;
-
-    background: #181818;
-
-    border: 1px solid #303030;
-}
-
-.equalizer.open {
-    display: block;
-}
-
-.eq-title {
-    margin-bottom: 12px;
-
-    color: white;
-
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.eq-bars {
-    height: 80px;
-
-    display: flex;
-
-    align-items: end;
-
-    justify-content: center;
-
-    gap: 5px;
-}
-
-.eq-bar {
-    width: 7px;
-
-    height: 20%;
-
-    border-radius: 5px 5px 2px 2px;
-
-    background:
-        linear-gradient(
-            to top,
-            #065fd4,
-            var(--blue)
-        );
-
-    animation: eq 1s ease-in-out infinite alternate;
-}
-
-.eq-bar:nth-child(2) { height: 42%; animation-delay:.1s; }
-.eq-bar:nth-child(3) { height: 67%; animation-delay:.2s; }
-.eq-bar:nth-child(4) { height: 84%; animation-delay:.3s; }
-.eq-bar:nth-child(5) { height: 55%; animation-delay:.4s; }
-.eq-bar:nth-child(6) { height: 75%; animation-delay:.5s; }
-.eq-bar:nth-child(7) { height: 90%; animation-delay:.6s; }
-.eq-bar:nth-child(8) { height: 64%; animation-delay:.7s; }
-.eq-bar:nth-child(9) { height: 48%; animation-delay:.8s; }
-.eq-bar:nth-child(10) { height: 72%; animation-delay:.9s; }
-
-@keyframes eq {
-    from {
-        transform: scaleY(.45);
-    }
-
-    to {
-        transform: scaleY(1);
-    }
-}
-
-.eq-presets {
-    display: flex;
-
-    gap: 6px;
-
-    margin-top: 10px;
-}
-
-.eq-preset {
-    flex: 1;
-
-    padding: 7px 5px;
-
-    border-radius: 6px;
-
-    border: 1px solid #303030;
-
-    background: #222;
-
-    color: #aaa;
-
-    font-size: 11px;
-}
-
-.eq-preset:hover,
-.eq-preset.active {
-    background: var(--blue);
-
-    color: white;
-
-    border-color: var(--blue);
-}
-
-/* =========================================================
-   QUEUE
-========================================================= */
-
-.pl-right {
-    min-width: 0;
-}
-
-.queue-head {
-    height: 40px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-}
-
-.queue-title {
-    color: white;
-
-    font-size: 13px;
-    font-weight: 800;
-}
-
-.queue-list {
-    max-height: calc(96vh - 95px);
-
-    overflow-y: auto;
-
-    border-radius: 8px;
-
-    border: 1px solid #252525;
-}
-
-.queue-item {
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
-    padding: 8px;
-
-    border-bottom: 1px solid #242424;
-
-    cursor: pointer;
-}
-
-.queue-item:last-child {
-    border-bottom: 0;
-}
-
-.queue-item:hover {
-    background: #212121;
-}
-
-.queue-item.current {
-    background: rgba(62,166,255,.12);
-}
-
-.queue-item.done {
-    opacity: .48;
-}
-
-.queue-item img {
-    width: 82px;
-
-    aspect-ratio: 16/9;
-
-    object-fit: cover;
-
-    border-radius: 5px;
-
-    background: black;
-
-    flex: none;
-}
-
-.qi-text {
-    flex: 1;
-
-    min-width: 0;
-}
-
-.qi-title {
-    color: white;
-
-    font-size: 12px;
-    font-weight: 700;
-
-    line-height: 1.35;
-
-    display: -webkit-box;
-
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-
-    overflow: hidden;
-}
-
-.qi-artist {
-    margin-top: 3px;
-
-    color: #888;
-
-    font-size: 11px;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-}
-
-.qi-x,
-.qi-now {
-    flex: none;
-
-    width: 28px;
-    height: 28px;
-
-    border: 0;
-
-    background: transparent;
-
-    color: #777;
-}
-
-.qi-x:hover {
-    color: white;
-}
-
-.qi-now {
-    color: var(--blue);
-}
-
-.qi-load {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 12px;
-
-    color: #aaa;
-
-    font-size: 12px;
-}
-
-.qi-load .spinner {
-    width: 18px;
-    height: 18px;
-
-    margin: 0;
-}
-
-/* =========================================================
-   MINI PLAYER
-========================================================= */
-
-.player-modal.minimized {
-    inset:
-        auto
-        14px
-        calc(14px + env(safe-area-inset-bottom,0px))
-        auto;
-
-    width: min(470px,calc(100vw - 28px));
-
-    height: auto;
-
-    padding: 0;
-
-    display: block;
-
-    background: transparent;
-
-    backdrop-filter: none;
-
-    pointer-events: none;
-}
-
-.player-modal.minimized .modal-box {
-    width: 100%;
-
-    overflow: visible;
-
-    pointer-events: auto;
-
-    border-radius: 9px;
-
-    border: 1px solid #383838;
-
-    box-shadow:
-        0 10px 40px rgba(0,0,0,.75);
-}
-
-.player-modal.minimized .modal-header {
-    position: absolute;
-
-    right: 0;
-
-    top: -40px;
-
-    border: 0;
-
-    padding: 0;
-
-    min-height: 34px;
-}
-
-.player-modal.minimized .modal-header h2 {
-    display: none;
-}
-
-.player-modal.minimized .modal-header .close:last-child {
-    display: none;
-}
-
-.player-modal.minimized .pl-body {
-    display: block;
-
-    padding: 6px;
-}
-
-.player-modal.minimized .pl-left {
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-}
-
-.player-modal.minimized .player {
-    width: 110px;
-
-    flex: none;
-
-    border-radius: 6px;
-}
-
-.player-modal.minimized .pl-info {
-    flex: 1;
-
-    min-width: 0;
-
-    padding: 0;
-}
-
-.player-modal.minimized .pl-title {
-    font-size: 12px;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-}
-
-.player-modal.minimized .pl-artist {
-    font-size: 11px;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-}
-
-.player-modal.minimized .player-controls {
-    padding: 0;
-
-    gap: 2px;
-}
-
-.player-modal.minimized .player-controls .icon-btn {
-    width: 32px;
-    height: 32px;
-
-    font-size: 13px;
-}
-
-.player-modal.minimized .player-controls #btnShuffle,
-.player-modal.minimized .player-controls #btnRepeat,
-.player-modal.minimized .player-controls #btnLike {
-    display: none;
-}
-
-.player-modal.minimized .player-toggles,
-.player-modal.minimized .premium-tools,
-.player-modal.minimized .equalizer,
-.player-modal.minimized .pl-right {
-    display: none;
-}
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-.toast {
-    position: fixed;
-
-    right: 18px;
-    bottom: 18px;
-
-    z-index: 5000;
-
-    max-width: 360px;
-
-    padding: 12px 15px;
-
-    border-radius: 8px;
-
-    background: #272727;
-
-    color: white;
-
-    border: 1px solid #444;
-
-    box-shadow: var(--shadow);
-
-    opacity: 0;
-
-    transform: translateY(20px);
-
-    pointer-events: none;
-
-    transition: .25s;
-}
-
-.toast.show {
-    opacity: 1;
-
-    transform: translateY(0);
-}
-
-/* =========================================================
-   CINEMA MODE
-========================================================= */
-
-body.cinema-mode {
-    background: #000;
-}
-
-body.cinema-mode .header,
-body.cinema-mode .sidebar,
-body.cinema-mode main {
-    background: #000;
-}
-
-body.cinema-mode .player-modal .modal-box {
-    background: #000;
-}
-
-body.cinema-mode .player {
-    box-shadow:
-        0 0 80px rgba(62,166,255,.08);
-}
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:1100px) {
-    :root {
-        --sidebar-width: 82px;
-    }
-
-    .sidebar {
-        width: 82px;
-    }
-
-    .side-item {
-        justify-content: center;
-
+    * {
+        box-sizing: border-box;
+        margin: 0;
         padding: 0;
-
-        gap: 0;
-
-        font-size: 0;
     }
 
-    .side-icon {
-        font-size: 18px;
+    :root {
+        --bg: #030303;
+        --sidebar: #080808;
+        --surface: #111111;
+        --surface-2: #181818;
+        --surface-3: #222222;
+        --text: #ffffff;
+        --muted: #aaa;
+        --muted-2: #777;
+
+        /* BLUE IS RESERVED FOR THE PRIMARY/LOCKED ACTION */
+        --blue: #3ea6ff;
+
+        --border: rgba(255,255,255,.08);
+        --hover: rgba(255,255,255,.08);
     }
 
-    .sidebar-title,
-    .sidebar-footer {
-        display: none;
+    body {
+        font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+
+        background: var(--bg);
+        color: var(--text);
+
+        min-height: 100vh;
+
+        overflow-x: hidden;
     }
 
-    main {
-        margin-left: 82px;
-    }
+    /* =========================
+       TOP BAR
+    ========================= */
 
-    .brand {
-        min-width: auto;
-    }
+    .topbar {
+        height: 72px;
 
-    .brand-text {
-        display: none;
-    }
-}
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
 
-@media(max-width:900px) {
-    .pl-body {
-        grid-template-columns: 1fr;
-    }
+        z-index: 100;
 
-    .pl-right .queue-list {
-        max-height: 360px;
-    }
+        display: flex;
+        align-items: center;
 
-    .stats {
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
-    }
-}
+        padding: 0 24px;
 
-@media(max-width:700px) {
-    .header-inner {
-        padding: 0 9px;
+        background: rgba(3,3,3,.96);
 
-        gap: 6px;
+        border-bottom: 1px solid var(--border);
     }
 
     .menu-btn {
-        display: none;
+        width: 42px;
+        height: 42px;
+
+        border: none;
+        background: transparent;
+
+        color: white;
+
+        font-size: 22px;
+
+        cursor: pointer;
+
+        border-radius: 50%;
+    }
+
+    .menu-btn:hover {
+        background: var(--hover);
     }
 
     .brand {
-        min-width: 110px;
+        display: flex;
+        align-items: center;
+
+        gap: 10px;
+
+        margin-left: 8px;
+
+        min-width: 230px;
     }
 
-    .brand-text {
-        display: block;
+    .brand-logo {
+        width: 30px;
+        height: 30px;
+
+        background: #ff0033;
+
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 13px;
+        font-weight: bold;
+
+        color: white;
+    }
+
+    .brand-name {
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -.3px;
+    }
+
+    .brand-name span {
+        font-weight: 400;
+    }
+
+    /* SEARCH */
+
+    .search-area {
+        flex: 1;
+
+        max-width: 680px;
+
+        margin: 0 auto;
+
+        display: flex;
+        align-items: center;
+    }
+
+    .search-box {
+        height: 46px;
+
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+
+        background: #202020;
+
+        border-radius: 7px;
+
+        overflow: hidden;
+
+        border: 1px solid rgba(255,255,255,.04);
+    }
+
+    .search-icon {
+        width: 52px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: #aaa;
+
+        font-size: 19px;
+    }
+
+    .search-box input {
+        flex: 1;
+
+        height: 100%;
+
+        background: transparent;
+
+        border: none;
+        outline: none;
+
+        color: white;
 
         font-size: 15px;
     }
 
-    .search-wrap {
-        min-width: 0;
+    .search-box input::placeholder {
+        color: #999;
     }
 
-    .voice-btn {
-        display: none;
+    .search-button {
+        height: 100%;
+        width: 58px;
+
+        border: none;
+
+        background: #292929;
+
+        color: white;
+
+        cursor: pointer;
+
+        font-size: 17px;
     }
 
-    .header-actions .hide-mobile {
-        display: none;
+    .search-button:hover {
+        background: #333;
     }
 
-    main {
-        margin-left: 0;
+    .top-actions {
+        display: flex;
+        align-items: center;
 
-        padding:
-            12px
-            12px
-            70px;
+        gap: 10px;
+
+        margin-left: 20px;
     }
 
-    .sidebar {
-        display: none;
-    }
+    .top-action {
+        height: 40px;
 
-    .hero {
-        padding-top: 18px;
-    }
+        padding: 0 16px;
 
-    .hero h1 {
-        font-size: 30px;
-    }
+        border-radius: 20px;
 
-    .grid {
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
+        border: 1px solid var(--border);
 
-        gap: 18px 8px;
-    }
+        background: transparent;
 
-    .card-title {
-        font-size: 12px;
-    }
+        color: white;
 
-    .channel {
-        font-size: 11px;
-    }
+        cursor: pointer;
 
-    .meta {
-        display: none;
-    }
+        font-size: 13px;
 
-    .card-footer {
-        margin-top: 5px;
-    }
-
-    .card-footer > .btn {
-        display: none;
-    }
-
-    .stats {
+        display: flex;
+        align-items: center;
         gap: 7px;
     }
 
-    .stat {
-        padding: 12px;
+    .top-action:hover {
+        background: var(--hover);
     }
 
-    .stat-value {
-        font-size: 21px;
+    /*
+       BLUE = LOCKED PRIMARY ACTION
+    */
+
+    .top-action.primary {
+        background: var(--blue);
+
+        color: #00111f;
+
+        border-color: var(--blue);
+
+        font-weight: 700;
     }
 
-    .form-grid {
-        grid-template-columns: 1fr;
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar {
+        position: fixed;
+
+        top: 72px;
+        left: 0;
+        bottom: 0;
+
+        width: 230px;
+
+        background: var(--sidebar);
+
+        border-right: 1px solid var(--border);
+
+        padding: 18px 12px;
+
+        overflow-y: auto;
+
+        z-index: 50;
     }
 
-    .field.full {
-        grid-column: auto;
+    .side-section {
+        margin-bottom: 24px;
     }
 
-    .player-modal .modal-box {
-        max-height: 100dvh;
+    .side-title {
+        color: #777;
 
-        border-radius: 0;
+        font-size: 11px;
+
+        font-weight: 700;
+
+        text-transform: uppercase;
+
+        padding: 0 13px;
+
+        margin-bottom: 7px;
+
+        letter-spacing: .8px;
     }
 
-    .pl-body {
-        padding: 0 0 20px;
+    .side-item {
+        width: 100%;
+
+        height: 44px;
+
+        border-radius: 7px;
+
+        border: none;
+
+        background: transparent;
+
+        color: #ddd;
+
+        display: flex;
+        align-items: center;
+
+        gap: 15px;
+
+        padding: 0 13px;
+
+        font-size: 14px;
+
+        cursor: pointer;
+
+        text-align: left;
     }
+
+    .side-item:hover {
+        background: var(--hover);
+        color: white;
+    }
+
+    .side-item.active {
+        background: #282828;
+        color: white;
+        font-weight: 600;
+    }
+
+    .side-icon {
+        width: 20px;
+
+        text-align: center;
+
+        font-size: 17px;
+    }
+
+    .playlist-item {
+        display: flex;
+        align-items: center;
+
+        gap: 11px;
+
+        padding: 9px 13px;
+
+        color: #aaa;
+
+        font-size: 13px;
+
+        cursor: pointer;
+
+        border-radius: 6px;
+    }
+
+    .playlist-item:hover {
+        color: white;
+        background: var(--hover);
+    }
+
+    .playlist-thumb {
+        width: 34px;
+        height: 34px;
+
+        border-radius: 4px;
+
+        background: linear-gradient(
+            135deg,
+            #444,
+            #111
+        );
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 15px;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+        margin-left: 230px;
+
+        padding-top: 72px;
+
+        min-height: calc(100vh - 72px);
+
+        padding-bottom: 110px;
+    }
+
+    .content {
+        max-width: 1250px;
+
+        margin: 0 auto;
+
+        padding: 35px 38px;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+        display: flex;
+
+        align-items: flex-end;
+
+        gap: 28px;
+
+        margin-bottom: 35px;
+    }
+
+    .hero-image {
+        width: 210px;
+        height: 210px;
+
+        flex-shrink: 0;
+
+        border-radius: 5px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #5326c7,
+                #1a0b38
+            );
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 72px;
+
+        box-shadow:
+            0 15px 40px rgba(0,0,0,.5);
+    }
+
+    .hero-info {
+        padding-bottom: 5px;
+    }
+
+    .hero-small {
+        color: #aaa;
+
+        font-size: 13px;
+
+        margin-bottom: 10px;
+    }
+
+    .hero-title {
+        font-size: 44px;
+
+        font-weight: 800;
+
+        letter-spacing: -1.5px;
+
+        margin-bottom: 12px;
+    }
+
+    .hero-description {
+        color: #aaa;
+
+        max-width: 650px;
+
+        line-height: 1.5;
+
+        font-size: 14px;
+
+        margin-bottom: 18px;
+    }
+
+    .hero-meta {
+        color: #888;
+
+        font-size: 13px;
+    }
+
+    .hero-actions {
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        margin-top: 20px;
+    }
+
+    .play-button {
+        height: 40px;
+
+        padding: 0 22px;
+
+        border: none;
+
+        border-radius: 20px;
+
+        background: white;
+
+        color: black;
+
+        font-weight: 700;
+
+        cursor: pointer;
+    }
+
+    .play-button:hover {
+        background: #ddd;
+    }
+
+    .icon-button {
+        width: 40px;
+        height: 40px;
+
+        border-radius: 50%;
+
+        border: 1px solid #333;
+
+        background: transparent;
+
+        color: white;
+
+        cursor: pointer;
+
+        font-size: 17px;
+    }
+
+    .icon-button:hover {
+        background: #282828;
+    }
+
+    /* =========================
+       FILTERS
+    ========================= */
+
+    .filters {
+        display: flex;
+
+        gap: 9px;
+
+        overflow-x: auto;
+
+        margin-bottom: 28px;
+
+        scrollbar-width: none;
+    }
+
+    .filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filter {
+        flex-shrink: 0;
+
+        padding: 9px 17px;
+
+        border-radius: 8px;
+
+        background: #242424;
+
+        border: none;
+
+        color: #eee;
+
+        cursor: pointer;
+
+        font-size: 13px;
+    }
+
+    .filter:hover {
+        background: #333;
+    }
+
+    .filter.active {
+        background: white;
+        color: black;
+    }
+
+    /* =========================
+       SECTION
+    ========================= */
+
+    .section {
+        margin-top: 32px;
+    }
+
+    .section-header {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        margin-bottom: 17px;
+    }
+
+    .section-title {
+        font-size: 22px;
+
+        font-weight: 700;
+    }
+
+    .section-more {
+        color: #aaa;
+
+        font-size: 13px;
+
+        cursor: pointer;
+    }
+
+    .section-more:hover {
+        color: white;
+    }
+
+    /* =========================
+       SONG GRID
+    ========================= */
+
+    .song-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(5, minmax(0, 1fr));
+
+        gap: 18px;
+    }
+
+    .song-card {
+        min-width: 0;
+
+        cursor: pointer;
+
+        position: relative;
+    }
+
+    .song-image {
+        aspect-ratio: 1 / 1;
+
+        width: 100%;
+
+        border-radius: 6px;
+
+        overflow: hidden;
+
+        position: relative;
+
+        background: #222;
+
+        margin-bottom: 11px;
+    }
+
+    .song-image img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+
+        display: block;
+
+        transition: transform .25s ease;
+    }
+
+    .song-card:hover .song-image img {
+        transform: scale(1.04);
+    }
+
+    .song-overlay {
+        position: absolute;
+
+        inset: 0;
+
+        background: rgba(0,0,0,.35);
+
+        opacity: 0;
+
+        display: flex;
+
+        justify-content: center;
+        align-items: center;
+
+        transition: opacity .2s ease;
+    }
+
+    .song-card:hover .song-overlay {
+        opacity: 1;
+    }
+
+    .overlay-play {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 50%;
+
+        border: none;
+
+        background: white;
+
+        color: black;
+
+        font-size: 20px;
+
+        cursor: pointer;
+    }
+
+    .song-title {
+        font-size: 14px;
+
+        font-weight: 600;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        margin-bottom: 5px;
+    }
+
+    .song-artist {
+        font-size: 12px;
+
+        color: #999;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+    /* =========================
+       LIST
+    ========================= */
+
+    .song-list {
+        background: transparent;
+    }
+
+    .list-row {
+        min-height: 62px;
+
+        display: grid;
+
+        grid-template-columns:
+            42px
+            50px
+            minmax(200px, 1.7fr)
+            minmax(120px, 1fr)
+            100px
+            50px;
+
+        align-items: center;
+
+        gap: 12px;
+
+        border-radius: 5px;
+
+        padding: 5px 10px;
+
+        color: #ddd;
+    }
+
+    .list-row:hover {
+        background: #181818;
+    }
+
+    .list-number {
+        color: #777;
+
+        text-align: center;
+
+        font-size: 13px;
+    }
+
+    .list-thumb {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 3px;
+
+        object-fit: cover;
+    }
+
+    .list-name {
+        min-width: 0;
+    }
+
+    .list-song {
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        font-size: 14px;
+
+        color: white;
+
+        margin-bottom: 5px;
+    }
+
+    .list-artist {
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        font-size: 12px;
+
+        color: #888;
+    }
+
+    .list-album {
+        color: #999;
+
+        font-size: 13px;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+    .list-time {
+        color: #888;
+
+        font-size: 13px;
+
+        text-align: right;
+    }
+
+    .more-btn {
+        border: none;
+
+        background: transparent;
+
+        color: #aaa;
+
+        font-size: 20px;
+
+        cursor: pointer;
+    }
+
+    .more-btn:hover {
+        color: white;
+    }
+
+    /* =========================
+       PLAYER
+    ========================= */
 
     .player {
-        border-radius: 0;
+        position: fixed;
+
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        height: 76px;
+
+        background: rgba(15,15,15,.98);
+
+        border-top: 1px solid #222;
+
+        z-index: 200;
+
+        display: flex;
+
+        align-items: center;
+
+        padding: 0 22px;
+
+        gap: 20px;
     }
 
-    .pl-info,
-    .pl-left .player-controls,
-    .pl-left .player-toggles,
-    .premium-tools,
-    .equalizer,
-    .pl-right {
-        margin-left: 12px;
-        margin-right: 12px;
+    .now-playing {
+        width: 270px;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+    }
+
+    .now-thumb {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 4px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #5326c7,
+                #111
+            );
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .now-info {
+        min-width: 0;
+    }
+
+    .now-title {
+        font-size: 13px;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+    .now-artist {
+        color: #888;
+
+        font-size: 11px;
+
+        margin-top: 4px;
     }
 
     .player-controls {
-        overflow-x: auto;
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 18px;
+
+        flex: 1;
     }
 
-    .premium-tools {
-        overflow-x: auto;
-        flex-wrap: nowrap;
+    .player-btn {
+        width: 34px;
+        height: 34px;
+
+        border: none;
+
+        background: transparent;
+
+        color: #ddd;
+
+        cursor: pointer;
+
+        font-size: 17px;
+
+        border-radius: 50%;
     }
 
-    .premium-btn {
-        flex: none;
-    }
-}
+    .player-btn:hover {
+        color: white;
 
-@media(max-width:420px) {
-    .grid {
-        grid-template-columns: 1fr;
+        background: #292929;
     }
 
-    .brand-text {
-        font-size: 14px;
+    .player-play {
+        width: 42px;
+        height: 42px;
+
+        background: white;
+
+        color: black;
+
+        border-radius: 50%;
+
+        font-size: 18px;
     }
 
-    .search-btn {
-        width: 48px;
+    .player-play:hover {
+        background: #ddd;
     }
 
-    .header-icon:nth-child(1),
-    .header-icon:nth-child(2) {
-        display: none;
-    }
-}
+    .volume {
+        width: 210px;
 
-/* =========================================================
-   REDUCE MOTION
-========================================================= */
+        display: flex;
 
-@media(prefers-reduced-motion:reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-        scroll-behavior: auto !important;
+        align-items: center;
+
+        gap: 10px;
     }
-}
+
+    .volume-icon {
+        color: #aaa;
+    }
+
+    input[type="range"] {
+        accent-color: white;
+
+        width: 130px;
+    }
+
+    /* =========================
+       EMPTY STATE
+    ========================= */
+
+    .empty {
+        padding: 80px 20px;
+
+        text-align: center;
+
+        border: 1px dashed #292929;
+
+        border-radius: 8px;
+
+        color: #777;
+    }
+
+    .empty-icon {
+        font-size: 42px;
+
+        margin-bottom: 15px;
+
+        opacity: .7;
+    }
+
+    .empty h3 {
+        color: #ddd;
+
+        margin-bottom: 7px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width: 1100px) {
+
+        .song-grid {
+            grid-template-columns:
+                repeat(4, minmax(0,1fr));
+        }
+
+        .top-actions {
+            display: none;
+        }
+
+        .now-playing {
+            width: 220px;
+        }
+
+        .volume {
+            width: 150px;
+        }
+    }
+
+    @media(max-width: 850px) {
+
+        .sidebar {
+            width: 72px;
+        }
+
+        .side-item {
+            justify-content: center;
+            padding: 0;
+        }
+
+        .side-item span:not(.side-icon),
+        .side-title,
+        .playlist-item {
+            display: none;
+        }
+
+        .main {
+            margin-left: 72px;
+        }
+
+        .brand {
+            min-width: auto;
+        }
+
+        .brand-name {
+            display: none;
+        }
+
+        .song-grid {
+            grid-template-columns:
+                repeat(3, minmax(0,1fr));
+        }
+
+        .hero-image {
+            width: 170px;
+            height: 170px;
+        }
+
+        .hero-title {
+            font-size: 34px;
+        }
+
+        .volume {
+            display: none;
+        }
+    }
+
+    @media(max-width: 650px) {
+
+        .topbar {
+            padding: 0 10px;
+        }
+
+        .search-area {
+            margin-left: 8px;
+        }
+
+        .content {
+            padding: 25px 16px;
+        }
+
+        .hero {
+            flex-direction: column;
+
+            align-items: flex-start;
+        }
+
+        .hero-image {
+            width: 180px;
+            height: 180px;
+        }
+
+        .hero-title {
+            font-size: 30px;
+        }
+
+        .song-grid {
+            grid-template-columns:
+                repeat(2, minmax(0,1fr));
+        }
+
+        .list-row {
+            grid-template-columns:
+                30px
+                48px
+                minmax(150px,1fr)
+                45px;
+        }
+
+        .list-album,
+        .list-time {
+            display: none;
+        }
+
+        .now-playing {
+            width: 180px;
+        }
+
+        .player {
+            gap: 5px;
+            padding: 0 10px;
+        }
+
+        .player-controls {
+            gap: 5px;
+        }
+
+        .player-btn:nth-child(1),
+        .player-btn:nth-child(5) {
+            display: none;
+        }
+    }
+
+    @media(max-width: 480px) {
+
+        .sidebar {
+            display: none;
+        }
+
+        .main {
+            margin-left: 0;
+        }
+
+        .search-box {
+            height: 40px;
+        }
+
+        .hero-title {
+            font-size: 27px;
+        }
+
+        .song-grid {
+            gap: 12px;
+        }
+
+        .now-playing {
+            width: 150px;
+        }
+
+        .now-thumb {
+            width: 42px;
+            height: 42px;
+        }
+
+        .now-title {
+            max-width: 90px;
+        }
+    }
 </style>
 </head>
 
 <body>
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
+<!-- =========================================================
+     TOP NAVIGATION
+========================================================= -->
 
-<header class="header">
+<header class="topbar">
 
-    <div class="header-inner">
+    <button
+        class="menu-btn"
+        id="menuBtn"
+        aria-label="Menu">
+        ☰
+    </button>
 
-        <button
-            class="menu-btn"
-            onclick="toggleSidebar()"
-            title="Menu"
-        >
-            ☰
-        </button>
+    <div class="brand">
 
-        <a class="brand" href="./">
-
-            <div class="brand-icon">
-                ▶
-            </div>
-
-            <div class="brand-text">
-                Trix<span>Tube</span>
-            </div>
-
-        </a>
-
-        <div class="search-wrap">
-
-            <div class="search-box">
-
-                <input
-                    id="searchInput"
-                    class="search"
-                    type="search"
-                    autocomplete="off"
-                    placeholder="Search your videos..."
-                >
-
-                <button
-                    class="search-btn"
-                    onclick="performSearch()"
-                    title="Search"
-                >
-                    ⌕
-                </button>
-
-            </div>
-
-            <button
-                class="voice-btn"
-                title="Voice search"
-                onclick="showToast('Voice search is not available in this local vault.')"
-            >
-                🎙
-            </button>
-
+        <div class="brand-logo">
+            ▶
         </div>
 
-        <div class="header-actions">
+        <div class="brand-name">
+            Music<span>Library</span>
+        </div>
 
-            <button
-                class="header-icon"
-                title="Add video"
-                onclick="openAddModal()"
-            >
-                ＋
-            </button>
+    </div>
 
-            <button
-                class="header-icon hide-mobile"
-                title="Create"
-                onclick="openAddModal()"
-            >
-                ▣
-            </button>
 
-            <button
-                class="header-icon"
-                title="Settings"
-                onclick="openSettings()"
-            >
-                ⚙
-            </button>
+    <div class="search-area">
 
-            <button
-                class="header-icon hide-mobile"
-                title="Backup"
-                onclick="backupVault()"
-            >
-                ⇩
-            </button>
+        <div class="search-box">
 
-            <button
-                class="header-icon hide-mobile"
-                title="Restore"
-                onclick="$('restoreFile').click()"
-            >
-                ⇧
-            </button>
-
-            <div class="avatar">
-                T
+            <div class="search-icon">
+                🔍
             </div>
 
             <input
-                id="restoreFile"
-                type="file"
-                accept=".json,application/json"
-                hidden
-                onchange="restoreVault(event)"
-            >
+                id="searchInput"
+                type="text"
+                placeholder="Search songs, albums, artists">
+
+            <button
+                class="search-button"
+                id="searchBtn">
+                🔎
+            </button>
 
         </div>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <button class="top-action">
+            ⚙ Settings
+        </button>
+
+        <!-- BLUE IS THE LOCKED PRIMARY ACTION -->
+        <button class="top-action primary" id="addBtn">
+            + Add Music
+        </button>
 
     </div>
 
 </header>
 
 
-<!-- =====================================================
+<!-- =========================================================
      SIDEBAR
-===================================================== -->
+========================================================= -->
 
-<aside id="sidebar" class="sidebar">
+<aside class="sidebar">
 
-    <div class="sidebar-section">
+    <div class="side-section">
 
-        <button
-            class="side-item active"
-            data-side="vault"
-            onclick="setMode('vault',this)"
-        >
+        <button class="side-item">
+
             <span class="side-icon">⌂</span>
+
             <span>Home</span>
+
         </button>
 
-        <button
-            class="side-item"
-            data-side="favorites"
-            onclick="setMode('favorites',this)"
-        >
-            <span class="side-icon">♥</span>
-            <span>Favorites</span>
+        <button class="side-item">
+
+            <span class="side-icon">◉</span>
+
+            <span>Explore</span>
+
         </button>
 
-        <button
-            class="side-item"
-            data-side="artists"
-            onclick="setMode('artists',this)"
-        >
-            <span class="side-icon">♬</span>
-            <span>Artists</span>
-        </button>
+        <button class="side-item active">
 
-        <button
-            class="side-item"
-            data-side="genres"
-            onclick="setMode('genres',this)"
-        >
-            <span class="side-icon">▤</span>
-            <span>Genres</span>
+            <span class="side-icon">♡</span>
+
+            <span>Liked Music</span>
+
         </button>
 
     </div>
 
-    <div class="sidebar-section">
 
-        <div class="sidebar-title">
+    <div class="side-section">
+
+        <div class="side-title">
             Library
         </div>
 
-        <button
-            class="side-item"
-            onclick="playAll()"
-        >
-            <span class="side-icon">▶</span>
-            <span>Play all</span>
+        <button class="side-item">
+
+            <span class="side-icon">♫</span>
+
+            <span>Songs</span>
+
         </button>
 
-        <button
-            class="side-item"
-            onclick="openAddModal()"
-        >
-            <span class="side-icon">＋</span>
-            <span>Add video</span>
+        <button class="side-item">
+
+            <span class="side-icon">▣</span>
+
+            <span>Albums</span>
+
         </button>
 
-        <button
-            class="side-item"
-            onclick="backupVault()"
-        >
-            <span class="side-icon">⇩</span>
-            <span>Backup</span>
-        </button>
+        <button class="side-item">
 
-        <button
-            class="side-item"
-            onclick="$('restoreFile').click()"
-        >
-            <span class="side-icon">⇧</span>
-            <span>Restore</span>
+            <span class="side-icon">♬</span>
+
+            <span>Artists</span>
+
         </button>
 
     </div>
 
-    <div class="sidebar-section">
 
-        <div class="sidebar-title">
-            TrixTube
+    <div class="side-section">
+
+        <div class="side-title">
+            Playlists
         </div>
 
-        <button
-            class="side-item"
-            onclick="openSettings()"
-        >
-            <span class="side-icon">⚙</span>
-            <span>Settings</span>
-        </button>
+        <div class="playlist-item">
 
-        <button
-            class="side-item"
-            onclick="toggleCinema()"
-        >
-            <span class="side-icon">▣</span>
-            <span>Cinema mode</span>
-        </button>
+            <div class="playlist-thumb">
+                ♡
+            </div>
 
-    </div>
+            <span>Liked Music</span>
 
-    <div class="sidebar-footer">
-        TrixTube<br>
-        Personal video library<br><br>
-        Your videos stay in your browser.
+        </div>
+
+        <div class="playlist-item">
+
+            <div class="playlist-thumb">
+                ☀
+            </div>
+
+            <span>Morning</span>
+
+        </div>
+
+        <div class="playlist-item">
+
+            <div class="playlist-thumb">
+                🚗
+            </div>
+
+            <span>Night Drive</span>
+
+        </div>
+
+        <div class="playlist-item">
+
+            <div class="playlist-thumb">
+                💪
+            </div>
+
+            <span>Workout</span>
+
+        </div>
+
+        <div class="playlist-item">
+
+            <div class="playlist-thumb">
+                🎧
+            </div>
+
+            <span>Favorites</span>
+
+        </div>
+
     </div>
 
 </aside>
 
 
-<!-- =====================================================
-     MAIN
-===================================================== -->
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
 
-<main>
+<main class="main">
 
-    <div class="category-bar">
+<div class="content">
 
-        <button
-            class="chip active"
-            onclick="quickSearch('')"
-        >
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-image">
+            ♡
+        </div>
+
+        <div class="hero-info">
+
+            <div class="hero-small">
+                PLAYLIST
+            </div>
+
+            <h1 class="hero-title">
+                Liked Music
+            </h1>
+
+            <p class="hero-description">
+                All the songs you've liked in one place.
+                Your personal collection of music.
+            </p>
+
+            <div class="hero-meta">
+                56 songs · Music Library
+            </div>
+
+            <div class="hero-actions">
+
+                <button
+                    class="play-button"
+                    id="playAll">
+                    ▶ Play
+                </button>
+
+                <button
+                    class="icon-button"
+                    title="Shuffle">
+                    🔀
+                </button>
+
+                <button
+                    class="icon-button"
+                    title="More">
+                    ⋮
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FILTERS -->
+
+    <div class="filters">
+
+        <button class="filter active">
             All
         </button>
 
-        <button
-            class="chip"
-            onclick="quickSearch('Music')"
-        >
+        <button class="filter">
             Music
         </button>
 
-        <button
-            class="chip"
-            onclick="quickSearch('Rock')"
-        >
-            Rock
+        <button class="filter">
+            Artists
         </button>
 
-        <button
-            class="chip"
-            onclick="quickSearch('Rap')"
-        >
-            Rap
+        <button class="filter">
+            Albums
         </button>
 
-        <button
-            class="chip"
-            onclick="quickSearch('Trap')"
-        >
-            Trap
+        <button class="filter">
+            Punjabi
         </button>
 
-        <button
-            class="chip"
-            onclick="quickSearch('EDM')"
-        >
-            EDM
+        <button class="filter">
+            Hindi
         </button>
 
-        <button
-            class="chip"
-            onclick="quickSearch('Phonk')"
-        >
-            Phonk
+        <button class="filter">
+            English
         </button>
 
-        <button
-            class="chip"
-            onclick="quickSearch('Lo-Fi')"
-        >
-            Lo-Fi
-        </button>
-
-        <button
-            class="chip"
-            onclick="quickSearch('Workout')"
-        >
+        <button class="filter">
             Workout
         </button>
 
-        <button
-            class="chip"
-            onclick="quickSearch('Night Drive')"
-        >
+        <button class="filter">
             Night Drive
         </button>
 
     </div>
 
 
-    <section class="hero">
+    <!-- RECENTLY LIKED -->
 
-        <div class="eyebrow">
-            ● TrixTube Library
-        </div>
+    <section class="section">
 
-        <h1>
-            Your videos.
-            <span>Your world.</span>
-        </h1>
+        <div class="section-header">
 
-        <p>
-            A YouTube-inspired personal video vault.
-            Save YouTube metadata, organize your library,
-            create queues and play directly from YouTube.
-        </p>
+            <h2 class="section-title">
+                Recently liked
+            </h2>
 
-    </section>
-
-
-    <!-- STATS -->
-
-    <section class="stats">
-
-        <div class="stat">
-
-            <div class="stat-label">
-                Videos
-            </div>
-
-            <div
-                id="statVideos"
-                class="stat-value"
-            >
-                0
-            </div>
-
-        </div>
-
-        <div class="stat">
-
-            <div class="stat-label">
-                Artists
-            </div>
-
-            <div
-                id="statArtists"
-                class="stat-value"
-            >
-                0
-            </div>
-
-        </div>
-
-        <div class="stat">
-
-            <div class="stat-label">
-                Favorites
-            </div>
-
-            <div
-                id="statFavorites"
-                class="stat-value"
-            >
-                0
-            </div>
-
-        </div>
-
-        <div class="stat">
-
-            <div class="stat-label">
-                Genres
-            </div>
-
-            <div
-                id="statGenres"
-                class="stat-value"
-            >
-                0
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- MODES -->
-
-    <section class="toolbar">
-
-        <div class="modes">
-
-            <button
-                class="mode active"
-                data-mode="vault"
-                onclick="setMode('vault',this)"
-            >
-                Home
-            </button>
-
-            <button
-                class="mode"
-                data-mode="favorites"
-                onclick="setMode('favorites',this)"
-            >
-                Favorites
-            </button>
-
-            <button
-                class="mode"
-                data-mode="artists"
-                onclick="setMode('artists',this)"
-            >
-                Artists
-            </button>
-
-            <button
-                class="mode"
-                data-mode="genres"
-                onclick="setMode('genres',this)"
-            >
-                Genres
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <section>
-
-        <div class="section-title">
-            Quick Search
-        </div>
-
-        <div class="chips">
-
-            <button class="chip"
-                    onclick="quickSearch('Linkin Park')">
-                Linkin Park
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Imagine Dragons')">
-                Imagine Dragons
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Dr Dre')">
-                Dr Dre
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Snoop Dogg')">
-                Snoop Dogg
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Trap Nation')">
-                Trap Nation
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Eminem')">
-                Eminem
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Morning')">
-                Morning
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Night Drive')">
-                Night Drive
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Workout')">
-                Workout
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Rock')">
-                Rock
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Rap')">
-                Rap
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Trap')">
-                Trap
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('EDM')">
-                EDM
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Phonk')">
-                Phonk
-            </button>
-
-            <button class="chip"
-                    onclick="quickSearch('Lo-Fi')">
-                Lo-Fi
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <section>
-
-        <div class="section-title">
-            <span id="sectionTitle">
-                My Video Vault
+            <span class="section-more">
+                More
             </span>
+
         </div>
 
-        <div
-            id="ytPrompt"
-            class="yt-prompt"
-        ></div>
 
-        <div
-            id="videoGrid"
-            class="grid"
-        ></div>
+        <div class="song-grid" id="songGrid">
+
+            <!-- CARD 1 -->
+
+            <div class="song-card"
+                 data-title="Do You Know"
+                 data-artist="Diljit Dosanjh">
+
+                <div class="song-image">
+
+                    <img
+                        src="https://i.ytimg.com/vi/Y8bYvZ4J5t8/hq720.jpg"
+                        alt="Do You Know">
+
+                    <div class="song-overlay">
+
+                        <button class="overlay-play">
+                            ▶
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="song-title">
+                    Do You Know
+                </div>
+
+                <div class="song-artist">
+                    Diljit Dosanjh
+                </div>
+
+            </div>
+
+
+            <!-- CARD 2 -->
+
+            <div class="song-card"
+                 data-title="Let Me Down Slowly"
+                 data-artist="Alec Benjamin">
+
+                <div class="song-image">
+
+                    <img
+                        src="https://i.ytimg.com/vi/r0U0AlLVqpk/hq720.jpg"
+                        alt="Let Me Down Slowly">
+
+                    <div class="song-overlay">
+
+                        <button class="overlay-play">
+                            ▶
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="song-title">
+                    Let Me Down Slowly
+                </div>
+
+                <div class="song-artist">
+                    Alec Benjamin
+                </div>
+
+            </div>
+
+
+            <!-- CARD 3 -->
+
+            <div class="song-card"
+                 data-title="Levels"
+                 data-artist="Sidhu Moose Wala">
+
+                <div class="song-image">
+
+                    <img
+                        src="https://i.ytimg.com/vi/8j9zMOKHnyQ/hq720.jpg"
+                        alt="Levels">
+
+                    <div class="song-overlay">
+
+                        <button class="overlay-play">
+                            ▶
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="song-title">
+                    LEVELS
+                </div>
+
+                <div class="song-artist">
+                    Sidhu Moose Wala
+                </div>
+
+            </div>
+
+
+            <!-- CARD 4 -->
+
+            <div class="song-card"
+                 data-title="Excuses"
+                 data-artist="AP Dhillon">
+
+                <div class="song-image">
+
+                    <img
+                        src="https://i.ytimg.com/vi/vX2cDW8lX8E/hq720.jpg"
+                        alt="Excuses">
+
+                    <div class="song-overlay">
+
+                        <button class="overlay-play">
+                            ▶
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="song-title">
+                    Excuses
+                </div>
+
+                <div class="song-artist">
+                    AP Dhillon
+                </div>
+
+            </div>
+
+
+            <!-- CARD 5 -->
+
+            <div class="song-card"
+                 data-title="Brown Munde"
+                 data-artist="AP Dhillon">
+
+                <div class="song-image">
+
+                    <img
+                        src="https://i.ytimg.com/vi/VNs_cCtdbPc/hq720.jpg"
+                        alt="Brown Munde">
+
+                    <div class="song-overlay">
+
+                        <button class="overlay-play">
+                            ▶
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="song-title">
+                    Brown Munde
+                </div>
+
+                <div class="song-artist">
+                    AP Dhillon
+                </div>
+
+            </div>
+
+        </div>
 
     </section>
+
+
+    <!-- SONG LIST -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <h2 class="section-title">
+                All liked songs
+            </h2>
+
+            <span
+                class="section-more"
+                id="songCount">
+                56 songs
+            </span>
+
+        </div>
+
+
+        <div class="song-list">
+
+            <!-- ROW 1 -->
+
+            <div class="list-row">
+
+                <div class="list-number">
+                    1
+                </div>
+
+                <img
+                    class="list-thumb"
+                    src="https://i.ytimg.com/vi/Y8bYvZ4J5t8/hq720.jpg">
+
+                <div class="list-name">
+
+                    <div class="list-song">
+                        Do You Know
+                    </div>
+
+                    <div class="list-artist">
+                        Diljit Dosanjh
+                    </div>
+
+                </div>
+
+                <div class="list-album">
+                    Back To Basics
+                </div>
+
+                <div class="list-time">
+                    3:18
+                </div>
+
+                <button class="more-btn">
+                    ⋮
+                </button>
+
+            </div>
+
+
+            <!-- ROW 2 -->
+
+            <div class="list-row">
+
+                <div class="list-number">
+                    2
+                </div>
+
+                <img
+                    class="list-thumb"
+                    src="https://i.ytimg.com/vi/r0U0AlLVqpk/hq720.jpg">
+
+                <div class="list-name">
+
+                    <div class="list-song">
+                        Let Me Down Slowly
+                    </div>
+
+                    <div class="list-artist">
+                        Alec Benjamin
+                    </div>
+
+                </div>
+
+                <div class="list-album">
+                    Narrated For You
+                </div>
+
+                <div class="list-time">
+                    2:49
+                </div>
+
+                <button class="more-btn">
+                    ⋮
+                </button>
+
+            </div>
+
+
+            <!-- ROW 3 -->
+
+            <div class="list-row">
+
+                <div class="list-number">
+                    3
+                </div>
+
+                <img
+                    class="list-thumb"
+                    src="https://i.ytimg.com/vi/8j9zMOKHnyQ/hq720.jpg">
+
+                <div class="list-name">
+
+                    <div class="list-song">
+                        LEVELS
+                    </div>
+
+                    <div class="list-artist">
+                        Sidhu Moose Wala
+                    </div>
+
+                </div>
+
+                <div class="list-album">
+                    Moosetape
+                </div>
+
+                <div class="list-time">
+                    3:46
+                </div>
+
+                <button class="more-btn">
+                    ⋮
+                </button>
+
+            </div>
+
+
+            <!-- ROW 4 -->
+
+            <div class="list-row">
+
+                <div class="list-number">
+                    4
+                </div>
+
+                <img
+                    class="list-thumb"
+                    src="https://i.ytimg.com/vi/vX2cDW8lX8E/hq720.jpg">
+
+                <div class="list-name">
+
+                    <div class="list-song">
+                        Excuses
+                    </div>
+
+                    <div class="list-artist">
+                        AP Dhillon
+                    </div>
+
+                </div>
+
+                <div class="list-album">
+                    Hidden Gems
+                </div>
+
+                <div class="list-time">
+                    2:44
+                </div>
+
+                <button class="more-btn">
+                    ⋮
+                </button>
+
+            </div>
+
+
+            <!-- ROW 5 -->
+
+            <div class="list-row">
+
+                <div class="list-number">
+                    5
+                </div>
+
+                <img
+                    class="list-thumb"
+                    src="https://i.ytimg.com/vi/VNs_cCtdbPc/hq720.jpg">
+
+                <div class="list-name">
+
+                    <div class="list-song">
+                        Brown Munde
+                    </div>
+
+                    <div class="list-artist">
+                        AP Dhillon
+                    </div>
+
+                </div>
+
+                <div class="list-album">
+                    Brown Munde
+                </div>
+
+                <div class="list-time">
+                    4:04
+                </div>
+
+                <button class="more-btn">
+                    ⋮
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</div>
 
 </main>
 
 
-<!-- =====================================================
-     ADD VIDEO
-===================================================== -->
+<!-- =========================================================
+     BOTTOM MUSIC PLAYER
+========================================================= -->
 
-<div
-    id="addModal"
-    class="modal"
-    onclick="closeModalOutside(event,'addModal')"
->
+<div class="player">
 
-    <div class="modal-box">
+    <div class="now-playing">
 
-        <div class="modal-header">
-
-            <h2>
-                Add video
-            </h2>
-
-            <button
-                class="close"
-                onclick="closeModal('addModal')"
-            >
-                ×
-            </button>
-
+        <div class="now-thumb">
+            ♫
         </div>
 
-        <div class="modal-content">
+        <div class="now-info">
 
-            <form
-                id="videoForm"
-                onsubmit="saveVideo(event)"
-            >
-
-                <div class="form-grid">
-
-                    <div class="field full">
-
-                        <label>
-                            YouTube URL *
-                        </label>
-
-                        <input
-                            id="videoUrl"
-                            type="url"
-                            placeholder="https://www.youtube.com/watch?v=..."
-                            required
-                        >
-
-                    </div>
-
-                    <div class="field full">
-
-                        <label>
-                            Title *
-                        </label>
-
-                        <input
-                            id="videoTitle"
-                            type="text"
-                            placeholder="Video title"
-                            required
-                        >
-
-                    </div>
-
-                    <div class="field">
-
-                        <label>
-                            Artist / Channel
-                        </label>
-
-                        <input
-                            id="videoArtist"
-                            type="text"
-                            placeholder="Artist or channel"
-                        >
-
-                    </div>
-
-                    <div class="field">
-
-                        <label>
-                            Genre
-                        </label>
-
-                        <input
-                            id="videoGenre"
-                            type="text"
-                            placeholder="Rock / Rap / EDM..."
-                        >
-
-                    </div>
-
-                    <div class="field">
-
-                        <label>
-                            Channel URL
-                        </label>
-
-                        <input
-                            id="channelUrl"
-                            type="url"
-                            placeholder="https://youtube.com/@channel"
-                        >
-
-                    </div>
-
-                    <div class="field">
-
-                        <label>
-                            Upload Date
-                        </label>
-
-                        <input
-                            id="uploadDate"
-                            type="date"
-                        >
-
-                    </div>
-
-                    <div class="field">
-
-                        <label>
-                            Duration
-                        </label>
-
-                        <input
-                            id="videoDuration"
-                            type="text"
-                            placeholder="03:45"
-                        >
-
-                    </div>
-
-                    <div class="field">
-
-                        <label>
-                            Views
-                        </label>
-
-                        <input
-                            id="videoViews"
-                            type="text"
-                            placeholder="1.2M"
-                        >
-
-                    </div>
-
-                    <div class="field full">
-
-                        <label>
-                            Tags
-                        </label>
-
-                        <input
-                            id="videoTags"
-                            type="text"
-                            placeholder="music, official, live"
-                        >
-
-                    </div>
-
-                    <div class="field full">
-
-                        <label>
-                            Description
-                        </label>
-
-                        <textarea
-                            id="videoDescription"
-                            placeholder="Optional description..."
-                        ></textarea>
-
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-
-                    <button
-                        type="button"
-                        class="btn"
-                        onclick="closeModal('addModal')"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-                        Save
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     PLAYER
-===================================================== -->
-
-<div
-    id="playerModal"
-    class="modal player-modal"
-    onclick="playerBackdrop(event)"
->
-
-    <div class="modal-box">
-
-        <div class="modal-header">
-
-            <h2>
-                TrixTube Player
-            </h2>
-
-            <div class="header-btns">
-
-                <button
-                    id="btnMinimize"
-                    class="close"
-                    onclick="toggleMinimize()"
-                    title="Minimize"
-                >
-                    ⌄
-                </button>
-
-                <button
-                    class="close"
-                    onclick="closePlayer()"
-                    title="Close"
-                >
-                    ×
-                </button>
-
+            <div
+                class="now-title"
+                id="nowTitle">
+                Do You Know
             </div>
 
-        </div>
-
-
-        <div class="pl-body">
-
-            <div class="pl-left">
-
-                <div class="player">
-
-                    <div id="youtubePlayer"></div>
-
-                </div>
-
-
-                <div class="pl-info">
-
-                    <div
-                        id="playerHeading"
-                        class="pl-title"
-                    >
-                        Now Playing
-                    </div>
-
-                    <div
-                        id="playerTitle"
-                        class="pl-artist"
-                    ></div>
-
-                </div>
-
-
-                <div class="player-controls">
-
-                    <button
-                        id="btnShuffle"
-                        class="icon-btn"
-                        onclick="toggleShuffle()"
-                        title="Shuffle"
-                    >
-                        ⇄
-                    </button>
-
-                    <button
-                        class="icon-btn"
-                        onclick="playPrev()"
-                        title="Previous"
-                    >
-                        ⏮
-                    </button>
-
-                    <button
-                        id="btnPlayPause"
-                        class="icon-btn big"
-                        onclick="togglePlayPause()"
-                        title="Play/Pause"
-                    >
-                        ▶
-                    </button>
-
-                    <button
-                        class="icon-btn"
-                        onclick="playNext(false)"
-                        title="Next"
-                    >
-                        ⏭
-                    </button>
-
-                    <button
-                        id="btnRepeat"
-                        class="icon-btn"
-                        onclick="cycleRepeat()"
-                        title="Repeat"
-                    >
-                        ↻
-                    </button>
-
-                    <button
-                        id="btnLike"
-                        class="icon-btn"
-                        onclick="likeCurrent()"
-                        title="Like"
-                    >
-                        ♡
-                    </button>
-
-                </div>
-
-
-                <!-- PREMIUM CONTROLS -->
-
-                <div class="premium-tools">
-
-                    <button
-                        id="btnTheater"
-                        class="premium-btn"
-                        onclick="toggleTheater()"
-                    >
-                        ▣ Theater
-                    </button>
-
-                    <button
-                        id="btnCinema"
-                        class="premium-btn"
-                        onclick="toggleCinema()"
-                    >
-                        ✦ Cinema
-                    </button>
-
-                    <button
-                        id="btnEq"
-                        class="premium-btn"
-                        onclick="toggleEqualizer()"
-                    >
-                        ♫ Equalizer
-                    </button>
-
-                    <select
-                        id="speedSelect"
-                        class="premium-btn"
-                        onchange="setPlaybackSpeed(this.value)"
-                    >
-                        <option value="0.5">0.5×</option>
-                        <option value="0.75">0.75×</option>
-                        <option value="1" selected>Normal</option>
-                        <option value="1.25">1.25×</option>
-                        <option value="1.5">1.5×</option>
-                        <option value="1.75">1.75×</option>
-                        <option value="2">2×</option>
-                    </select>
-
-                </div>
-
-
-                <!-- EQUALIZER -->
-
-                <div
-                    id="equalizer"
-                    class="equalizer"
-                >
-
-                    <div class="eq-title">
-                        TrixTube Audio Preset
-                    </div>
-
-                    <div class="eq-bars">
-
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-
-                    </div>
-
-                    <div class="eq-presets">
-
-                        <button
-                            class="eq-preset"
-                            onclick="setEQ('normal',this)"
-                        >
-                            Normal
-                        </button>
-
-                        <button
-                            class="eq-preset"
-                            onclick="setEQ('loud',this)"
-                        >
-                            Extra Loud
-                        </button>
-
-                        <button
-                            class="eq-preset"
-                            onclick="setEQ('bass',this)"
-                        >
-                            Bass Boost
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="player-toggles">
-
-                    <label class="opt">
-
-                        <input
-                            id="optAutoNext"
-                            type="checkbox"
-                            onchange="setAutoNext(this.checked)"
-                        >
-
-                        Auto-play next
-
-                    </label>
-
-                    <label class="opt">
-
-                        <input
-                            id="optRadio"
-                            type="checkbox"
-                            onchange="setRadio(this.checked)"
-                        >
-
-                        Radio
-
-                    </label>
-
-                    <label class="opt">
-
-                        <input
-                            id="optBackground"
-                            type="checkbox"
-                            onchange="setBackground(this.checked)"
-                        >
-
-                        Background play
-
-                    </label>
-
-                </div>
-
-            </div>
-
-
-            <!-- QUEUE -->
-
-            <div class="pl-right">
-
-                <div class="queue-head">
-
-                    <span class="queue-title">
-                        Up next
-                    </span>
-
-                    <button
-                        class="btn"
-                        style="height:30px;padding:0 10px;font-size:12px"
-                        onclick="clearUpNext()"
-                    >
-                        Clear
-                    </button>
-
-                </div>
-
-                <div
-                    id="queueList"
-                    class="queue-list"
-                ></div>
-
+            <div
+                class="now-artist"
+                id="nowArtist">
+                Diljit Dosanjh
             </div>
 
         </div>
 
     </div>
 
-</div>
+
+    <div class="player-controls">
+
+        <button class="player-btn">
+            🔀
+        </button>
+
+        <button class="player-btn">
+            ⏮
+        </button>
+
+        <button
+            class="player-btn player-play"
+            id="mainPlay">
+            ▶
+        </button>
+
+        <button class="player-btn">
+            ⏭
+        </button>
+
+        <button class="player-btn">
+            🔁
+        </button>
+
+    </div>
 
 
-<!-- =====================================================
-     SETTINGS
-===================================================== -->
+    <div class="volume">
 
-<div
-    id="settingsModal"
-    class="modal"
-    onclick="closeModalOutside(event,'settingsModal')"
->
+        <span class="volume-icon">
+            🔊
+        </span>
 
-    <div class="modal-box">
-
-        <div class="modal-header">
-
-            <h2>
-                TrixTube Settings
-            </h2>
-
-            <button
-                class="close"
-                onclick="closeModal('settingsModal')"
-            >
-                ×
-            </button>
-
-        </div>
-
-        <div class="modal-content">
-
-            <div class="form-grid">
-
-                <div class="field full">
-
-                    <label>
-                        Player theme
-                    </label>
-
-                    <select id="setTheme">
-
-                        <option value="youtube">
-                            YouTube Dark
-                        </option>
-
-                        <option value="cinema">
-                            Cinema Black
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="field">
-
-                    <label>
-                        Default playback speed
-                    </label>
-
-                    <select id="setSpeed">
-
-                        <option value="0.5">0.5×</option>
-                        <option value="0.75">0.75×</option>
-                        <option value="1">Normal</option>
-                        <option value="1.25">1.25×</option>
-                        <option value="1.5">1.5×</option>
-                        <option value="1.75">1.75×</option>
-                        <option value="2">2×</option>
-
-                    </select>
-
-                </div>
-
-                <div class="field">
-
-                    <label>
-                        Audio preset
-                    </label>
-
-                    <select id="setEQ">
-
-                        <option value="normal">
-                            Normal
-                        </option>
-
-                        <option value="loud">
-                            Extra Loud
-                        </option>
-
-                        <option value="bass">
-                            Bass Boost
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                class="btn"
-                onclick="closeModal('settingsModal')"
-            >
-                Cancel
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="saveSettingsForm()"
-            >
-                Save
-            </button>
-
-        </div>
+        <input
+            type="range"
+            min="0"
+            max="100"
+            value="70">
 
     </div>
 
 </div>
-
-
-<div id="toast" class="toast"></div>
 
 
 <script>
-"use strict";
 
-/* =========================================================
-   TRIXTUBE
-   LOCAL VIDEO VAULT
-========================================================= */
+    /*
+     * ==========================================
+     * SEARCH
+     * ==========================================
+     */
 
-const STORAGE_KEY = "trixtube_vault_v1";
-const SETTINGS_KEY = "trixtube_settings_v1";
+    const searchInput =
+        document.getElementById("searchInput");
 
-let vault = loadVault();
+    const cards =
+        document.querySelectorAll(".song-card");
 
-let currentMode = "vault";
-let currentSearch = "";
 
-let queue = [];
-let queueIndex = -1;
+    searchInput.addEventListener("input", function () {
 
-let ytPlayer = null;
-let ytPlayerReady = false;
-let ytApiPromise = null;
+        const query =
+            this.value.toLowerCase().trim();
 
-let pendingVideoId = null;
-let userPaused = false;
+        cards.forEach(card => {
 
-let played = new Set();
+            const title =
+                card.dataset.title.toLowerCase();
 
-let radioBusy = false;
-
-let pushed = false;
-
-const settings = loadSettings();
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function $(id) {
-    return document.getElementById(id);
-}
-
-function uid() {
-    return (
-        Date.now().toString(36) +
-        Math.random().toString(36).slice(2,9)
-    );
-}
-
-function esc(value) {
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-}
-
-function jsSafe(value) {
-    return String(value ?? "")
-        .replace(/\\/g,"\\\\")
-        .replace(/'/g,"\\'")
-        .replace(/\r/g,"\\r")
-        .replace(/\n/g,"\\n")
-        .replace(/</g,"\\u003c")
-        .replace(/>/g,"\\u003e");
-}
-
-function formatDate(value) {
-    if (!value) return "";
-
-    const d = new Date(value);
-
-    if (Number.isNaN(d.getTime())) {
-        return value;
-    }
-
-    return d.toLocaleDateString(undefined,{
-        year:"numeric",
-        month:"short",
-        day:"numeric"
-    });
-}
-
-/* =========================================================
-   STORAGE
-========================================================= */
-
-function loadVault() {
-    try {
-        const saved =
-            localStorage.getItem(STORAGE_KEY);
-
-        if (!saved) return [];
-
-        const data = JSON.parse(saved);
-
-        return Array.isArray(data) ? data : [];
-
-    } catch(error) {
-        console.error(error);
-        return [];
-    }
-}
-
-function saveVault() {
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(vault)
-    );
-
-    updateStats();
-}
-
-function loadSettings() {
-    try {
-        return Object.assign({
-            autoNext:true,
-            shuffle:false,
-            repeat:"off",
-            background:true,
-            radio:false,
-            speed:1,
-            eq:"normal",
-            cinema:false
-        },JSON.parse(
-            localStorage.getItem(SETTINGS_KEY) || "{}"
-        ));
-    } catch(error) {
-        return {
-            autoNext:true,
-            shuffle:false,
-            repeat:"off",
-            background:true,
-            radio:false,
-            speed:1,
-            eq:"normal",
-            cinema:false
-        };
-    }
-}
-
-function saveSettings() {
-    localStorage.setItem(
-        SETTINGS_KEY,
-        JSON.stringify(settings)
-    );
-}
-
-/* =========================================================
-   YOUTUBE URL
-========================================================= */
-
-function getYouTubeId(url) {
-
-    try {
-
-        const parsed = new URL(url);
-
-        const host =
-            parsed.hostname
-                .replace(/^www\./,"")
-                .replace(/^m\./,"");
-
-        if (host === "youtu.be") {
-            return parsed.pathname
-                .split("/")
-                .filter(Boolean)[0] || "";
-        }
-
-        if (
-            host === "youtube.com" ||
-            host === "youtube-nocookie.com"
-        ) {
-
-            if (parsed.pathname === "/watch") {
-                return parsed.searchParams.get("v") || "";
-            }
-
-            const parts =
-                parsed.pathname
-                    .split("/")
-                    .filter(Boolean);
+            const artist =
+                card.dataset.artist.toLowerCase();
 
             if (
-                ["shorts","embed","live"]
-                    .includes(parts[0])
-            ) {
-                return parts[1] || "";
-            }
-        }
-
-    } catch(error) {
-        console.error(error);
-    }
-
-    return "";
-}
-
-function thumbnailUrl(videoId) {
-    return (
-        "https://i.ytimg.com/vi/" +
-        encodeURIComponent(videoId) +
-        "/hqdefault.jpg"
-    );
-}
-
-/* =========================================================
-   SEARCH
-   LOCAL VAULT SEARCH ONLY
-========================================================= */
-
-function matchesSearch(video,query) {
-
-    if (!query) return true;
-
-    const haystack = [
-        video.title,
-        video.artist,
-        video.channel,
-        video.genre,
-        video.tags,
-        video.description,
-        video.mood,
-        video.collection
-    ]
-        .join(" ")
-        .toLowerCase();
-
-    return haystack.includes(
-        query.toLowerCase()
-    );
-}
-
-function getFilteredVideos() {
-
-    let list = [...vault];
-
-    if (currentMode === "favorites") {
-        list = list.filter(v => v.favorite);
-    }
-
-    if (currentMode === "artists") {
-        list.sort((a,b) =>
-            String(a.artist || "")
-                .localeCompare(
-                    String(b.artist || "")
-                )
-        );
-    }
-
-    if (currentMode === "genres") {
-        list.sort((a,b) =>
-            String(a.genre || "")
-                .localeCompare(
-                    String(b.genre || "")
-                )
-        );
-    }
-
-    return list.filter(v =>
-        matchesSearch(v,currentSearch)
-    );
-}
-
-function visibleItems() {
-    return getFilteredVideos();
-}
-
-function performSearch() {
-
-    currentSearch =
-        $("searchInput")
-            .value
-            .trim();
-
-    render();
-}
-
-function quickSearch(value) {
-
-    $("searchInput").value = value;
-
-    currentSearch = value;
-
-    render();
-}
-
-$("searchInput").addEventListener(
-    "input",
-    function() {
-
-        currentSearch =
-            this.value.trim();
-
-        render();
-    }
-);
-
-$("searchInput").addEventListener(
-    "keydown",
-    function(event) {
-
-        if (event.key === "Enter") {
-            event.preventDefault();
-            performSearch();
-        }
-
-    }
-);
-
-/* =========================================================
-   MODE
-========================================================= */
-
-function setMode(mode,button) {
-
-    currentMode = mode;
-
-    document
-        .querySelectorAll(".mode")
-        .forEach(el =>
-            el.classList.remove("active")
-        );
-
-    document
-        .querySelectorAll(".side-item")
-        .forEach(el =>
-            el.classList.remove("active")
-        );
-
-    const modeButton =
-        document.querySelector(
-            `.mode[data-mode="${mode}"]`
-        );
-
-    const sideButton =
-        document.querySelector(
-            `.side-item[data-side="${mode}"]`
-        );
-
-    if (modeButton) {
-        modeButton.classList.add("active");
-    }
-
-    if (sideButton) {
-        sideButton.classList.add("active");
-    }
-
-    const titles = {
-        vault:"My Video Vault",
-        favorites:"Favorites",
-        artists:"Artists / Channels",
-        genres:"Genres"
-    };
-
-    $("sectionTitle").textContent =
-        titles[mode] || "My Video Vault";
-
-    render();
-}
-
-/* =========================================================
-   RENDER
-========================================================= */
-
-function updatePrompt() {
-
-    const el = $("ytPrompt");
-
-    if (!el) return;
-
-    let html = "";
-
-    if (visibleItems().length) {
-        html += `
-            <button
-                class="btn btn-primary"
-                onclick="playAll()"
-            >
-                ▶ Play All
-            </button>
-        `;
-    }
-
-    if (currentSearch) {
-        html += `
-            <button
-                class="btn"
-                onclick="quickSearch('')"
-            >
-                ✕ Clear Search
-            </button>
-        `;
-    }
-
-    el.innerHTML = html;
-}
-
-function render() {
-
-    updatePrompt();
-
-    const grid = $("videoGrid");
-
-    const videos =
-        getFilteredVideos();
-
-    if (!videos.length) {
-
-        grid.innerHTML = `
-            <div class="empty">
-
-                <div class="empty-icon">
-                    ▣
-                </div>
-
-                <h3>
-                    ${
-                        currentSearch
-                        ? "No videos found"
-                        : "Your vault is empty"
-                    }
-                </h3>
-
-                <p>
-                    ${
-                        currentSearch
-                        ? "Try another search."
-                        : "Add a YouTube video to start your library."
-                    }
-                </p>
-
-                <br>
-
-                <button
-                    class="btn btn-primary"
-                    onclick="openAddModal()"
-                >
-                    ＋ Add Video
-                </button>
-
-            </div>
-        `;
-
-        return;
-    }
-
-    grid.innerHTML =
-        videos
-            .map(videoCard)
-            .join("");
-}
-
-function videoCard(video) {
-
-    const id =
-        jsSafe(video.videoId);
-
-    const title =
-        esc(video.title || "Untitled");
-
-    const artist =
-        esc(
-            video.artist ||
-            video.channel ||
-            "Unknown Channel"
-        );
-
-    const duration =
-        esc(video.duration || "");
-
-    const views =
-        esc(video.views || "");
-
-    const date =
-        esc(formatDate(video.uploadDate));
-
-    const liked =
-        Boolean(video.favorite);
-
-    const actions = `
-        <button
-            class="icon-btn ${liked ? "favorite" : ""}"
-            title="Favorite"
-            onclick="toggleFavorite('${id}')"
-        >
-            ${liked ? "♥" : "♡"}
-        </button>
-
-        <button
-            class="icon-btn"
-            title="Delete"
-            onclick="deleteVideo('${id}')"
-        >
-            ×
-        </button>
-    `;
-
-    const thumbActions = `
-        <div
-            class="thumb-actions"
-            onclick="event.stopPropagation()"
-        >
-
-            <button
-                class="ta-btn ${liked ? "liked" : ""}"
-                title="Like"
-                onclick="toggleFavorite('${id}')"
-            >
-                ${liked ? "♥" : "♡"}
-            </button>
-
-            <button
-                class="ta-btn"
-                title="Play next"
-                onclick="addToQueue('${id}',true)"
-            >
-                ⏭
-            </button>
-
-            <button
-                class="ta-btn"
-                title="Add to queue"
-                onclick="addToQueue('${id}',false)"
-            >
-                ☰
-            </button>
-
-            <button
-                class="ta-btn"
-                title="Radio"
-                onclick="sendToRadio('${id}')"
-            >
-                📻
-            </button>
-
-        </div>
-    `;
-
-    return `
-        <article class="card">
-
-            <div
-                class="thumb"
-                onclick="playVideo('${id}')"
-            >
-
-                <img
-                    src="${esc(
-                        video.thumbnail ||
-                        thumbnailUrl(video.videoId)
-                    )}"
-                    alt="${title}"
-                    loading="lazy"
-                    onerror="
-                        this.onerror=null;
-                        this.src='https://i.ytimg.com/vi/${id}/mqdefault.jpg'
-                    "
-                >
-
-                ${thumbActions}
-
-                ${
-                    duration
-                    ? `<div class="duration">${duration}</div>`
-                    : ""
-                }
-
-                <div class="play-overlay">
-
-                    <div class="play-circle">
-                        ▶
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="card-body">
-
-                <div
-                    class="card-title"
-                    title="${title}"
-                >
-                    ${title}
-                </div>
-
-                <div class="channel">
-                    ${artist}
-                </div>
-
-                <div class="meta">
-
-                    ${
-                        views
-                        ? `<span>◉ ${views}</span>`
-                        : ""
-                    }
-
-                    ${
-                        date
-                        ? `<span>• ${date}</span>`
-                        : ""
-                    }
-
-                    ${
-                        video.genre
-                        ? `<span>• ${esc(video.genre)}</span>`
-                        : ""
-                    }
-
-                </div>
-
-
-                <div class="card-footer">
-
-                    <button
-                        class="btn btn-primary"
-                        onclick="playVideo('${id}')"
-                    >
-                        ▶ Play
-                    </button>
-
-                    <div class="card-actions">
-                        ${actions}
-                    </div>
-
-                </div>
-
-            </div>
-
-        </article>
-    `;
-}
-
-/* =========================================================
-   STATS
-========================================================= */
-
-function updateStats() {
-
-    $("statVideos").textContent =
-        vault.length;
-
-    const artists =
-        new Set(
-            vault
-                .map(v =>
-                    String(
-                        v.artist ||
-                        v.channel ||
-                        ""
-                    ).trim()
-                )
-                .filter(Boolean)
-        );
-
-    $("statArtists").textContent =
-        artists.size;
-
-    $("statFavorites").textContent =
-        vault.filter(
-            v => v.favorite
-        ).length;
-
-    const genres =
-        new Set(
-            vault
-                .map(v =>
-                    String(v.genre || "")
-                        .trim()
-                        .toLowerCase()
-                )
-                .filter(Boolean)
-        );
-
-    $("statGenres").textContent =
-        genres.size;
-}
-
-/* =========================================================
-   ADD VIDEO
-========================================================= */
-
-function openAddModal() {
-
-    $("addModal")
-        .classList.add("open");
-
-    setTimeout(
-        () => $("videoUrl").focus(),
-        50
-    );
-}
-
-function closeModal(id) {
-    $(id).classList.remove("open");
-}
-
-function closeModalOutside(event,id) {
-
-    if (event.target.id === id) {
-        closeModal(id);
-    }
-}
-
-function saveVideo(event) {
-
-    event.preventDefault();
-
-    const url =
-        $("videoUrl")
-            .value
-            .trim();
-
-    const videoId =
-        getYouTubeId(url);
-
-    if (!videoId) {
-        showToast(
-            "Please enter a valid YouTube URL."
-        );
-        return;
-    }
-
-    if (
-        vault.some(
-            v => v.videoId === videoId
-        )
-    ) {
-        showToast(
-            "This video is already in your vault."
-        );
-        return;
-    }
-
-    const video = {
-
-        id:uid(),
-
-        videoId,
-
-        url,
-
-        title:
-            $("videoTitle")
-                .value
-                .trim(),
-
-        artist:
-            $("videoArtist")
-                .value
-                .trim(),
-
-        channel:
-            $("videoArtist")
-                .value
-                .trim(),
-
-        channelUrl:
-            $("channelUrl")
-                .value
-                .trim(),
-
-        genre:
-            $("videoGenre")
-                .value
-                .trim(),
-
-        uploadDate:
-            $("uploadDate")
-                .value,
-
-        duration:
-            $("videoDuration")
-                .value
-                .trim(),
-
-        views:
-            $("videoViews")
-                .value
-                .trim(),
-
-        tags:
-            $("videoTags")
-                .value
-                .trim(),
-
-        description:
-            $("videoDescription")
-                .value
-                .trim(),
-
-        thumbnail:
-            thumbnailUrl(videoId),
-
-        favorite:false,
-
-        addedAt:
-            new Date().toISOString()
-
-    };
-
-    vault.unshift(video);
-
-    saveVault();
-
-    $("videoForm").reset();
-
-    closeModal("addModal");
-
-    render();
-
-    showToast(
-        "Added to TrixTube."
-    );
-}
-
-/* =========================================================
-   FAVORITES
-========================================================= */
-
-function toggleFavorite(videoId) {
-
-    const video =
-        vault.find(
-            v => v.videoId === videoId
-        );
-
-    if (!video) return;
-
-    video.favorite =
-        !video.favorite;
-
-    saveVault();
-
-    render();
-
-    refreshLike();
-
-    showToast(
-        video.favorite
-        ? "Added to favorites."
-        : "Removed from favorites."
-    );
-}
-
-function likeCurrent() {
-
-    const item =
-        queue[queueIndex];
-
-    if (!item) return;
-
-    let video =
-        vault.find(
-            v => v.videoId === item.videoId
-        );
-
-    if (!video) {
-
-        video = {
-            id:uid(),
-
-            videoId:item.videoId,
-
-            url:
-                "https://www.youtube.com/watch?v=" +
-                item.videoId,
-
-            title:item.title,
-
-            artist:item.artist,
-
-            channel:item.artist,
-
-            thumbnail:
-                thumbnailUrl(item.videoId),
-
-            favorite:true,
-
-            addedAt:
-                new Date().toISOString()
-        };
-
-        vault.unshift(video);
-
-    } else {
-
-        video.favorite =
-            !video.favorite;
-
-    }
-
-    saveVault();
-
-    render();
-
-    refreshLike();
-}
-
-/* =========================================================
-   DELETE
-========================================================= */
-
-function deleteVideo(videoId) {
-
-    const video =
-        vault.find(
-            v => v.videoId === videoId
-        );
-
-    if (!video) return;
-
-    if (
-        !confirm(
-            "Delete this video from TrixTube?\n\n" +
-            video.title
-        )
-    ) {
-        return;
-    }
-
-    vault =
-        vault.filter(
-            v => v.videoId !== videoId
-        );
-
-    saveVault();
-
-    render();
-
-    showToast(
-        "Video removed."
-    );
-}
-
-/* =========================================================
-   BACKUP
-========================================================= */
-
-function backupVault() {
-
-    const backup = {
-
-        app:"TrixTube",
-
-        version:1,
-
-        exportedAt:
-            new Date().toISOString(),
-
-        videos:vault
-
-    };
-
-    const blob =
-        new Blob(
-            [
-                JSON.stringify(
-                    backup,
-                    null,
-                    2
-                )
-            ],
-            {
-                type:"application/json"
-            }
-        );
-
-    const url =
-        URL.createObjectURL(blob);
-
-    const a =
-        document.createElement("a");
-
-    const date =
-        new Date()
-            .toISOString()
-            .slice(0,10);
-
-    a.href = url;
-
-    a.download =
-        "trixtube-backup-" +
-        date +
-        ".json";
-
-    document.body.appendChild(a);
-
-    a.click();
-
-    a.remove();
-
-    URL.revokeObjectURL(url);
-
-    showToast(
-        "Backup created."
-    );
-}
-
-/* =========================================================
-   RESTORE
-========================================================= */
-
-function restoreVault(event) {
-
-    const file =
-        event.target.files[0];
-
-    if (!file) return;
-
-    const reader =
-        new FileReader();
-
-    reader.onload =
-        function() {
-
-            try {
-
-                const data =
-                    JSON.parse(
-                        reader.result
-                    );
-
-                const imported =
-                    Array.isArray(data)
-                    ? data
-                    : data.videos;
-
-                if (
-                    !Array.isArray(imported)
-                ) {
-                    throw new Error(
-                        "Invalid backup"
-                    );
-                }
-
-                let added = 0;
-
-                imported.forEach(video => {
-
-                    if (
-                        !video ||
-                        !video.videoId
-                    ) {
-                        return;
-                    }
-
-                    const exists =
-                        vault.some(
-                            v =>
-                                v.videoId ===
-                                video.videoId
-                        );
-
-                    if (!exists) {
-
-                        vault.push(video);
-
-                        added++;
-                    }
-
-                });
-
-                saveVault();
-
-                render();
-
-                showToast(
-                    added +
-                    " video(s) restored."
-                );
-
-            } catch(error) {
-
-                console.error(error);
-
-                showToast(
-                    "Invalid TrixTube backup."
-                );
-            }
-
-            event.target.value = "";
-
-        };
-
-    reader.readAsText(file);
-}
-
-/* =========================================================
-   YOUTUBE PLAYER API
-========================================================= */
-
-function loadYouTubeApi() {
-
-    if (
-        window.YT &&
-        window.YT.Player
-    ) {
-        return Promise.resolve();
-    }
-
-    if (ytApiPromise) {
-        return ytApiPromise;
-    }
-
-    ytApiPromise =
-        new Promise(
-            (resolve,reject) => {
-
-                const previous =
-                    window.onYouTubeIframeAPIReady;
-
-                window.onYouTubeIframeAPIReady =
-                    function() {
-
-                        if (
-                            typeof previous ===
-                            "function"
-                        ) {
-                            previous();
-                        }
-
-                        resolve();
-                    };
-
-                const script =
-                    document.createElement(
-                        "script"
-                    );
-
-                script.src =
-                    "https://www.youtube.com/iframe_api";
-
-                script.async = true;
-
-                script.onerror =
-                    function() {
-
-                        ytApiPromise = null;
-
-                        reject(
-                            new Error(
-                                "YouTube API failed"
-                            )
-                        );
-                    };
-
-                document.head.appendChild(
-                    script
-                );
-
-            }
-        );
-
-    return ytApiPromise;
-}
-
-function createPlayer(videoId) {
-
-    const vars = {
-
-        autoplay:1,
-
-        playsinline:1,
-
-        rel:0,
-
-        modestbranding:1,
-
-        enablejsapi:1
-
-    };
-
-    if (
-        /^https?:$/.test(
-            location.protocol
-        )
-    ) {
-        vars.origin =
-            location.origin;
-    }
-
-    ytPlayer =
-        new YT.Player(
-            "youtubePlayer",
-            {
-
-                width:"100%",
-
-                height:"100%",
-
-                videoId,
-
-                playerVars:vars,
-
-                events:{
-
-                    onReady:
-                        onPlayerReady,
-
-                    onStateChange:
-                        onPlayerState,
-
-                    onError:
-                        onPlayerError
-
-                }
-
-            }
-        );
-}
-
-function onPlayerReady() {
-
-    ytPlayerReady = true;
-
-    try {
-
-        if (pendingVideoId) {
-
-            ytPlayer.loadVideoById(
-                pendingVideoId
-            );
-
-            pendingVideoId = null;
-
-        } else {
-
-            ytPlayer.playVideo();
-
-        }
-
-        applyPlayerSettings();
-
-    } catch(error) {
-        console.error(error);
-    }
-}
-
-function onPlayerState(event) {
-
-    if (!window.YT) return;
-
-    const S =
-        YT.PlayerState;
-
-    if (
-        event.data ===
-        S.PLAYING
-    ) {
-
-        userPaused = false;
-
-        setPlayingUi(true);
-
-        keepAliveOn();
-
-        return;
-    }
-
-    if (
-        event.data ===
-        S.PAUSED
-    ) {
-
-        setPlayingUi(false);
-
-        if (!document.hidden) {
-            userPaused = true;
-        }
-
-        keepAliveOff();
-
-        return;
-    }
-
-    if (
-        event.data ===
-        S.ENDED
-    ) {
-
-        if (
-            settings.repeat ===
-            "one"
-        ) {
-
-            ytPlayer.seekTo(
-                0,
-                true
-            );
-
-            ytPlayer.playVideo();
-
-            return;
-        }
-
-        if (settings.autoNext) {
-            playNext(true);
-        }
-
-    }
-}
-
-function onPlayerError() {
-
-    showToast(
-        "This video cannot be embedded. Skipping."
-    );
-
-    setTimeout(
-        () => playNext(true),
-        700
-    );
-}
-
-/* =========================================================
-   QUEUE
-========================================================= */
-
-function toQueueItem(video) {
-
-    return {
-
-        videoId:
-            video.videoId,
-
-        title:
-            video.title ||
-            "Untitled",
-
-        artist:
-            video.artist ||
-            video.channel ||
-            "",
-
-        thumbnail:
-            video.thumbnail ||
-            thumbnailUrl(
-                video.videoId
-            )
-
-    };
-}
-
-function playVideo(videoId) {
-
-    const items =
-        visibleItems();
-
-    const index =
-        items.findIndex(
-            v => v.videoId === videoId
-        );
-
-    if (index === -1) return;
-
-    played.clear();
-
-    queue =
-        items.map(
-            toQueueItem
-        );
-
-    queueIndex = index;
-
-    openPlayer();
-
-    loadCurrent();
-}
-
-function playAll() {
-
-    const items =
-        visibleItems();
-
-    if (!items.length) {
-        showToast(
-            "No videos to play."
-        );
-
-        return;
-    }
-
-    played.clear();
-
-    queue =
-        items.map(
-            toQueueItem
-        );
-
-    queueIndex = 0;
-
-    openPlayer();
-
-    loadCurrent();
-}
-
-function loadCurrent() {
-
-    const item =
-        queue[queueIndex];
-
-    if (!item) return;
-
-    played.add(
-        item.videoId
-    );
-
-    $("playerHeading")
-        .textContent =
-        item.title;
-
-    $("playerTitle")
-        .textContent =
-        item.artist || "";
-
-    renderQueue();
-
-    refreshLike();
-
-    loadYouTubeApi()
-        .then(() => {
-
-            const current =
-                queue[queueIndex];
-
-            if (!current) return;
-
-            if (!ytPlayer) {
-
-                createPlayer(
-                    current.videoId
-                );
-
-            } else if (
-                !ytPlayerReady
+                title.includes(query) ||
+                artist.includes(query)
             ) {
 
-                pendingVideoId =
-                    current.videoId;
+                card.style.display = "";
 
             } else {
 
-                ytPlayer.loadVideoById(
-                    current.videoId
-                );
+                card.style.display = "none";
 
-                setTimeout(
-                    applyPlayerSettings,
-                    400
-                );
             }
-
-        })
-        .catch(() => {
-
-            showToast(
-                "Unable to load YouTube player."
-            );
 
         });
-}
 
-function nextIndex() {
+    });
 
-    if (!queue.length) {
-        return -1;
-    }
 
-    if (
-        settings.shuffle &&
-        queue.length > 1
-    ) {
+    /*
+     * ==========================================
+     * PLAY SONG
+     * ==========================================
+     */
 
-        let index;
+    const nowTitle =
+        document.getElementById("nowTitle");
 
-        do {
-            index =
-                Math.floor(
-                    Math.random() *
-                    queue.length
-                );
-        }
-        while (
-            index === queueIndex
-        );
+    const nowArtist =
+        document.getElementById("nowArtist");
 
-        return index;
-    }
+    const mainPlay =
+        document.getElementById("mainPlay");
 
-    if (
-        queueIndex + 1 <
-        queue.length
-    ) {
-        return queueIndex + 1;
-    }
-
-    if (
-        settings.repeat ===
-        "all"
-    ) {
-        return 0;
-    }
-
-    return -1;
-}
-
-function playNext(auto) {
-
-    const index =
-        nextIndex();
-
-    if (index === -1) {
-
-        if (auto) {
-            showToast(
-                "Queue finished."
-            );
-        }
-
-        return;
-    }
-
-    queueIndex = index;
-
-    loadCurrent();
-}
-
-function playPrev() {
-
-    if (
-        ytPlayer &&
-        ytPlayerReady
-    ) {
-
-        try {
-
-            if (
-                ytPlayer.getCurrentTime() >
-                5
-            ) {
-
-                ytPlayer.seekTo(
-                    0,
-                    true
-                );
-
-                return;
-            }
-
-        } catch(error) {}
-    }
-
-    if (!queue.length) return;
-
-    queueIndex--;
-
-    if (queueIndex < 0) {
-
-        queueIndex =
-            settings.repeat ===
-            "all"
-            ? queue.length - 1
-            : 0;
-    }
-
-    loadCurrent();
-}
-
-function jumpTo(index) {
-
-    if (
-        index < 0 ||
-        index >= queue.length
-    ) {
-        return;
-    }
-
-    queueIndex = index;
-
-    loadCurrent();
-}
-
-/* =========================================================
-   QUEUE UI
-========================================================= */
-
-function renderQueue() {
-
-    const el =
-        $("queueList");
-
-    if (!queue.length) {
-
-        el.innerHTML = `
-            <div class="empty"
-                 style="padding:40px 15px">
-                Queue is empty.
-            </div>
-        `;
-
-        return;
-    }
-
-    el.innerHTML =
-        queue.map(
-            (q,i) => `
-
-            <div
-                class="queue-item
-                    ${i === queueIndex ? "current" : ""}
-                    ${i < queueIndex ? "done" : ""}"
-                onclick="jumpTo(${i})"
-            >
-
-                <img
-                    src="${esc(q.thumbnail)}"
-                    alt=""
-                    loading="lazy"
-                >
-
-                <div class="qi-text">
-
-                    <div class="qi-title">
-                        ${esc(q.title)}
-                    </div>
-
-                    <div class="qi-artist">
-                        ${esc(q.artist)}
-                    </div>
-
-                </div>
-
-                ${
-                    i === queueIndex
-                    ? `
-                        <span class="qi-now">
-                            ▶
-                        </span>
-                    `
-                    : `
-                        <button
-                            class="qi-x"
-                            title="Remove"
-                            onclick="
-                                removeFromQueue(
-                                    ${i},
-                                    event
-                                )
-                            "
-                        >
-                            ×
-                        </button>
-                    `
-                }
-
-            </div>
-        `
-        )
-        .join("");
-}
-
-function removeFromQueue(i,event) {
-
-    event.stopPropagation();
-
-    if (
-        i === queueIndex
-    ) {
-
-        showToast(
-            "The currently playing video cannot be removed."
-        );
-
-        return;
-    }
-
-    queue.splice(i,1);
-
-    if (i < queueIndex) {
-        queueIndex--;
-    }
-
-    renderQueue();
-}
-
-function clearUpNext() {
-
-    if (
-        queueIndex < 0
-    ) {
-        return;
-    }
-
-    queue =
-        queue.slice(
-            0,
-            queueIndex + 1
-        );
-
-    renderQueue();
-
-    showToast(
-        "Up next cleared."
-    );
-}
-
-/* =========================================================
-   ADD TO QUEUE
-========================================================= */
-
-function addToQueue(videoId,next) {
-
-    const video =
-        vault.find(
-            v =>
-                v.videoId ===
-                videoId
-        );
-
-    if (!video) return;
-
-    const item =
-        toQueueItem(video);
-
-    if (!queue.length) {
-
-        queue = [item];
-
-        queueIndex = 0;
-
-        openPlayer();
-
-        loadCurrent();
-
-        return;
-    }
-
-    if (
-        queue.some(
-            (q,i) =>
-                i >= queueIndex &&
-                q.videoId === videoId
-        )
-    ) {
-
-        showToast(
-            "Already in queue."
-        );
-
-        return;
-    }
-
-    queue.splice(
-        next
-        ? queueIndex + 1
-        : queue.length,
-        0,
-        item
-    );
-
-    renderQueue();
-
-    showToast(
-        next
-        ? "Will play next."
-        : "Added to queue."
-    );
-}
-
-function sendToRadio(videoId) {
-
-    const video =
-        vault.find(
-            v =>
-                v.videoId ===
-                videoId
-        );
-
-    if (!video) return;
-
-    queue = [
-        toQueueItem(video)
-    ];
-
-    queueIndex = 0;
-
-    settings.radio = true;
-
-    saveSettings();
-
-    openPlayer();
-
-    loadCurrent();
-
-    showToast(
-        "TrixTube Radio started."
-    );
-}
-
-/* =========================================================
-   PLAYBACK
-========================================================= */
-
-function togglePlayPause() {
-
-    if (
-        !ytPlayer ||
-        !ytPlayerReady
-    ) {
-        return;
-    }
-
-    try {
-
-        const state =
-            ytPlayer.getPlayerState();
-
-        if (
-            state ===
-                YT.PlayerState.PLAYING ||
-            state ===
-                YT.PlayerState.BUFFERING
-        ) {
-
-            userPaused = true;
-
-            ytPlayer.pauseVideo();
-
-        } else {
-
-            userPaused = false;
-
-            ytPlayer.playVideo();
-
-        }
-
-    } catch(error) {}
-}
-
-function setPlayingUi(playing) {
-
-    $("btnPlayPause")
-        .textContent =
-        playing
-        ? "⏸"
-        : "▶";
-}
-
-/* =========================================================
-   PLAYER WINDOW
-========================================================= */
-
-function openPlayer() {
-
-    $("playerModal")
-        .classList.add("open");
-
-    $("playerModal")
-        .classList.remove("minimized");
-
-    $("btnMinimize")
-        .textContent = "⌄";
-
-    if (!pushed) {
-
-        history.pushState(
-            {player:true},
-            ""
-        );
-
-        pushed = true;
-    }
-}
-
-function minimizePlayer() {
-
-    $("playerModal")
-        .classList.add("minimized");
-
-    $("btnMinimize")
-        .textContent = "⤢";
-
-    if (pushed) {
-
-        pushed = false;
-
-        history.back();
-    }
-}
-
-function toggleMinimize() {
-
-    if (
-        $("playerModal")
-            .classList.contains(
-                "minimized"
-            )
-    ) {
-        openPlayer();
-    } else {
-        minimizePlayer();
-    }
-}
-
-function playerBackdrop(event) {
-
-    if (
-        event.target.id ===
-        "playerModal"
-    ) {
-        minimizePlayer();
-    }
-}
-
-function closePlayer() {
-
-    try {
-
-        if (
-            ytPlayer &&
-            ytPlayerReady
-        ) {
-            ytPlayer.stopVideo();
-        }
-
-    } catch(error) {}
-
-    queue = [];
-
-    queueIndex = -1;
-
-    userPaused = true;
-
-    $("playerModal")
-        .classList.remove(
-            "open",
-            "minimized"
-        );
-
-    $("queueList")
-        .innerHTML = "";
-
-    pushed = false;
-
-    refreshLike();
-}
-
-/* =========================================================
-   PLAYER SETTINGS
-========================================================= */
-
-function toggleShuffle() {
-
-    settings.shuffle =
-        !settings.shuffle;
-
-    saveSettings();
-
-    refreshToggles();
-}
-
-function cycleRepeat() {
-
-    const modes =
-        ["off","all","one"];
-
-    const index =
-        modes.indexOf(
-            settings.repeat
-        );
-
-    settings.repeat =
-        modes[
-            (index + 1) %
-            modes.length
-        ];
-
-    saveSettings();
-
-    refreshToggles();
-}
-
-function setAutoNext(value) {
-
-    settings.autoNext =
-        Boolean(value);
-
-    saveSettings();
-}
-
-function setRadio(value) {
-
-    settings.radio =
-        Boolean(value);
-
-    saveSettings();
-
-    showToast(
-        settings.radio
-        ? "Radio enabled."
-        : "Radio disabled."
-    );
-}
-
-function setBackground(value) {
-
-    settings.background =
-        Boolean(value);
-
-    saveSettings();
-
-    if (
-        !settings.background
-    ) {
-        keepAliveOff();
-    }
-}
-
-function refreshToggles() {
-
-    $("btnShuffle")
-        .classList.toggle(
-            "active",
-            settings.shuffle
-        );
-
-    $("btnRepeat")
-        .classList.toggle(
-            "active",
-            settings.repeat !== "off"
-        );
-
-    $("btnRepeat")
-        .textContent =
-        settings.repeat === "one"
-        ? "↻1"
-        : "↻";
-
-    $("btnRepeat").title =
-        "Repeat: " +
-        settings.repeat;
-
-    $("optAutoNext").checked =
-        settings.autoNext;
-
-    $("optRadio").checked =
-        settings.radio;
-
-    $("optBackground").checked =
-        settings.background;
-
-    $("speedSelect").value =
-        String(settings.speed);
-}
-
-/* =========================================================
-   SPEED
-========================================================= */
-
-function setPlaybackSpeed(value) {
-
-    settings.speed =
-        Number(value);
-
-    saveSettings();
-
-    if (
-        ytPlayer &&
-        ytPlayerReady
-    ) {
-
-        try {
-            ytPlayer.setPlaybackRate(
-                settings.speed
-            );
-        } catch(error) {}
-    }
-
-    showToast(
-        "Playback speed: " +
-        settings.speed +
-        "×"
-    );
-}
-
-function applyPlayerSettings() {
-
-    refreshToggles();
-
-    if (
-        ytPlayer &&
-        ytPlayerReady
-    ) {
-
-        try {
-
-            ytPlayer.setPlaybackRate(
-                Number(
-                    settings.speed
-                )
-            );
-
-        } catch(error) {}
-    }
-}
-
-/* =========================================================
-   THEATER
-========================================================= */
-
-function toggleTheater() {
-
-    const modal =
-        $("playerModal");
-
-    modal.classList.toggle(
-        "theater-player"
-    );
-
-    const active =
-        modal.classList.contains(
-            "theater-player"
-        );
-
-    $("btnTheater")
-        .classList.toggle(
-            "active",
-            active
-        );
-
-    showToast(
-        active
-        ? "Theater mode enabled."
-        : "Theater mode disabled."
-    );
-}
-
-/* =========================================================
-   CINEMA
-========================================================= */
-
-function toggleCinema() {
-
-    document.body
-        .classList.toggle(
-            "cinema-mode"
-        );
-
-    settings.cinema =
-        document.body.classList.contains(
-            "cinema-mode"
-        );
-
-    saveSettings();
-
-    showToast(
-        settings.cinema
-        ? "Cinema mode enabled."
-        : "Cinema mode disabled."
-    );
-}
-
-/* =========================================================
-   EQUALIZER UI
-========================================================= */
-
-function toggleEqualizer() {
-
-    const el =
-        $("equalizer");
-
-    el.classList.toggle(
-        "open"
-    );
-
-    $("btnEq")
-        .classList.toggle(
-            "active",
-            el.classList.contains(
-                "open"
-            )
-        );
-}
-
-function setEQ(mode,button) {
-
-    settings.eq = mode;
-
-    saveSettings();
 
     document
-        .querySelectorAll(".eq-preset")
-        .forEach(
-            b =>
-                b.classList.remove(
-                    "active"
-                )
-        );
+        .querySelectorAll(".song-card")
+        .forEach(card => {
 
-    if (button) {
-        button.classList.add(
-            "active"
-        );
-    }
+            const play =
+                card.querySelector(".overlay-play");
 
-    showToast(
-        mode === "bass"
-        ? "Bass Boost preset selected."
-        : mode === "loud"
-        ? "Extra Loud preset selected."
-        : "Normal audio preset selected."
-    );
-}
+            play.addEventListener("click", function (event) {
 
-/* =========================================================
-   BACKGROUND PLAY SUPPORT
-========================================================= */
+                event.stopPropagation();
 
-let keepAliveEl = null;
+                nowTitle.textContent =
+                    card.dataset.title;
 
-function makeSilentWavUrl() {
+                nowArtist.textContent =
+                    card.dataset.artist;
 
-    const rate = 8000;
-
-    const buffer =
-        new ArrayBuffer(
-            44 + rate
-        );
-
-    const view =
-        new DataView(buffer);
-
-    const text =
-        (offset,str) => {
-
-            for (
-                let i=0;
-                i<str.length;
-                i++
-            ) {
-                view.setUint8(
-                    offset+i,
-                    str.charCodeAt(i)
-                );
-            }
-        };
-
-    text(0,"RIFF");
-
-    view.setUint32(
-        4,
-        36+rate,
-        true
-    );
-
-    text(8,"WAVE");
-    text(12,"fmt ");
-
-    view.setUint32(
-        16,
-        16,
-        true
-    );
-
-    view.setUint16(
-        20,
-        1,
-        true
-    );
-
-    view.setUint16(
-        22,
-        1,
-        true
-    );
-
-    view.setUint32(
-        24,
-        rate,
-        true
-    );
-
-    view.setUint32(
-        28,
-        rate,
-        true
-    );
-
-    view.setUint16(
-        32,
-        1,
-        true
-    );
-
-    view.setUint16(
-        34,
-        8,
-        true
-    );
-
-    text(36,"data");
-
-    view.setUint32(
-        40,
-        rate,
-        true
-    );
-
-    new Uint8Array(
-        buffer,
-        44
-    ).fill(128);
-
-    return URL.createObjectURL(
-        new Blob(
-            [buffer],
-            {type:"audio/wav"}
-        )
-    );
-}
-
-function keepAliveOn() {
-
-    if (
-        !settings.background
-    ) {
-        return;
-    }
-
-    if (!keepAliveEl) {
-
-        keepAliveEl =
-            new Audio(
-                makeSilentWavUrl()
-            );
-
-        keepAliveEl.loop = true;
-    }
-
-    keepAliveEl
-        .play()
-        .catch(() => {});
-}
-
-function keepAliveOff() {
-
-    if (keepAliveEl) {
-        keepAliveEl.pause();
-    }
-}
-
-/* =========================================================
-   MEDIA SESSION
-========================================================= */
-
-function updateMediaSession(item) {
-
-    if (
-        !("mediaSession" in navigator) ||
-        !window.MediaMetadata
-    ) {
-        return;
-    }
-
-    try {
-
-        navigator.mediaSession.metadata =
-            new MediaMetadata({
-
-                title:item.title,
-
-                artist:
-                    item.artist ||
-                    "TrixTube",
-
-                album:"TrixTube",
-
-                artwork:[
-                    {
-                        src:item.thumbnail,
-
-                        sizes:"480x360",
-
-                        type:"image/jpeg"
-                    }
-                ]
+                mainPlay.textContent = "❚❚";
 
             });
 
-    } catch(error) {}
-}
+        });
 
-function initMediaSession() {
 
-    if (
-        !("mediaSession" in navigator)
-    ) {
-        return;
-    }
+    /*
+     * CLICK CARD
+     */
 
-    const actions = {
+    document
+        .querySelectorAll(".song-card")
+        .forEach(card => {
 
-        play:() => {
+            card.addEventListener("click", function () {
 
-            userPaused = false;
+                nowTitle.textContent =
+                    card.dataset.title;
 
-            if (
-                ytPlayer &&
-                ytPlayerReady
-            ) {
-                ytPlayer.playVideo();
-            }
-        },
+                nowArtist.textContent =
+                    card.dataset.artist;
 
-        pause:() => {
+                mainPlay.textContent = "❚❚";
 
-            userPaused = true;
+            });
 
-            if (
-                ytPlayer &&
-                ytPlayerReady
-            ) {
-                ytPlayer.pauseVideo();
-            }
-        },
+        });
 
-        nexttrack:() =>
-            playNext(false),
 
-        previoustrack:() =>
-            playPrev(),
+    /*
+     * ==========================================
+     * PLAY / PAUSE
+     * ==========================================
+     */
 
-        stop:() =>
-            closePlayer()
+    let playing = false;
 
-    };
+    mainPlay.addEventListener("click", function () {
 
-    Object.entries(actions)
-        .forEach(
-            ([action,handler]) => {
+        playing = !playing;
 
-                try {
+        this.textContent =
+            playing ? "❚❚" : "▶";
 
-                    navigator.mediaSession
-                        .setActionHandler(
-                            action,
-                            handler
-                        );
+    });
 
-                } catch(error) {}
 
-            }
-        );
-}
+    /*
+     * ==========================================
+     * PLAY ALL
+     * ==========================================
+     */
 
-/* =========================================================
-   SIDEBAR
-========================================================= */
+    document
+        .getElementById("playAll")
+        .addEventListener("click", function () {
 
-function toggleSidebar() {
+            nowTitle.textContent =
+                "Do You Know";
+
+            nowArtist.textContent =
+                "Diljit Dosanjh";
+
+            playing = true;
+
+            mainPlay.textContent = "❚❚";
+
+        });
+
+
+    /*
+     * ==========================================
+     * FILTER BUTTONS
+     * ==========================================
+     */
+
+    document
+        .querySelectorAll(".filter")
+        .forEach(button => {
+
+            button.addEventListener("click", function () {
+
+                document
+                    .querySelectorAll(".filter")
+                    .forEach(btn => {
+
+                        btn.classList.remove("active");
+
+                    });
+
+                this.classList.add("active");
+
+            });
+
+        });
+
+
+    /*
+     * ==========================================
+     * SIDEBAR MENU
+     * ==========================================
+     */
+
+    const menuBtn =
+        document.getElementById("menuBtn");
 
     const sidebar =
-        $("sidebar");
+        document.querySelector(".sidebar");
 
-    const hidden =
-        sidebar.style.display ===
-        "none";
 
-    sidebar.style.display =
-        hidden
-        ? ""
-        : "none";
+    menuBtn.addEventListener("click", function () {
 
-    if (hidden) {
+        if (window.innerWidth > 850) {
 
-        document
-            .querySelector("main")
-            .style.marginLeft = "";
+            if (sidebar.style.width === "72px") {
 
-    } else {
+                sidebar.style.width = "230px";
 
-        document
-            .querySelector("main")
-            .style.marginLeft =
-            "0";
-    }
-}
+            } else {
 
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-function openSettings() {
-
-    $("setSpeed").value =
-        String(settings.speed);
-
-    $("setEQ").value =
-        settings.eq;
-
-    $("setTheme").value =
-        settings.cinema
-        ? "cinema"
-        : "youtube";
-
-    $("settingsModal")
-        .classList.add("open");
-}
-
-function saveSettingsForm() {
-
-    settings.speed =
-        Number(
-            $("setSpeed").value
-        );
-
-    settings.eq =
-        $("setEQ").value;
-
-    const theme =
-        $("setTheme").value;
-
-    settings.cinema =
-        theme === "cinema";
-
-    document.body
-        .classList.toggle(
-            "cinema-mode",
-            settings.cinema
-        );
-
-    saveSettings();
-
-    applyPlayerSettings();
-
-    closeModal(
-        "settingsModal"
-    );
-
-    showToast(
-        "Settings saved."
-    );
-}
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-let toastTimer;
-
-function showToast(message) {
-
-    const toast =
-        $("toast");
-
-    toast.textContent =
-        message;
-
-    toast.classList.add(
-        "show"
-    );
-
-    clearTimeout(
-        toastTimer
-    );
-
-    toastTimer =
-        setTimeout(
-            () =>
-                toast.classList.remove(
-                    "show"
-                ),
-            2600
-        );
-}
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key !==
-            "Escape"
-        ) {
-            return;
-        }
-
-        if (
-            $("settingsModal")
-                .classList.contains(
-                    "open"
-                )
-        ) {
-
-            closeModal(
-                "settingsModal"
-            );
-
-            return;
-        }
-
-        if (
-            $("addModal")
-                .classList.contains(
-                    "open"
-                )
-        ) {
-
-            closeModal(
-                "addModal"
-            );
-
-            return;
-        }
-
-        if (
-            $("playerModal")
-                .classList.contains(
-                    "open"
-                )
-        ) {
-
-            minimizePlayer();
-        }
-
-    }
-);
-
-/* =========================================================
-   PHONE BACK BUTTON
-========================================================= */
-
-window.addEventListener(
-    "popstate",
-    function() {
-
-        pushed = false;
-
-        const modal =
-            $("playerModal");
-
-        if (
-            modal.classList.contains(
-                "open"
-            ) &&
-            !modal.classList.contains(
-                "minimized"
-            )
-        ) {
-
-            modal.classList.add(
-                "minimized"
-            );
-
-        }
-
-    }
-);
-
-/* =========================================================
-   VISIBILITY
-========================================================= */
-
-document.addEventListener(
-    "visibilitychange",
-    function() {
-
-        if (
-            !document.hidden &&
-            settings.background &&
-            ytPlayer &&
-            ytPlayerReady &&
-            queue.length &&
-            !userPaused
-        ) {
-
-            try {
-
-                if (
-                    ytPlayer.getPlayerState() ===
-                    YT.PlayerState.PAUSED
-                ) {
-                    ytPlayer.playVideo();
-                }
-
-            } catch(error) {}
-        }
-
-    }
-);
-
-/* =========================================================
-   BACKGROUND RESUME
-========================================================= */
-
-setInterval(
-    function() {
-
-        try {
-
-            if (
-                document.hidden &&
-                settings.background &&
-                !userPaused &&
-                queue.length &&
-                ytPlayerReady &&
-                ytPlayer.getPlayerState() ===
-                YT.PlayerState.PAUSED
-            ) {
-
-                ytPlayer.playVideo();
+                sidebar.style.width = "72px";
 
             }
 
-        } catch(error) {}
-
-    },
-    1500
-);
-
-/* =========================================================
-   POINTER
-========================================================= */
-
-document.addEventListener(
-    "pointerdown",
-    function() {
-
-        if (
-            queue.length &&
-            !userPaused
-        ) {
-            keepAliveOn();
         }
 
-    },
-    {
-        passive:true
-    }
-);
+    });
 
-/* =========================================================
-   PLAYER LIKE
-========================================================= */
 
-function refreshLike() {
+    /*
+     * ==========================================
+     * ADD MUSIC
+     * ==========================================
+     */
 
-    const item =
-        queue[queueIndex];
+    document
+        .getElementById("addBtn")
+        .addEventListener("click", function () {
 
-    const video =
-        item &&
-        vault.find(
-            v =>
-                v.videoId ===
-                item.videoId
-        );
+            alert(
+                "Add Music is locked for now."
+            );
 
-    const button =
-        $("btnLike");
+        });
 
-    if (!button) return;
-
-    button.textContent =
-        video && video.favorite
-        ? "♥"
-        : "♡";
-
-    button.classList.toggle(
-        "active",
-        Boolean(
-            video &&
-            video.favorite
-        )
-    );
-}
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-if (settings.cinema) {
-    document.body.classList.add(
-        "cinema-mode"
-    );
-}
-
-refreshToggles();
-
-initMediaSession();
-
-updateStats();
-
-render();
-
-/* =========================================================
-   PWA
-========================================================= */
-
-if (
-    "serviceWorker" in navigator
-) {
-
-    window.addEventListener(
-        "load",
-        async function() {
-
-            try {
-
-                await navigator.serviceWorker.register(
-                    "./sw.js",
-                    {
-                        scope:"./"
-                    }
-                );
-
-            } catch(error) {
-
-                console.error(
-                    "Service worker:",
-                    error
-                );
-
-            }
-
-        }
-    );
-}
 </script>
 
 </body>
