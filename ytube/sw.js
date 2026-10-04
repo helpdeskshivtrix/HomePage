@@ -1,7 +1,7 @@
 "use strict";
 
 const CACHE_NAME =
-    "shivtrix-videovault-v4";
+    "shivtrixYouTube";
 
 
 /*
