@@ -1,0 +1,2893 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="theme-color"
+        content="#030407"
+    >
+
+    <meta
+        name="description"
+        content="ShivTrix VideoVault - YouTube metadata library and player"
+    >
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="VideoVault"
+    >
+
+    <title>ShivTrix VideoVault</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- App icon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+
+    <style>
+        :root {
+            --bg: #030407;
+            --bg2: #070a10;
+            --panel: #0b0f17;
+            --panel2: #101620;
+            --line: #1b2635;
+
+            --blue: #0066ff;
+            --blue2: #00a8ff;
+            --neon: #00eaff;
+
+            --text: #f4f7fb;
+            --muted: #8e9bad;
+            --danger: #ff4268;
+            --success: #21e6a0;
+
+            --shadow:
+                0 0 30px rgba(0, 119, 255, 0.12),
+                0 15px 50px rgba(0, 0, 0, 0.5);
+
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background: var(--bg);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 50% -20%,
+                    rgba(0, 119, 255, 0.18),
+                    transparent 38%
+                ),
+                radial-gradient(
+                    circle at 0% 50%,
+                    rgba(0, 234, 255, 0.06),
+                    transparent 30%
+                ),
+                var(--bg);
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            overflow-x: hidden;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            width: 100%;
+
+            background:
+                rgba(3, 4, 7, 0.86);
+
+            border-bottom: 1px solid rgba(0, 234, 255, 0.08);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        .header-inner {
+            width: min(1500px, calc(100% - 30px));
+            min-height: 72px;
+
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            white-space: nowrap;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 11px;
+
+            display: grid;
+            place-items: center;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0055ff,
+                    #00d9ff
+                );
+
+            box-shadow:
+                0 0 18px rgba(0, 170, 255, 0.45);
+        }
+
+        .brand-text {
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            font-size: 18px;
+        }
+
+        .brand-text span {
+            color: var(--neon);
+        }
+
+        .search-wrap {
+            flex: 1;
+            max-width: 700px;
+            margin: auto;
+
+            position: relative;
+        }
+
+        .search {
+            width: 100%;
+            height: 46px;
+
+            padding:
+                0 46px
+                0 17px;
+
+            border-radius: 13px;
+
+            border: 1px solid #1b2a3e;
+
+            outline: none;
+
+            background:
+                rgba(10, 15, 23, 0.95);
+
+            color: white;
+
+            transition: 0.2s;
+        }
+
+        .search::placeholder {
+            color: #657286;
+        }
+
+        .search:focus {
+            border-color: rgba(0, 234, 255, 0.55);
+
+            box-shadow:
+                0 0 0 3px rgba(0, 234, 255, 0.07),
+                0 0 22px rgba(0, 119, 255, 0.12);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: var(--muted);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            height: 42px;
+
+            padding: 0 14px;
+
+            border-radius: 11px;
+
+            border: 1px solid #1e2c3f;
+
+            background: #0b111a;
+
+            color: #dce7f4;
+
+            font-weight: 700;
+
+            transition:
+                transform 0.15s,
+                border 0.15s,
+                background 0.15s;
+        }
+
+        .btn:hover {
+            border-color: #28527b;
+            background: #101a28;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            border-color: rgba(0, 174, 255, 0.5);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #005eff,
+                    #008cff
+                );
+
+            color: white;
+
+            box-shadow:
+                0 0 20px rgba(0, 119, 255, 0.18);
+        }
+
+        /* Playlist Extractor */
+        .playlist-extractor-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .playlist-extractor-btn:hover {
+            border-color: rgba(0, 234, 255, 0.65);
+            box-shadow:
+                0 0 20px rgba(0, 174, 255, 0.25);
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            width: min(1500px, calc(100% - 30px));
+            margin: auto;
+
+            padding:
+                28px
+                0
+                70px;
+        }
+
+        .hero {
+            padding: 30px 0 24px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 7px 11px;
+
+            border-radius: 999px;
+
+            border: 1px solid rgba(0, 234, 255, 0.15);
+
+            background: rgba(0, 119, 255, 0.07);
+
+            color: var(--neon);
+
+            font-size: 12px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            margin: 16px 0 10px;
+
+            font-size:
+                clamp(32px, 5vw, 64px);
+
+            line-height: 1;
+
+            letter-spacing: -2.5px;
+        }
+
+        .hero h1 span {
+            color: var(--neon);
+
+            text-shadow:
+                0 0 28px rgba(0, 234, 255, 0.25);
+        }
+
+        .hero p {
+            max-width: 800px;
+
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 12px;
+
+            margin-bottom: 24px;
+        }
+
+        .stat {
+            padding: 18px;
+
+            border-radius: var(--radius);
+
+            border: 1px solid var(--line);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(13, 19, 29, 0.95),
+                    rgba(6, 9, 14, 0.95)
+                );
+
+            box-shadow: var(--shadow);
+        }
+
+        .stat-label {
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .stat-value {
+            margin-top: 7px;
+
+            font-size: 28px;
+            font-weight: 900;
+
+            color: white;
+        }
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+        .modes {
+            display: flex;
+            gap: 7px;
+
+            flex-wrap: wrap;
+        }
+
+        .mode {
+            padding: 9px 13px;
+
+            border-radius: 10px;
+
+            border: 1px solid #182536;
+
+            background: #080d14;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .mode.active {
+            color: white;
+
+            border-color:
+                rgba(0, 234, 255, 0.32);
+
+            background:
+                rgba(0, 119, 255, 0.15);
+
+            box-shadow:
+                inset 0 0 18px
+                rgba(0, 119, 255, 0.08);
+        }
+
+        /* =========================
+           CHIPS
+        ========================= */
+
+        .chips {
+            display: flex;
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+            margin-bottom: 25px;
+        }
+
+        .chip {
+            border: 1px solid #1a293b;
+
+            background: #080d14;
+
+            color: #9daabd;
+
+            border-radius: 999px;
+
+            padding: 8px 12px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .chip:hover {
+            color: var(--neon);
+            border-color: rgba(0, 234, 255, 0.3);
+        }
+
+        /* =========================
+           VIDEO GRID
+        ========================= */
+
+        .section-title {
+            margin: 0 0 14px;
+
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fill,
+                    minmax(250px, 1fr)
+                );
+
+            gap: 16px;
+        }
+
+        .card {
+            overflow: hidden;
+
+            border-radius: var(--radius);
+
+            border: 1px solid #152233;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0c1119,
+                    #070a0f
+                );
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.3);
+
+            transition:
+                transform 0.18s,
+                border 0.18s,
+                box-shadow 0.18s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+
+            border-color:
+                rgba(0, 174, 255, 0.25);
+
+            box-shadow:
+                0 20px 55px rgba(0, 0, 0, 0.42),
+                0 0 25px rgba(0, 119, 255, 0.08);
+        }
+
+        .thumb {
+            position: relative;
+
+            aspect-ratio: 16 / 9;
+
+            overflow: hidden;
+
+            background: #05070a;
+        }
+
+        .thumb img {
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+        }
+
+        .duration {
+            position: absolute;
+
+            right: 8px;
+            bottom: 8px;
+
+            padding: 4px 6px;
+
+            border-radius: 6px;
+
+            background: rgba(0, 0, 0, 0.82);
+
+            color: white;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .play-overlay {
+            position: absolute;
+
+            inset: 0;
+
+            display: grid;
+            place-items: center;
+
+            background:
+                rgba(0, 0, 0, 0);
+
+            transition: 0.2s;
+        }
+
+        .play-circle {
+            width: 55px;
+            height: 55px;
+
+            border-radius: 50%;
+
+            display: grid;
+            place-items: center;
+
+            opacity: 0;
+
+            transform: scale(0.8);
+
+            background:
+                rgba(0, 119, 255, 0.92);
+
+            box-shadow:
+                0 0 30px
+                rgba(0, 174, 255, 0.45);
+
+            transition: 0.2s;
+        }
+
+        .card:hover .play-overlay {
+            background: rgba(0, 0, 0, 0.22);
+        }
+
+        .card:hover .play-circle {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .card-body {
+            padding: 14px;
+        }
+
+        .card-title {
+            min-height: 42px;
+
+            margin-bottom: 8px;
+
+            color: white;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            line-height: 1.45;
+        }
+
+        .channel {
+            color: var(--neon);
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .meta {
+            display: flex;
+            gap: 10px;
+
+            margin-top: 8px;
+
+            color: #6f7e91;
+
+            font-size: 11px;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 8px;
+
+            margin-top: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            width: 34px;
+            height: 34px;
+
+            border-radius: 9px;
+
+            border: 1px solid #1a293a;
+
+            background: #080d14;
+
+            color: #9eabba;
+
+            display: grid;
+            place-items: center;
+        }
+
+        .icon-btn:hover {
+            color: white;
+            border-color: #31547a;
+        }
+
+        .icon-btn.favorite {
+            color: #ff4f7c;
+
+            border-color:
+                rgba(255, 79, 124, 0.25);
+
+            background:
+                rgba(255, 79, 124, 0.06);
+        }
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+            padding: 70px 20px;
+
+            text-align: center;
+
+            border-radius: var(--radius);
+
+            border: 1px dashed #1c2b3c;
+
+            background:
+                rgba(8, 12, 18, 0.7);
+        }
+
+        .empty-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .empty h3 {
+            margin: 0 0 8px;
+        }
+
+        .empty p {
+            margin: 0;
+
+            color: var(--muted);
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 500;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px;
+
+            background:
+                rgba(0, 0, 0, 0.78);
+
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(720px, 100%);
+            max-height: 92vh;
+
+            overflow-y: auto;
+
+            border-radius: 20px;
+
+            border: 1px solid #1d3045;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0d131c,
+                    #070a0f
+                );
+
+            box-shadow:
+                0 30px 100px
+                rgba(0, 0, 0, 0.65),
+                0 0 50px
+                rgba(0, 119, 255, 0.08);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 18px 20px;
+
+            border-bottom:
+                1px solid #162334;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+
+            font-size: 18px;
+        }
+
+        .close {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 10px;
+
+            border: 1px solid #1d2b3c;
+
+            background: #080d14;
+
+            color: #9da9b9;
+
+            font-size: 20px;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            color: #9ba8b9;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+
+            border-radius: 10px;
+
+            border: 1px solid #1c2c3e;
+
+            outline: none;
+
+            background: #070c13;
+
+            color: white;
+
+            padding: 11px 12px;
+        }
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            border-color:
+                rgba(0, 234, 255, 0.45);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(0, 234, 255, 0.05);
+        }
+
+        .field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+
+            gap: 8px;
+
+            padding: 16px 20px;
+
+            border-top:
+                1px solid #162334;
+        }
+
+        /* =========================
+           PLAYER
+        ========================= */
+
+        .player-modal .modal-box {
+            width: min(1200px, 100%);
+        }
+
+        .player {
+            position: relative;
+
+            width: 100%;
+
+            aspect-ratio: 16 / 9;
+
+            background: #000;
+        }
+
+        .player iframe {
+            width: 100%;
+            height: 100%;
+
+            border: 0;
+
+            display: block;
+        }
+
+        .player-title {
+            padding: 15px 20px;
+
+            color: white;
+
+            font-size: 15px;
+            font-weight: 800;
+
+            border-top:
+                1px solid #172436;
+        }
+
+        /* =========================
+           TOAST
+        ========================= */
+
+        .toast {
+            position: fixed;
+
+            right: 18px;
+            bottom: 18px;
+
+            z-index: 1000;
+
+            max-width: 360px;
+
+            padding: 13px 16px;
+
+            border-radius: 12px;
+
+            border: 1px solid #1e3349;
+
+            background:
+                rgba(10, 15, 23, 0.96);
+
+            color: white;
+
+            box-shadow:
+                0 15px 50px
+                rgba(0, 0, 0, 0.45);
+
+            transform:
+                translateY(30px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transition: 0.25s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .header-inner {
+                flex-wrap: wrap;
+                padding: 12px 0;
+            }
+
+            .search-wrap {
+                order: 3;
+                flex-basis: 100%;
+                max-width: none;
+            }
+
+            .header {
+                position: relative;
+            }
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            main {
+                width: min(100% - 20px, 1500px);
+            }
+
+            .header-inner {
+                width: calc(100% - 20px);
+            }
+
+            .brand-text {
+                font-size: 16px;
+            }
+
+            .header-actions .btn span {
+                display: none;
+            }
+
+            .header-actions .btn {
+                width: 42px;
+                padding: 0;
+            }
+
+            .hero h1 {
+                letter-spacing: -1.5px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                gap: 10px;
+            }
+
+            .card-body {
+                padding: 10px;
+            }
+
+            .card-title {
+                font-size: 12px;
+                min-height: 35px;
+            }
+
+            .meta {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 420px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="header-inner">
+
+        <a class="brand" href="./">
+
+            <div class="brand-icon">
+                ▶
+            </div>
+
+            <div class="brand-text">
+                ShivTrix <span>VideoVault</span>
+            </div>
+
+        </a>
+
+        <div class="search-wrap">
+
+            <span class="search-icon">
+                ⌕
+            </span>
+
+            <input
+                id="searchInput"
+                class="search"
+                type="search"
+                autocomplete="off"
+                placeholder="Search artist, channel, song, genre..."
+            >
+
+        </div>
+
+        <div class="header-actions">
+
+            <!-- ADD VIDEO -->
+            <button
+                class="btn btn-primary"
+                onclick="openAddModal()"
+                title="Add video"
+            >
+                ＋ <span>Add</span>
+            </button>
+
+            <!-- YOUTUBE PLAYLIST EXTRACTOR -->
+            <a
+                class="btn btn-primary playlist-extractor-btn"
+                href="https://export-youtube-playlist.vercel.app/tools/youtube-playlist-link-extractor/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="YouTube Playlist Extractor"
+            >
+                📋 <span>Playlist Extractor</span>
+            </a>
+
+            <!-- BACKUP -->
+            <button
+                class="btn"
+                onclick="backupVault()"
+                title="Backup"
+            >
+                ⇩ <span>Backup</span>
+            </button>
+
+            <!-- RESTORE -->
+            <button
+                class="btn"
+                onclick="document.getElementById('restoreFile').click()"
+                title="Restore"
+            >
+                ⇧ <span>Restore</span>
+            </button>
+
+            <input
+                id="restoreFile"
+                type="file"
+                accept=".json,application/json"
+                hidden
+                onchange="restoreVault(event)"
+            >
+
+        </div>
+
+    </div>
+
+</header>
+
+<main>
+
+    <section class="hero">
+
+        <div class="eyebrow">
+            <span>●</span>
+            Personal YouTube Metadata Library
+        </div>
+
+        <h1>
+            Your Videos.
+            <span>Your Vault.</span>
+        </h1>
+
+        <p>
+            Organize YouTube videos by artist, channel, genre,
+            mood and collection. Video files are never downloaded
+            or stored locally. Play directly from YouTube.
+        </p>
+
+    </section>
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Videos
+            </div>
+
+            <div
+                id="statVideos"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Artists / Channels
+            </div>
+
+            <div
+                id="statArtists"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Favorites
+            </div>
+
+            <div
+                id="statFavorites"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Genres
+            </div>
+
+            <div
+                id="statGenres"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="toolbar">
+
+        <div class="modes">
+
+            <button
+                class="mode active"
+                data-mode="vault"
+                onclick="setMode('vault', this)"
+            >
+                My Vault
+            </button>
+
+            <button
+                class="mode"
+                data-mode="favorites"
+                onclick="setMode('favorites', this)"
+            >
+                Favorites
+            </button>
+
+            <button
+                class="mode"
+                data-mode="artists"
+                onclick="setMode('artists', this)"
+            >
+                Artists
+            </button>
+
+            <button
+                class="mode"
+                data-mode="genres"
+                onclick="setMode('genres', this)"
+            >
+                Genres
+            </button>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <div class="section-title">
+            Quick Search
+        </div>
+
+        <div class="chips">
+
+            <button class="chip" onclick="quickSearch('Linkin Park')">
+                Linkin Park
+            </button>
+
+            <button class="chip" onclick="quickSearch('Imagine Dragons')">
+                Imagine Dragons
+            </button>
+
+            <button class="chip" onclick="quickSearch('Dr Dre')">
+                Dr Dre
+            </button>
+
+            <button class="chip" onclick="quickSearch('Snoop Dogg')">
+                Snoop Dogg
+            </button>
+
+            <button class="chip" onclick="quickSearch('Trap Nation')">
+                Trap Nation
+            </button>
+
+            <button class="chip" onclick="quickSearch('Eminem')">
+                Eminem
+            </button>
+
+            <button class="chip" onclick="quickSearch('Morning')">
+                Morning
+            </button>
+
+            <button class="chip" onclick="quickSearch('Night Drive')">
+                Night Drive
+            </button>
+
+            <button class="chip" onclick="quickSearch('Workout')">
+                Workout
+            </button>
+
+            <button class="chip" onclick="quickSearch('Rock')">
+                Rock
+            </button>
+
+            <button class="chip" onclick="quickSearch('Rap')">
+                Rap
+            </button>
+
+            <button class="chip" onclick="quickSearch('Trap')">
+                Trap
+            </button>
+
+            <button class="chip" onclick="quickSearch('EDM')">
+                EDM
+            </button>
+
+            <button class="chip" onclick="quickSearch('Phonk')">
+                Phonk
+            </button>
+
+            <button class="chip" onclick="quickSearch('Lo-Fi')">
+                Lo-Fi
+            </button>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <div class="section-title">
+
+            <span id="sectionTitle">
+                My Video Vault
+            </span>
+
+        </div>
+
+        <div
+            id="videoGrid"
+            class="grid"
+        ></div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     ADD VIDEO MODAL
+========================= -->
+
+<div
+    id="addModal"
+    class="modal"
+    onclick="closeModalOutside(event, 'addModal')"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Add Video to Vault
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('addModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-content">
+
+            <form
+                id="videoForm"
+                onsubmit="saveVideo(event)"
+            >
+
+                <div class="form-grid">
+
+                    <div class="field full">
+
+                        <label>
+                            YouTube URL *
+                        </label>
+
+                        <input
+                            id="videoUrl"
+                            type="url"
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            required
+                        >
+
+                    </div>
+
+                    <div class="field full">
+
+                        <label>
+                            Title *
+                        </label>
+
+                        <input
+                            id="videoTitle"
+                            type="text"
+                            placeholder="Video title"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            Artist / Channel
+                        </label>
+
+                        <input
+                            id="videoArtist"
+                            type="text"
+                            placeholder="Linkin Park / Trap Nation..."
+                        >
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            Genre / Category
+                        </label>
+
+                        <input
+                            id="videoGenre"
+                            type="text"
+                            placeholder="Rock / Rap / Trap / EDM..."
+                        >
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            Channel URL
+                        </label>
+
+                        <input
+                            id="channelUrl"
+                            type="url"
+                            placeholder="https://youtube.com/@channel"
+                        >
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            Upload Date
+                        </label>
+
+                        <input
+                            id="uploadDate"
+                            type="date"
+                        >
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            Duration
+                        </label>
+
+                        <input
+                            id="videoDuration"
+                            type="text"
+                            placeholder="03:45"
+                        >
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            Views
+                        </label>
+
+                        <input
+                            id="videoViews"
+                            type="text"
+                            placeholder="1.2M"
+                        >
+
+                    </div>
+
+                    <div class="field full">
+
+                        <label>
+                            Tags
+                        </label>
+
+                        <input
+                            id="videoTags"
+                            type="text"
+                            placeholder="rock, music, official, live"
+                        >
+
+                    </div>
+
+                    <div class="field full">
+
+                        <label>
+                            Description
+                        </label>
+
+                        <textarea
+                            id="videoDescription"
+                            placeholder="Optional description..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn"
+                        onclick="closeModal('addModal')"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save to Vault
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PLAYER MODAL
+========================= -->
+
+<div
+    id="playerModal"
+    class="modal player-modal"
+    onclick="closeModalOutside(event, 'playerModal')"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                YouTube Player
+            </h2>
+
+            <button
+                class="close"
+                onclick="closePlayer()"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="player">
+
+            <iframe
+                id="youtubePlayer"
+                title="YouTube Player"
+                allow="
+                    accelerometer;
+                    autoplay;
+                    clipboard-write;
+                    encrypted-media;
+                    gyroscope;
+                    picture-in-picture;
+                    web-share
+                "
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
+
+        </div>
+
+        <div
+            id="playerTitle"
+            class="player-title"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+<script>
+"use strict";
+
+/* =========================================================
+   SHIVTRIX VIDEOVAULT
+   Metadata-only YouTube library
+   No video/audio files are downloaded.
+========================================================= */
+
+const STORAGE_KEY = "shivtrix_videovault_v1";
+
+let vault = loadVault();
+let currentMode = "vault";
+let currentSearch = "";
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+function loadVault() {
+
+    try {
+
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (!saved) {
+            return [];
+        }
+
+        const parsed = JSON.parse(saved);
+
+        return Array.isArray(parsed)
+            ? parsed
+            : [];
+
+    } catch (error) {
+
+        console.error(
+            "Vault load error:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+function saveVault() {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(vault)
+    );
+
+    updateStats();
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function uid() {
+
+    return (
+        Date.now().toString(36) +
+        Math.random()
+            .toString(36)
+            .slice(2, 9)
+    );
+}
+
+
+function esc(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function jsSafe(value) {
+
+    return String(value ?? "")
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'")
+        .replace(/\r/g, "\\r")
+        .replace(/\n/g, "\\n")
+        .replace(/</g, "\\u003c")
+        .replace(/>/g, "\\u003e");
+}
+
+
+function formatViews(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    return String(value);
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return date.toLocaleDateString(
+        undefined,
+        {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+        }
+    );
+}
+
+
+/* =========================================================
+   YOUTUBE ID
+========================================================= */
+
+function getYouTubeId(url) {
+
+    try {
+
+        const parsed = new URL(url);
+
+        const host =
+            parsed.hostname
+                .replace(/^www\./, "")
+                .replace(/^m\./, "");
+
+        if (host === "youtu.be") {
+
+            return parsed.pathname
+                .split("/")
+                .filter(Boolean)[0] || "";
+
+        }
+
+        if (
+            host === "youtube.com" ||
+            host === "youtube-nocookie.com"
+        ) {
+
+            if (parsed.pathname === "/watch") {
+
+                return parsed.searchParams.get("v") || "";
+
+            }
+
+            const parts =
+                parsed.pathname
+                    .split("/")
+                    .filter(Boolean);
+
+            if (
+                parts[0] === "shorts" ||
+                parts[0] === "embed" ||
+                parts[0] === "live"
+            ) {
+
+                return parts[1] || "";
+
+            }
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Invalid YouTube URL:",
+            error
+        );
+
+    }
+
+    return "";
+}
+
+
+/* =========================================================
+   THUMBNAIL
+========================================================= */
+
+function thumbnailUrl(videoId) {
+
+    return (
+        "https://i.ytimg.com/vi/" +
+        encodeURIComponent(videoId) +
+        "/hqdefault.jpg"
+    );
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function matchesSearch(video, query) {
+
+    if (!query) {
+        return true;
+    }
+
+    const haystack = [
+        video.title,
+        video.artist,
+        video.channel,
+        video.genre,
+        video.tags,
+        video.description,
+        video.mood,
+        video.collection
+    ]
+        .join(" ")
+        .toLowerCase();
+
+    return haystack.includes(
+        query.toLowerCase()
+    );
+}
+
+
+function getFilteredVideos() {
+
+    let list = [...vault];
+
+    if (currentMode === "favorites") {
+
+        list = list.filter(
+            video => video.favorite
+        );
+
+    }
+
+    if (currentMode === "artists") {
+
+        list.sort(
+            (a, b) =>
+                String(a.artist || "")
+                    .localeCompare(
+                        String(b.artist || "")
+                    )
+        );
+
+    }
+
+    if (currentMode === "genres") {
+
+        list.sort(
+            (a, b) =>
+                String(a.genre || "")
+                    .localeCompare(
+                        String(b.genre || "")
+                    )
+        );
+
+    }
+
+    list = list.filter(
+        video =>
+            matchesSearch(
+                video,
+                currentSearch
+            )
+    );
+
+    return list;
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function render() {
+
+    const grid =
+        document.getElementById(
+            "videoGrid"
+        );
+
+    const videos =
+        getFilteredVideos();
+
+    if (!videos.length) {
+
+        grid.innerHTML = `
+            <div class="empty"
+                 style="grid-column:1/-1">
+
+                <div class="empty-icon">
+                    ▣
+                </div>
+
+                <h3>
+                    Your vault is empty
+                </h3>
+
+                <p>
+                    Add a YouTube video to start
+                    building your metadata library.
+                </p>
+
+                <br>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openAddModal()"
+                >
+                    ＋ Add First Video
+                </button>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    grid.innerHTML =
+        videos
+            .map(videoCard)
+            .join("");
+}
+
+
+function videoCard(video) {
+
+    const id =
+        jsSafe(video.videoId);
+
+    const title =
+        jsSafe(video.title);
+
+    const safeTitle =
+        esc(video.title || "Untitled");
+
+    const artist =
+        esc(
+            video.artist ||
+            video.channel ||
+            "Unknown Channel"
+        );
+
+    const duration =
+        esc(video.duration || "");
+
+    const views =
+        esc(
+            formatViews(video.views)
+        );
+
+    const date =
+        esc(
+            formatDate(video.uploadDate)
+        );
+
+    return `
+        <article class="card">
+
+            <div
+                class="thumb"
+                onclick="playVideo('${id}', '${title}')"
+            >
+
+                <img
+                    src="${esc(
+                        video.thumbnail ||
+                        thumbnailUrl(video.videoId)
+                    )}"
+                    alt="${safeTitle}"
+                    loading="lazy"
+                    onerror="
+                        this.src='https://i.ytimg.com/vi/${id}/mqdefault.jpg'
+                    "
+                >
+
+                ${
+                    duration
+                    ?
+                    `
+                    <div class="duration">
+                        ${duration}
+                    </div>
+                    `
+                    :
+                    ""
+                }
+
+                <div class="play-overlay">
+
+                    <div class="play-circle">
+                        ▶
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card-body">
+
+                <div
+                    class="card-title"
+                    title="${safeTitle}"
+                >
+                    ${safeTitle}
+                </div>
+
+                <div class="channel">
+                    ${artist}
+                </div>
+
+                <div class="meta">
+
+                    ${
+                        views
+                        ?
+                        `<span>◉ ${views}</span>`
+                        :
+                        ""
+                    }
+
+                    ${
+                        date
+                        ?
+                        `<span>• ${date}</span>`
+                        :
+                        ""
+                    }
+
+                    ${
+                        video.genre
+                        ?
+                        `<span>• ${esc(video.genre)}</span>`
+                        :
+                        ""
+                    }
+
+                </div>
+
+                <div class="card-footer">
+
+                    <button
+                        class="btn btn-primary"
+                        style="height:34px;padding:0 11px;font-size:12px"
+                        onclick="playVideo('${id}', '${title}')"
+                    >
+                        ▶ Play
+                    </button>
+
+                    <div class="card-actions">
+
+                        <button
+                            class="icon-btn ${
+                                video.favorite
+                                    ? "favorite"
+                                    : ""
+                            }"
+                            title="Favorite"
+                            onclick="toggleFavorite('${id}')"
+                        >
+                            ${
+                                video.favorite
+                                    ? "♥"
+                                    : "♡"
+                            }
+                        </button>
+
+                        <button
+                            class="icon-btn"
+                            title="Delete"
+                            onclick="deleteVideo('${id}')"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats() {
+
+    document.getElementById(
+        "statVideos"
+    ).textContent =
+        vault.length;
+
+    const artists =
+        new Set(
+            vault
+                .map(
+                    video =>
+                        (
+                            video.artist ||
+                            video.channel ||
+                            ""
+                        ).trim()
+                )
+                .filter(Boolean)
+        );
+
+    document.getElementById(
+        "statArtists"
+    ).textContent =
+        artists.size;
+
+    document.getElementById(
+        "statFavorites"
+    ).textContent =
+        vault.filter(
+            video => video.favorite
+        ).length;
+
+    const genres =
+        new Set(
+            vault
+                .map(
+                    video =>
+                        String(
+                            video.genre || ""
+                        )
+                            .trim()
+                            .toLowerCase()
+                )
+                .filter(Boolean)
+        );
+
+    document.getElementById(
+        "statGenres"
+    ).textContent =
+        genres.size;
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+document
+    .getElementById("searchInput")
+    .addEventListener(
+        "input",
+        event => {
+
+            currentSearch =
+                event.target.value
+                    .trim();
+
+            render();
+
+        }
+    );
+
+
+function quickSearch(value) {
+
+    const input =
+        document.getElementById(
+            "searchInput"
+        );
+
+    input.value = value;
+
+    currentSearch = value;
+
+    render();
+
+    input.focus();
+}
+
+
+/* =========================================================
+   MODES
+========================================================= */
+
+function setMode(mode, button) {
+
+    currentMode = mode;
+
+    document
+        .querySelectorAll(".mode")
+        .forEach(
+            element =>
+                element.classList.remove(
+                    "active"
+                )
+        );
+
+    button.classList.add("active");
+
+    const titles = {
+        vault: "My Video Vault",
+        favorites: "Favorites",
+        artists: "Artists / Channels",
+        genres: "Genres"
+    };
+
+    document.getElementById(
+        "sectionTitle"
+    ).textContent =
+        titles[mode] ||
+        "My Video Vault";
+
+    render();
+}
+
+
+/* =========================================================
+   ADD VIDEO
+========================================================= */
+
+function openAddModal() {
+
+    document
+        .getElementById("addModal")
+        .classList.add("open");
+
+    setTimeout(
+        () =>
+            document
+                .getElementById("videoUrl")
+                .focus(),
+        50
+    );
+}
+
+
+function closeModal(id) {
+
+    document
+        .getElementById(id)
+        .classList.remove("open");
+}
+
+
+function closeModalOutside(
+    event,
+    id
+) {
+
+    if (
+        event.target.id === id
+    ) {
+
+        closeModal(id);
+
+    }
+}
+
+
+function saveVideo(event) {
+
+    event.preventDefault();
+
+    const url =
+        document
+            .getElementById("videoUrl")
+            .value
+            .trim();
+
+    const videoId =
+        getYouTubeId(url);
+
+    if (!videoId) {
+
+        showToast(
+            "Please enter a valid YouTube URL."
+        );
+
+        return;
+    }
+
+    const video = {
+
+        id: uid(),
+
+        videoId,
+
+        url,
+
+        title:
+            document
+                .getElementById("videoTitle")
+                .value
+                .trim(),
+
+        artist:
+            document
+                .getElementById("videoArtist")
+                .value
+                .trim(),
+
+        channel:
+            document
+                .getElementById("videoArtist")
+                .value
+                .trim(),
+
+        channelUrl:
+            document
+                .getElementById("channelUrl")
+                .value
+                .trim(),
+
+        genre:
+            document
+                .getElementById("videoGenre")
+                .value
+                .trim(),
+
+        uploadDate:
+            document
+                .getElementById("uploadDate")
+                .value,
+
+        duration:
+            document
+                .getElementById("videoDuration")
+                .value
+                .trim(),
+
+        views:
+            document
+                .getElementById("videoViews")
+                .value
+                .trim(),
+
+        tags:
+            document
+                .getElementById("videoTags")
+                .value
+                .trim(),
+
+        description:
+            document
+                .getElementById("videoDescription")
+                .value
+                .trim(),
+
+        thumbnail:
+            thumbnailUrl(videoId),
+
+        favorite: false,
+
+        addedAt:
+            new Date().toISOString()
+
+    };
+
+    const duplicate =
+        vault.some(
+            item =>
+                item.videoId === videoId
+        );
+
+    if (duplicate) {
+
+        showToast(
+            "This video is already in your vault."
+        );
+
+        return;
+    }
+
+    vault.unshift(video);
+
+    saveVault();
+
+    render();
+
+    document
+        .getElementById("videoForm")
+        .reset();
+
+    closeModal("addModal");
+
+    showToast(
+        "Video added to VideoVault."
+    );
+}
+
+
+/* =========================================================
+   PLAY
+========================================================= */
+
+function playVideo(
+    videoId,
+    title
+) {
+
+    if (!videoId) {
+        return;
+    }
+
+    const iframe =
+        document.getElementById(
+            "youtubePlayer"
+        );
+
+    iframe.src =
+        "https://www.youtube.com/embed/" +
+        encodeURIComponent(videoId) +
+        "?autoplay=1&rel=0&modestbranding=1";
+
+    document.getElementById(
+        "playerTitle"
+    ).textContent =
+        title || "YouTube Video";
+
+    document
+        .getElementById("playerModal")
+        .classList.add("open");
+}
+
+
+function closePlayer() {
+
+    const iframe =
+        document.getElementById(
+            "youtubePlayer"
+        );
+
+    iframe.src = "";
+
+    closeModal("playerModal");
+}
+
+
+/* =========================================================
+   FAVORITE
+========================================================= */
+
+function toggleFavorite(videoId) {
+
+    const video =
+        vault.find(
+            item =>
+                item.videoId === videoId
+        );
+
+    if (!video) {
+        return;
+    }
+
+    video.favorite =
+        !video.favorite;
+
+    saveVault();
+
+    render();
+
+    showToast(
+        video.favorite
+            ? "Added to favorites."
+            : "Removed from favorites."
+    );
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+function deleteVideo(videoId) {
+
+    const video =
+        vault.find(
+            item =>
+                item.videoId === videoId
+        );
+
+    if (!video) {
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            "Delete this video from your vault?\n\n" +
+            video.title
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    vault =
+        vault.filter(
+            item =>
+                item.videoId !== videoId
+        );
+
+    saveVault();
+
+    render();
+
+    showToast(
+        "Video removed."
+    );
+}
+
+
+/* =========================================================
+   BACKUP
+========================================================= */
+
+function backupVault() {
+
+    const backup = {
+
+        app:
+            "ShivTrix VideoVault",
+
+        version:
+            1,
+
+        exportedAt:
+            new Date().toISOString(),
+
+        videos:
+            vault
+
+    };
+
+    const blob =
+        new Blob(
+            [
+                JSON.stringify(
+                    backup,
+                    null,
+                    2
+                )
+            ],
+            {
+                type:
+                    "application/json"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    const date =
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
+    a.href = url;
+
+    a.download =
+        "shivtrix-videovault-" +
+        date +
+        ".json";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+    showToast(
+        "Vault backup created."
+    );
+}
+
+
+/* =========================================================
+   RESTORE
+========================================================= */
+
+function restoreVault(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload =
+        function () {
+
+            try {
+
+                const data =
+                    JSON.parse(
+                        reader.result
+                    );
+
+                const imported =
+                    Array.isArray(data)
+                        ? data
+                        : data.videos;
+
+                if (
+                    !Array.isArray(
+                        imported
+                    )
+                ) {
+
+                    throw new Error(
+                        "Invalid backup"
+                    );
+
+                }
+
+                let added = 0;
+
+                imported.forEach(
+                    video => {
+
+                        if (
+                            !video ||
+                            !video.videoId
+                        ) {
+                            return;
+                        }
+
+                        const exists =
+                            vault.some(
+                                item =>
+                                    item.videoId ===
+                                    video.videoId
+                            );
+
+                        if (!exists) {
+
+                            vault.push(video);
+
+                            added++;
+
+                        }
+
+                    }
+                );
+
+                saveVault();
+
+                render();
+
+                showToast(
+                    added +
+                    " video(s) restored."
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Restore error:",
+                    error
+                );
+
+                showToast(
+                    "Invalid VideoVault backup file."
+                );
+
+            }
+
+            event.target.value = "";
+
+        };
+
+    reader.readAsText(file);
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(
+            () =>
+                toast.classList.remove(
+                    "show"
+                ),
+            2800
+        );
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeModal("addModal");
+            closePlayer();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+updateStats();
+render();
+
+
+/* =========================================================
+   PWA SERVICE WORKER
+========================================================= */
+
+if (
+    "serviceWorker" in navigator
+) {
+
+    window.addEventListener(
+        "load",
+        async () => {
+
+            try {
+
+                const registration =
+                    await navigator.serviceWorker.register(
+                        "./sw.js",
+                        {
+                            scope: "./"
+                        }
+                    );
+
+                console.log(
+                    "ShivTrix VideoVault Service Worker registered:",
+                    registration.scope
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Service Worker registration failed:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+}
+</script>
+
+</body>
+</html>
+```
