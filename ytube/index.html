@@ -317,19 +317,17 @@ function savePick(it){if(!it)return;pendIt=it;
 function delList(i){const n=names()[+i];if(n&&confirm("Delete playlist “"+n+"”?")){delete D.lists[n];save();go("home")}}
 
 /* ---------- player ---------- */
-let Q=[],qi=-1,from="",yt=null,ytReady=false,ytApi=null,pend=null,userPaused=false,errs=0,shuf=false,rep=0,rmod="",busy=false,drag=false,follow=false,up=null,curTab="up",roomPendingPlay=false,roomNeedUnmute=false;
+let Q=[],qi=-1,from="",yt=null,ytReady=false,ytApi=null,pend=null,userPaused=false,errs=0,shuf=false,rep=0,rmod="",busy=false,drag=false,follow=false,up=null,curTab="up";
 const au=$("au"),played=new Set();
 function loadYT(){if(window.YT&&YT.Player)return Promise.resolve();
  return ytApi=ytApi||new Promise((ok,no)=>{window.onYouTubeIframeAPIReady=ok;const s=document.createElement("script");s.src="https://www.youtube.com/iframe_api";s.onerror=()=>{ytApi=null;no()};document.head.appendChild(s)})}
 function ytLoad(id,t){loadYT().then(()=>{
- const roomAuto=!!(room&&follow);
- if(!yt){const v={autoplay:1,mute:roomAuto?1:0,playsinline:1,rel:0,modestbranding:1,enablejsapi:1,start:Math.floor(t||0)};if(/^https?:$/.test(location.protocol))v.origin=location.origin;
-  yt=new YT.Player("ytp",{width:"100%",height:"100%",videoId:id,playerVars:v,events:{onReady:()=>{ytReady=true;if(roomAuto){roomNeedUnmute=true;roomPendingPlay=true;try{yt.mute();yt.playVideo()}catch(e){}}if(pend){yt.loadVideoById({videoId:pend.id,startSeconds:pend.t});pend=null}},onStateChange:onState,onError:onErr}})}
- else if(!ytReady)pend={id,t:t||0};else{try{if(roomAuto){roomNeedUnmute=true;roomPendingPlay=true;yt.mute();}else if(yt.isMuted&&yt.isMuted())yt.unMute();}catch(e){}yt.loadVideoById({videoId:id,startSeconds:t||0})}}).catch(()=>toast("Couldn't load the YouTube player"))}
+ if(!yt){const v={autoplay:1,playsinline:1,rel:0,modestbranding:1,enablejsapi:1,start:Math.floor(t||0)};if(/^https?:$/.test(location.protocol))v.origin=location.origin;
+  yt=new YT.Player("ytp",{width:"100%",height:"100%",videoId:id,playerVars:v,events:{onReady:()=>{ytReady=true;if(pend){yt.loadVideoById({videoId:pend.id,startSeconds:pend.t});pend=null}},onStateChange:onState,onError:onErr}})}
+ else if(!ytReady)pend={id,t:t||0};else yt.loadVideoById({videoId:id,startSeconds:t||0})}).catch(()=>toast("Couldn't load the YouTube player"))}
 function playAt(i){if(!LIST[i])return;follow=false;document.body.classList.remove("follow");Q=LIST.slice();qi=i;from=SRC;played.clear();rmod="";openPl();loadCur()}
 function loadCur(start){
  const it=Q[qi];if(!it)return;played.add(it.videoId);userPaused=false;
- if(follow&&room&&!it.off){roomPendingPlay=true;roomNeedUnmute=true}
  $("plT").textContent=it.title;$("plA").textContent=it.artist;$("plF").textContent=from;
  $("mT").textContent=it.title;$("mA").textContent=it.artist;$("mImg").src=it.thumbnail||"";
  $("vbox").classList.toggle("offl",!!it.off);
@@ -338,8 +336,8 @@ function loadCur(start){
  else{au.pause();ytLoad(it.videoId,start)}
  if(!follow){sendLoad();topUp()}}
 function onState(e){const S=YT.PlayerState;
- if(e.data===S.PLAYING){userPaused=false;errs=0;ui(true);keepOn();roomPendingPlay=false}
- else if(e.data===S.PAUSED){ui(false);if(document.hidden&&!userPaused&&!follow)setTimeout(()=>{try{if(!userPaused&&yt.getPlayerState()===S.PAUSED)yt.playVideo()}catch(x){}},400);if(!document.hidden&&!follow)userPaused=true}
+ if(e.data===S.PLAYING){userPaused=false;errs=0;ui(true);keepOn()}
+ else if(e.data===S.PAUSED){ui(false);if(document.hidden&&!userPaused&&!follow)setTimeout(()=>{try{if(!userPaused&&yt.getPlayerState()===S.PAUSED)yt.playVideo()}catch(x){}},400);if(!document.hidden)userPaused=true}
  else if(e.data===S.ENDED)ended();
  if(!follow)bc({t:"s",p:e.data===S.PLAYING,c:time(),id:(Q[qi]||{}).videoId})}
 function onErr(){errs++;toast("Can't play this video. Skipping…");if(follow||errs>=Math.min(Q.length,5))return;setTimeout(()=>next(true),800)}
@@ -350,10 +348,7 @@ function time(){try{const it=Q[qi];return it&&it.off?au.currentTime:(yt&&ytReady
 function dur(){try{const it=Q[qi];return it&&it.off?au.duration||0:(yt&&ytReady?yt.getDuration():0)||0}catch(e){return 0}}
 function seekTo(s){const it=Q[qi];if(it&&it.off)au.currentTime=s;else try{yt.seekTo(s,true)}catch(e){}}
 function playing(){const it=Q[qi];if(it&&it.off)return!au.paused;try{const s=yt.getPlayerState();return s===1||s===3}catch(e){return false}}
-function roomWake(){if(!follow||!room||!yt||!ytReady||!Q[qi]||Q[qi].off)return;try{if(roomNeedUnmute){yt.unMute();roomNeedUnmute=false}yt.playVideo();roomPendingPlay=false;userPaused=false;ui(true);toast("Room playback unlocked")}catch(e){}}
-function bindRoomWake(){if(bindRoomWake.bound)return;bindRoomWake.bound=true;const wake=()=>{if(roomPendingPlay)roomWake()};["pointerdown","keydown","touchstart"].forEach(k=>document.addEventListener(k,wake,{passive:true}));}
-bindRoomWake();
-function togglePlay(){if(follow&&room){roomWake();return cmd("toggle");}
+function togglePlay(){if(follow&&room)return cmd("toggle");
  if(playing()){userPaused=true;const it=Q[qi];if(it&&it.off)au.pause();else yt.pauseVideo()}else{userPaused=false;resume()}}
 function ui(p){$("bPP").textContent=p?"⏸":"▶";$("mPP").textContent=p?"⏸":"▶";try{navigator.mediaSession.playbackState=p?"playing":"paused"}catch(e){}}
 function nextIdx(){if(!Q.length)return-1;
@@ -434,23 +429,22 @@ let room=null,es=null;
 function post(s){if(room)fetch(NT+room,{method:"POST",body:s}).catch(()=>{})}
 function bc(o){if(!room)return;o.f=me;post(JSON.stringify(o))}
 function cmd(c){bc({t:"cmd",c})}
-function sendLoad(){const it=Q[qi];if(room&&it&&!it.off)bc({t:"load",it,from,c:time(),p:playing()})}
+function sendLoad(){const it=Q[qi];if(room&&it&&!it.off)bc({t:"load",it,from,c:time()})}
 function onRoom(raw){let m;try{m=JSON.parse(raw)}catch(e){return}if(!m||m.f===me)return;
- if(m.t==="load"){follow=true;document.body.classList.add("follow");Q=[m.it];qi=0;from=m.from;openPl();loadCur(m.c);roomPendingPlay=!!m.p;roomNeedUnmute=true;if(roomPendingPlay)setTimeout(()=>roomWake(),150)}
- else if(m.t==="s"){if(follow&&Q[qi]&&Q[qi].videoId===m.id&&yt&&ytReady)try{if(Math.abs(yt.getCurrentTime()-m.c)>1.25)yt.seekTo(m.c,true);if(m.p){roomPendingPlay=true;roomNeedUnmute=true;yt.mute();yt.playVideo();setTimeout(()=>roomWake(),100)}else{roomPendingPlay=false;yt.pauseVideo()}}catch(e){}}
+ if(m.t==="load"){follow=true;document.body.classList.add("follow");Q=[m.it];qi=0;from=m.from;openPl();loadCur(m.c)}
+ else if(m.t==="s"){if(follow&&Q[qi]&&Q[qi].videoId===m.id&&yt&&ytReady)try{if(Math.abs(yt.getCurrentTime()-m.c)>2.5)yt.seekTo(m.c,true);if(m.p)yt.playVideo();else yt.pauseVideo()}catch(e){}}
  else if(m.t==="x"){if(follow){try{yt.stopVideo()}catch(e){}ui(false)}}
  else if(m.t==="hi"){if(!follow)sendLoad()}
  else if(m.t==="cmd"){if(!follow&&Q.length){if(m.c==="toggle")togglePlay();else if(m.c==="next")next(false);else if(m.c==="prev")prev()}}}
-function enterRoom(id,creator){leaveRoom(true);room=id;roomPendingPlay=false;roomNeedUnmute=false;
+function enterRoom(id,creator){leaveRoom(true);room=id;
  es=new EventSource(NT+id+"/sse");let first=true;
  es.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.event==="message")onRoom(d.message)}catch(x){}};
- es.onerror=()=>{toast("Room connection lost — retrying…")};
  es.onopen=()=>{if(first){first=false;bc({t:"hi"});if(creator)sendLoad()}};
  try{history.replaceState(null,"","#room="+id)}catch(e){}
  $("castBtn").classList.add("on")}
 function leaveRoom(quiet){if(es)es.close();es=null;
  if(room&&!quiet)toast("Left room "+room);
- room=null;roomPendingPlay=false;roomNeedUnmute=false;follow=false;document.body.classList.remove("follow");$("castBtn").classList.remove("on");
+ room=null;follow=false;document.body.classList.remove("follow");$("castBtn").classList.remove("on");
  try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}
 function createRoom(){let id="";for(let i=0;i<8;i++)id+=AB[Math.random()*AB.length|0];
  enterRoom(id,true);showCast();toast("Room created")}
