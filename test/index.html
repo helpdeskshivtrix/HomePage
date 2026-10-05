@@ -1,188 +1,696 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro ID Generator</title>
-  <meta name="theme-color" content="#4f46e5">
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #f8fafc;
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --accent: #10b981;
-    }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      background: var(--card);
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
-      width: 100%;
-      max-width: 450px;
-      text-align: center;
-    }
-    h1 { margin-top: 0; font-size: 1.75rem; color: #fff; }
-    .display-box {
-      background: #0f172a;
-      padding: 1rem;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 1.1rem;
-      word-break: break-all;
-      margin: 1.5rem 0;
-      min-height: 24px;
-      border: 1px solid #334155;
-      cursor: pointer;
-      position: relative;
-      transition: border-color 0.2s;
-    }
-    .display-box:hover { border-color: var(--primary); }
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.2s;
-    }
-    button:hover { background: var(--primary-hover); }
-    .history {
-      margin-top: 2rem;
-      text-align: left;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-    .history h3 { font-size: 0.9rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; }
-    .history ul { list-style: none; padding: 0; margin: 0; }
-    .history li {
-      font-family: monospace;
-      padding: 0.5rem;
-      border-bottom: 1px solid #334155;
-      font-size: 0.85rem;
-      display: flex;
-      justify-content: space-between;
-      cursor: pointer;
-    }
-    .history li:hover { color: var(--accent); }
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      background: var(--accent);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-    }
-  </style>
-  <script>
-    // Inline PWA Manifest Data URI
-    const manifest = {
-      name: "Professional Unique ID Generator",
-      short_name: "Pro ID Gen",
-      start_url: ".",
-      display: "standalone",
-      background_color: "#0f172a",
-      theme_color: "#6366f1",
-      icons: [{
-        src: "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' rx='15%' fill='%236366f1'/><path d='M150 150h212v212H150z' fill='none' stroke='white' stroke-width='40'/></svg>",
-        sizes: "512x512",
-        type: "image/svg+xml"
-      }]
-    };
-    const manifestStr = JSON.stringify(manifest);
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(manifestStr)));
-    document.head.appendChild(link);
-  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#00a884">
+<meta name="color-scheme" content="light dark">
+<title>WhatsApp</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --teal:#00a884; --teal-d:#008069;
+  --bg:#efeae2; --panel:#fff; --head:#f0f2f5; --in:#fff; --out:#d9fdd3;
+  --tx:#111b21; --tx2:#667781; --line:#e9edef; --hover:#f5f6f6; --active:#f0f2f5;
+  --ic:#54656f; --tick:#53bdeb; --notice:#fff5c4; --danger:#ea0038; --input:#fff;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0b141a; --panel:#111b21; --head:#202c33; --in:#202c33; --out:#005c4b;
+    --tx:#e9edef; --tx2:#8696a0; --line:#222d34; --hover:#202c33; --active:#2a3942;
+    --ic:#aebac1; --notice:#182229; --input:#2a3942;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--head);color:var(--tx);
+  font:14.5px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+[hidden]{display:none!important}
+.ic{display:inline-flex;align-items:center;justify-content:center;flex:none}
+
+/* layout */
+.app{display:grid;grid-template-columns:minmax(320px,32%) 1fr;height:100dvh;max-width:1700px;margin:0 auto;background:var(--panel);overflow:hidden}
+.side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--panel)}
+.main{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--bg)}
+
+.bar{height:60px;flex:none;display:flex;align-items:center;gap:12px;padding:0 14px;padding-top:env(safe-area-inset-top);background:var(--head)}
+.bar .grow{flex:1;min-width:0}
+.ibtn{width:40px;height:40px;border-radius:50%;color:var(--ic);display:inline-flex;align-items:center;justify-content:center;position:relative}
+.ibtn:hover{background:var(--active)}
+.ibtn .dot{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--danger);border:2px solid var(--head)}
+
+.avatar{width:40px;height:40px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:15px;user-select:none}
+.avatar.lg{width:49px;height:49px;font-size:17px}
+
+.search{padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
+.search label{display:flex;align-items:center;gap:14px;background:var(--head);border-radius:8px;padding:0 12px;height:36px;color:var(--ic)}
+.search input{flex:1;border:0;outline:0;background:transparent;font-size:14.5px;min-width:0}
+.search input::placeholder{color:var(--tx2)}
+
+.list{flex:1;overflow-y:auto;overscroll-behavior:contain}
+.item{display:flex;align-items:center;gap:14px;width:100%;padding:0 14px;height:72px;text-align:left;position:relative}
+.item:hover{background:var(--hover)}
+.item.active{background:var(--active)}
+.item .body{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:center;gap:3px;border-bottom:1px solid var(--line)}
+.item:last-child .body{border-bottom:0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.name{font-size:16.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.time{font-size:12px;color:var(--tx2);flex:none}
+.item.unread .time{color:var(--teal)}
+.preview{display:flex;align-items:center;gap:3px;color:var(--tx2);min-width:0;font-size:14px}
+.preview .txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.preview .typing{color:var(--teal)}
+.preview .tick{color:var(--tx2)}
+.preview .tick.read{color:var(--tick)}
+.badge{background:var(--teal);color:#fff;border-radius:11px;min-width:20px;height:20px;padding:0 6px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.empty{padding:32px 20px;text-align:center;color:var(--tx2)}
+
+/* splash */
+.splash{position:absolute;inset:0;z-index:2;background:var(--head);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;border-bottom:6px solid var(--teal)}
+.splash .logo{width:84px;height:84px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:28px}
+.splash h1{font-size:30px;font-weight:300;letter-spacing:-.2px}
+.splash p{margin-top:12px;max-width:440px;color:var(--tx2);font-size:14px;line-height:1.5}
+.splash .lock{margin-top:40px;font-size:13px;color:var(--tx2);display:flex;gap:6px;align-items:center}
+
+/* chat */
+.chat{display:flex;flex-direction:column;min-height:0;flex:1}
+.chat .bar{cursor:default;border-bottom:1px solid var(--line)}
+.who{display:flex;align-items:center;gap:13px;flex:1;min-width:0}
+.who .t{min-width:0}
+.who .n{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .s{font-size:13px;color:var(--tx2)}
+.back{display:none}
+
+.stream{flex:1;overflow-y:auto;padding:18px max(4%,12px) 10px;display:flex;flex-direction:column;gap:3px;
+  background-color:var(--bg);
+  background-image:radial-gradient(color-mix(in srgb,var(--tx) 7%,transparent) 1px,transparent 1.5px);
+  background-size:22px 22px;overscroll-behavior:contain}
+.notice{align-self:center;max-width:460px;text-align:center;background:var(--notice);color:var(--tx2);font-size:12.5px;padding:7px 12px;border-radius:8px;margin:6px 0 10px;box-shadow:0 1px .5px rgba(11,20,26,.13)}
+.day{align-self:center;background:var(--panel);color:var(--tx2);font-size:12.5px;padding:5px 12px;border-radius:8px;margin:6px 0;box-shadow:0 1px .5px rgba(11,20,26,.13)}
+.msg{display:flex}
+.msg.out{justify-content:flex-end}
+.bubble{max-width:min(68%,560px);padding:6px 8px 6px 9px;border-radius:8px;box-shadow:0 1px .5px rgba(11,20,26,.13);background:var(--in);word-break:break-word;white-space:pre-wrap;position:relative}
+.msg.out .bubble{background:var(--out);border-top-right-radius:0}
+.msg.in .bubble{border-top-left-radius:0}
+.bubble img{display:block;max-width:100%;max-height:340px;border-radius:6px;margin-bottom:2px}
+.meta{float:right;margin:7px 0 -3px 12px;display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--tx2);white-space:nowrap}
+.meta .tick.read{color:var(--tick)}
+
+.foot{flex:none;display:flex;align-items:center;gap:6px;padding:8px 12px;padding-bottom:calc(8px + env(safe-area-inset-bottom));background:var(--head)}
+.foot .field{flex:1;background:var(--input);border-radius:8px;padding:0 14px;display:flex}
+.foot input[type=text]{flex:1;border:0;outline:0;background:transparent;height:42px;font-size:15px;min-width:0}
+.send{width:42px;height:42px;border-radius:50%;background:var(--teal);color:#fff;display:inline-flex;align-items:center;justify-content:center}
+.send:hover{background:var(--teal-d)}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(11,20,26,.5);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--panel);z-index:50;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.18)}
+.drawer.on{transform:none}
+.drawer .bar{background:var(--teal-d);color:#fff}
+.drawer .bar .ibtn{color:#fff}
+.drawer .bar .ibtn:hover{background:rgba(255,255,255,.14)}
+.drawer h2{font-size:19px;font-weight:500}
+.dbody{flex:1;overflow-y:auto;padding:8px 0 24px}
+.sec{padding:16px 22px;border-bottom:1px solid var(--line)}
+.sec h3{font-size:14px;color:var(--teal);font-weight:600;margin-bottom:10px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:5px 0;color:var(--tx2)}
+.kv b{color:var(--tx);font-weight:500;text-align:right}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer}
+.switch small{display:block;color:var(--tx2);margin-top:2px}
+.switch input{appearance:none;width:40px;height:22px;border-radius:11px;background:var(--tx2);position:relative;flex:none;cursor:pointer;transition:background .15s}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch input:checked{background:var(--teal)}
+.switch input:checked::after{transform:translateX(18px)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{padding:9px 16px;border-radius:20px;border:1px solid var(--line);color:var(--tx);font-weight:500}
+.btn:hover{background:var(--hover)}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.pri:hover{background:var(--teal-d)}
+.warn{margin:12px 22px 0;padding:12px 14px;border-radius:8px;background:color-mix(in srgb,var(--danger) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--danger) 35%,transparent);font-size:13.5px}
+.warn .btn{margin-top:10px}
+.hint{color:var(--tx2);font-size:13px;margin-top:8px;line-height:1.45}
+
+/* call */
+.call{position:fixed;inset:0;z-index:60;background:#0b141a;color:#fff;display:none;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(32px + env(safe-area-inset-top)) 20px calc(32px + env(safe-area-inset-bottom));text-align:center}
+.call.on{display:flex}
+.call video{width:100%;max-width:520px;max-height:55dvh;border-radius:14px;background:#1f2c34;transform:scaleX(-1);object-fit:cover}
+.call .avatar{width:96px;height:96px;font-size:34px;margin:0 auto 14px}
+.call .small{color:#8696a0;font-size:13px;max-width:360px;line-height:1.45}
+.call .end{background:var(--danger);color:#fff;padding:13px 44px;border-radius:30px;font-weight:600}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#1f2c34;color:#e9edef;padding:11px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;max-width:90vw;box-shadow:0 4px 18px rgba(0,0,0,.3)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  .main{display:none}
+  .app.open .side{display:none}
+  .app.open .main{display:flex}
+  .back{display:inline-flex}
+  .bubble{max-width:82%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Pro ID Generator</h1>
-    <div class="display-box" id="idDisplay" title="Click to copy">Click Generate</div>
-    <button id="genBtn">Generate UUID v4</button>
-    
-    <div class="history">
-      <h3>History Log</h3>
-      <ul id="historyList"></ul>
+<div class="app" id="app">
+  <aside class="side">
+    <header class="bar">
+      <div class="avatar" style="background:#6b7c85" title="You">Me</div>
+      <div class="grow"></div>
+      <button class="ibtn" id="btnBackup" aria-label="Backup and restore" title="Backup and restore"><span class="ic" id="icoBackup"></span><span class="dot" id="backupDot" hidden></span></button>
+      <button class="ibtn" id="btnNew" aria-label="New chat" title="New chat"></button>
+    </header>
+    <div class="search">
+      <label><span id="icoSearch"></span><input id="q" type="search" placeholder="Search or start a new chat" autocomplete="off" aria-label="Search chats and messages"></label>
+    </div>
+    <div class="list" id="list" role="list"></div>
+  </aside>
+
+  <main class="main">
+    <div class="splash" id="splash">
+      <div class="logo" id="splashLogo"></div>
+      <h1>WhatsApp Web</h1>
+      <p>Pick a chat to start messaging. Your chats are stored on this device and backed up every night at midnight.</p>
+      <div class="lock"><span id="icoLock"></span>End-to-end encrypted</div>
+    </div>
+
+    <section class="chat" id="chat" hidden>
+      <header class="bar">
+        <button class="ibtn back" id="btnBack" aria-label="Back to chats"></button>
+        <div class="who">
+          <div class="avatar" id="cAvatar"></div>
+          <div class="t"><div class="n" id="cName"></div><div class="s" id="cStatus">online</div></div>
+        </div>
+        <button class="ibtn" id="btnVideo" aria-label="Video call" title="Video call"></button>
+        <button class="ibtn" id="btnVoice" aria-label="Voice call" title="Voice call"></button>
+      </header>
+      <div class="stream" id="stream" aria-live="polite"></div>
+      <footer class="foot">
+        <button class="ibtn" id="btnAttach" aria-label="Attach photo" title="Attach photo"></button>
+        <input type="file" id="file" accept="image/*" hidden>
+        <div class="field"><input id="msg" type="text" placeholder="Type a message" autocomplete="off" aria-label="Message"></div>
+        <button class="send" id="btnSend" aria-label="Send"></button>
+      </footer>
+    </section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Backup and restore" aria-hidden="true">
+  <header class="bar"><button class="ibtn" id="btnClose" aria-label="Close"></button><h2>Backup and restore</h2></header>
+  <div class="dbody">
+    <div class="warn" id="permWarn" hidden>
+      Your backup file needs permission before it can be updated.
+      <div><button class="btn pri" id="btnAllow">Allow and save backup</button></div>
+    </div>
+
+    <div class="sec">
+      <h3>Nightly backup</h3>
+      <label class="switch">
+        <span>Back up at midnight<small>Each backup replaces the previous one.</small></span>
+        <input type="checkbox" id="auto">
+      </label>
+      <div class="kv"><span>Last backup</span><b id="kLast">—</b></div>
+      <div class="kv"><span>Next backup</span><b id="kNext">—</b></div>
+      <div class="kv"><span>Chats in backup</span><b id="kCount">—</b></div>
+      <div class="btns"><button class="btn pri" id="btnNow">Back up now</button></div>
+    </div>
+
+    <div class="sec" id="fileSec">
+      <h3>Backup file on this device</h3>
+      <div class="kv"><span>File</span><b id="kFile">Not chosen</b></div>
+      <div class="btns">
+        <button class="btn" id="btnPick">Choose file</button>
+        <button class="btn" id="btnForget" hidden>Stop using file</button>
+      </div>
+      <p class="hint" id="fileHint">Choose one file once. Every backup then overwrites that same file, so no old copies pile up.</p>
+    </div>
+
+    <div class="sec">
+      <h3>Export and restore</h3>
+      <div class="btns">
+        <button class="btn" id="btnDownload">Download backup</button>
+        <button class="btn" id="btnRestoreFile">Restore from file</button>
+        <button class="btn" id="btnRestoreLast">Restore last backup</button>
+      </div>
+      <input type="file" id="restoreInput" accept="application/json,.json" hidden>
+      <p class="hint">Restoring replaces all chats currently on this device.</p>
+    </div>
+
+    <div class="sec">
+      <h3>How midnight backup works</h3>
+      <p class="hint">A browser can only write files while the app is running. If the app is closed at midnight, the backup runs the next time you open it. Where your browser supports it, a background task also refreshes the internal backup.</p>
     </div>
   </div>
+</aside>
 
-  <div class="toast" id="toast">Copied to clipboard!</div>
+<div class="call" id="call" role="dialog" aria-label="Call">
+  <div>
+    <div class="avatar" id="callAvatar"></div>
+    <h2 id="callName" style="font-weight:400"></h2>
+    <div class="small" id="callState" style="margin-top:6px"></div>
+  </div>
+  <video id="localVideo" autoplay playsinline muted></video>
+  <div>
+    <p class="small" style="margin:0 auto 18px">This is a local camera and microphone preview. Calling another device needs a signaling server.</p>
+    <button class="end" id="btnEnd">End call</button>
+  </div>
+</div>
 
-  <script>
-    const idDisplay = document.getElementById('idDisplay');
-    const genBtn = document.getElementById('genBtn');
-    const historyList = document.getElementById('historyList');
-    const toast = document.getElementById('toast');
+<div class="toast" id="toast" role="status"></div>
 
-    function showToast(msg) {
-      toast.innerText = msg;
-      toast.style.opacity = '1';
-      setTimeout(() => toast.style.opacity = '0', 2000);
-    }
+<script>
+'use strict';
 
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
-    }
+/* ---------- tiny helpers ---------- */
+const $ = s => document.querySelector(s);
+const ICONS = {
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  back:'<path d="M15 18l-6-6 6-6"/>',
+  close:'<path d="M18 6L6 18M6 6l12 12"/>',
+  phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+  video:'<rect x="2" y="6" width="14" height="12" rx="2"/><path d="M22 8l-6 4 6 4z"/>',
+  clip:'<path d="M21 11l-9 9a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/>',
+  send:'<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
+  chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.7A8 8 0 1 1 21 12z"/><path d="M12 8v8M8 12h8"/>',
+  backup:'<path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 18v2h16v-2"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  tick1:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  tick2:'<path d="M2 12.5l4.5 4.5L16 7.5"/><path d="M10 15.5l2 1.5L22 7.5"/>',
+  logo:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.7A8 8 0 1 1 21 12z"/>'
+};
+function svg(name, size = 22, sw = 2){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+}
+function ico(name, size, sw){ const s = document.createElement('span'); s.className = 'ic'; s.innerHTML = svg(name, size, sw); return s; }
+function put(sel, name, size, sw){ $(sel).innerHTML = svg(name, size, sw); }
+function h(tag, attrs = {}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)){
+    if (k === 'class') e.className = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) if (c != null) e.append(c);
+  return e;
+}
+const initials = n => n.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const PALETTE = ['#7f66ff','#e8590c','#0c8599','#c2255c','#2f9e44','#e67700','#5f3dc4','#1971c2'];
+const avatar = (c, big) => h('div', { class: 'avatar' + (big ? ' lg' : ''), style: `background:${c.color}` }, initials(c.name));
+const fmtTime = ts => new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+function listTime(ts){
+  const d = new Date(ts), t = new Date();
+  if (dayKey(d) === dayKey(t)) return fmtTime(ts);
+  const y = new Date(t); y.setDate(t.getDate() - 1);
+  return dayKey(d) === dayKey(y) ? 'Yesterday' : d.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+function dayLabel(ts){
+  const d = new Date(ts), t = new Date();
+  if (dayKey(d) === dayKey(t)) return 'Today';
+  const y = new Date(t); y.setDate(t.getDate() - 1);
+  return dayKey(d) === dayKey(y) ? 'Yesterday' : d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' });
+}
+let toastTimer;
+function toast(text){
+  const t = $('#toast'); t.textContent = text; t.classList.add('on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 3200);
+}
 
-    genBtn.addEventListener('click', () => {
-      const uuid = crypto.randomUUID();
-      idDisplay.innerText = uuid;
-      
-      // Add to UI log
-      const li = document.createElement('li');
-      li.innerText = uuid;
-      li.onclick = () => copyToClipboard(uuid);
-      historyList.insertBefore(li, historyList.firstChild);
-    });
+/* ---------- IndexedDB key-value store ---------- */
+const DB_NAME = 'wa-clone', STORE = 'kv';
+let dbPromise;
+function db(){
+  return dbPromise ||= new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function tx(mode, fn){
+  const d = await db();
+  return new Promise((res, rej) => {
+    const t = d.transaction(STORE, mode), s = t.objectStore(STORE);
+    let out; try { out = fn(s); } catch (e){ rej(e); return; }
+    t.oncomplete = () => res(out && 'result' in out ? out.result : undefined);
+    t.onerror = t.onabort = () => rej(t.error);
+  });
+}
+const kvGet = k => tx('readonly', s => s.get(k));
+const kvSet = (k, v) => tx('readwrite', s => s.put(v, k));
+const kvDel = k => tx('readwrite', s => s.delete(k));
 
-    idDisplay.addEventListener('click', () => {
-      if(idDisplay.innerText !== 'Click Generate') {
-        copyToClipboard(idDisplay.innerText);
+/* ---------- state ---------- */
+let state, current = null;
+let meta = { auto: true, lastBackupAt: null, lastBackupDay: null, needsPermission: false, fileName: null };
+const typing = new Set();
+const replyTimers = {};
+let saveTimer;
+
+function seed(){
+  const now = Date.now(), M = 60000;
+  const C = (id, name, about, msgs, unread = 0) => ({
+    id, name, about, unread, color: PALETTE[id % PALETTE.length],
+    messages: msgs.map((m, i) => ({ id: id * 1000 + i, from: m[0], type: 'text', text: m[1], ts: now - m[2] * M, status: 'read' }))
+  });
+  return { chats: [
+    C(1, 'Alice Smith', 'Hey there! I am using WhatsApp.', [
+      ['in', 'Hey! Are we still meeting up today?', 95],
+      ['out', 'Yes, 4 pm at the usual place.', 90],
+      ['in', 'Perfect, see you there.', 88]]),
+    C(2, 'Project Delta', 'Team group', [
+      ['in', 'Bob: Release branch is cut.', 190],
+      ['in', 'Priya: QA starts tomorrow morning.', 160],
+      ['in', 'Bob: Please check the deployment notes.', 150]], 3),
+    C(3, 'Charlie Dev', 'At work', [
+      ['in', 'Did the encryption handshake pass?', 1600],
+      ['out', 'Verified on both ends.', 1590]]),
+    C(4, 'Mom', 'Busy', [
+      ['in', 'Call me when you are free.', 3000]], 1)
+  ]};
+}
+function save(){ clearTimeout(saveTimer); saveTimer = setTimeout(() => kvSet('state', state), 150); }
+async function flush(){ clearTimeout(saveTimer); await kvSet('state', state); }
+async function saveMeta(){ await kvSet('meta', meta); }
+const chatById = id => state.chats.find(c => c.id === id);
+
+/* ---------- chat list ---------- */
+function renderList(){
+  const q = $('#q').value.trim().toLowerCase();
+  const box = $('#list'); box.replaceChildren();
+  const rows = state.chats
+    .map(c => ({ c, last: c.messages[c.messages.length - 1] }))
+    .map(r => ({ ...r, hit: q ? [...r.c.messages].reverse().find(m => m.type === 'text' && m.text.toLowerCase().includes(q)) : null }))
+    .filter(r => !q || r.c.name.toLowerCase().includes(q) || r.hit)
+    .sort((a, b) => (b.last?.ts || 0) - (a.last?.ts || 0));
+  if (!rows.length){ box.append(h('p', { class: 'empty' }, q ? 'No chats or messages found' : 'No chats yet. Tap the new chat button.')); return; }
+  for (const { c, last, hit } of rows){
+    const shown = hit || last;
+    const pv = h('div', { class: 'preview' });
+    if (typing.has(c.id)) pv.append(h('span', { class: 'txt typing' }, 'typing…'));
+    else {
+      if (shown && shown.from === 'out'){
+        const t = ico(shown.status === 'sent' ? 'tick1' : 'tick2', 16, 2.4);
+        t.classList.add('tick'); if (shown.status === 'read') t.classList.add('read'); pv.append(t);
       }
-    });
-
-    // Dynamic Base64 Service Worker Setup for Offline PWA Installation
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        const swContent = `
-          const CACHE_NAME = 'id-gen-v1';
-          self.addEventListener('install', e => self.skipWaiting());
-          self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-          self.addEventListener('fetch', e => {
-            e.respondWith(
-              fetch(e.request).catch(() => caches.match(e.request) || new Response("Offline Content"))
-            );
-          });
-        `;
-        const swBlob = new Blob([swContent], { type: 'text/javascript' });
-        const swUrl = URL.createObjectURL(swBlob);
-        navigator.serviceWorker.register(swUrl).catch(err => console.log('SW setup bypassed:', err));
-      });
+      pv.append(h('span', { class: 'txt' }, shown ? (shown.type === 'img' ? 'Photo' : shown.text) : 'No messages'));
     }
-  </script>
+    if (c.unread) pv.append(h('span', { class: 'badge' }, String(c.unread)));
+    box.append(h('button', {
+      class: 'item' + (current === c.id ? ' active' : '') + (c.unread ? ' unread' : ''),
+      role: 'listitem', onclick: () => openChat(c.id)
+    }, avatar(c, true), h('div', { class: 'body' },
+      h('div', { class: 'row' }, h('span', { class: 'name' }, c.name), h('span', { class: 'time' }, shown ? listTime(shown.ts) : '')),
+      pv)));
+  }
+}
+
+/* ---------- conversation ---------- */
+function openChat(id){
+  current = id;
+  const c = chatById(id); c.unread = 0; save();
+  $('#app').classList.add('open');
+  $('#splash').hidden = true; $('#chat').hidden = false;
+  $('#cAvatar').replaceWith(Object.assign(avatar(c), { id: 'cAvatar' }));
+  $('#cName').textContent = c.name;
+  renderList(); renderChat();
+  if (matchMedia('(min-width:761px)').matches) $('#msg').focus();
+}
+function closeChat(){
+  current = null; $('#app').classList.remove('open');
+  $('#chat').hidden = true; $('#splash').hidden = false; renderList();
+}
+function tickEl(m){
+  const t = ico(m.status === 'sent' ? 'tick1' : 'tick2', 16, 2.4);
+  t.classList.add('tick'); if (m.status === 'read') t.classList.add('read');
+  t.setAttribute('aria-label', m.status); return t;
+}
+function renderChat(){
+  const c = chatById(current); if (!c) return;
+  $('#cStatus').textContent = typing.has(c.id) ? 'typing…' : 'online';
+  const s = $('#stream'); s.replaceChildren();
+  s.append(h('div', { class: 'notice' }, 'Messages are end-to-end encrypted. No one outside this chat can read them.'));
+  let lastDay = '';
+  for (const m of c.messages){
+    const dk = dayKey(new Date(m.ts));
+    if (dk !== lastDay){ s.append(h('div', { class: 'day' }, dayLabel(m.ts))); lastDay = dk; }
+    const info = h('span', { class: 'meta' }, fmtTime(m.ts), m.from === 'out' ? tickEl(m) : null);
+    const body = m.type === 'img' ? h('img', { src: m.text, alt: 'Photo' }) : document.createTextNode(m.text);
+    s.append(h('div', { class: 'msg ' + m.from }, h('div', { class: 'bubble' }, body, info)));
+  }
+  s.scrollTop = s.scrollHeight;
+}
+function refresh(c){ save(); renderList(); if (current === c.id) renderChat(); }
+
+function pushOut(c, type, text){
+  const m = { id: Date.now() + Math.random(), from: 'out', type, text, ts: Date.now(), status: 'sent' };
+  c.messages.push(m); refresh(c);
+  setTimeout(() => { m.status = 'delivered'; refresh(c); }, 700);
+  setTimeout(() => { m.status = 'read'; refresh(c); }, 1700);
+  scheduleReply(c);
+}
+const REPLIES = [
+  'Got it, thanks.', 'Sounds good to me.', 'Give me a minute and I will check.',
+  'Nice! Send more details when you can.', 'Can we talk about this later today?', 'On it.'
+];
+function scheduleReply(c){
+  clearTimeout(replyTimers[c.id]);
+  replyTimers[c.id] = setTimeout(() => {
+    typing.add(c.id); renderList(); if (current === c.id) renderChat();
+    replyTimers[c.id] = setTimeout(() => {
+      typing.delete(c.id);
+      c.messages.push({ id: Date.now() + Math.random(), from: 'in', type: 'text', text: REPLIES[Math.floor(Math.random() * REPLIES.length)], ts: Date.now(), status: 'read' });
+      if (current !== c.id) c.unread++;
+      refresh(c);
+    }, 1800);
+  }, 2000);
+}
+function sendText(){
+  const c = chatById(current); const v = $('#msg').value.trim();
+  if (!c || !v) return;
+  $('#msg').value = ''; pushOut(c, 'text', v);
+}
+function toDataUrl(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1000 / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas'); cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url); res(cv.toDataURL('image/jpeg', .82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Not an image')); };
+    img.src = url;
+  });
+}
+
+/* ---------- backup engine ---------- */
+let midnightTimer;
+const msToMidnight = () => { const n = new Date(), m = new Date(n); m.setHours(24, 0, 0, 0); return m - n; };
+
+async function replaceInternalBackup(payload){
+  // one transaction: delete the old backup, then write the new one
+  await tx('readwrite', s => { s.delete('backup:latest'); s.put(payload, 'backup:latest'); });
+}
+async function writeBackupFile(json, interactive){
+  const handle = await kvGet('fileHandle');
+  if (!handle) return { ok: false, reason: 'none' };
+  let perm = await handle.queryPermission({ mode: 'readwrite' });
+  if (perm !== 'granted'){
+    if (!interactive) return { ok: false, reason: 'permission' };
+    perm = await handle.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') return { ok: false, reason: 'permission' };
+  }
+  const w = await handle.createWritable();   // truncates: the old file content is overwritten
+  await w.write(json); await w.close();
+  return { ok: true, name: handle.name };
+}
+async function runBackup(reason, interactive = false){
+  try {
+    await flush();
+    const payload = { app: 'wa-clone-backup', version: 1, createdAt: new Date().toISOString(), reason, state };
+    await replaceInternalBackup(payload);
+    meta.lastBackupAt = payload.createdAt; meta.lastBackupDay = dayKey(); meta.needsPermission = false;
+    let msg = 'Backup saved';
+    try {
+      const f = await writeBackupFile(JSON.stringify(payload), interactive);
+      if (f.ok){ meta.fileName = f.name; msg = `Backup saved to ${f.name}`; }
+      else if (f.reason === 'permission'){ meta.needsPermission = true; msg = 'Backup saved. Allow file access to update your backup file.'; }
+    } catch (e){ meta.needsPermission = true; msg = 'Backup saved, but the file could not be updated.'; }
+    await saveMeta(); renderBackup();
+    if (reason !== 'catch-up' || interactive) toast(msg);
+    return true;
+  } catch (e){ toast('Backup failed: ' + e.message); return false; }
+}
+function scheduleMidnight(){
+  clearTimeout(midnightTimer);
+  if (!meta.auto) return;
+  midnightTimer = setTimeout(async () => { await runBackup('midnight'); scheduleMidnight(); }, msToMidnight() + 500);
+  renderBackup();
+}
+async function catchUp(){
+  if (meta.auto && meta.lastBackupDay !== dayKey()) await runBackup('catch-up');
+}
+function downloadBackup(){
+  const payload = { app: 'wa-clone-backup', version: 1, createdAt: new Date().toISOString(), reason: 'manual-download', state };
+  const a = h('a', { href: URL.createObjectURL(new Blob([JSON.stringify(payload)], { type: 'application/json' })), download: 'whatsapp-backup.json' });
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast('Downloaded whatsapp-backup.json');
+}
+async function pickFile(){
+  if (!window.showSaveFilePicker){ toast('This browser cannot keep a backup file. Use Download backup.'); return; }
+  try {
+    const handle = await showSaveFilePicker({ suggestedName: 'whatsapp-backup.json', types: [{ description: 'Backup', accept: { 'application/json': ['.json'] } }] });
+    await kvSet('fileHandle', handle); meta.fileName = handle.name; await saveMeta();
+    await runBackup('file-chosen', true);
+  } catch (e){ if (e.name !== 'AbortError') toast('Could not choose file: ' + e.message); }
+}
+async function forgetFile(){
+  await kvDel('fileHandle'); meta.fileName = null; meta.needsPermission = false; await saveMeta(); renderBackup();
+  toast('Backup file removed from settings');
+}
+async function applyRestore(payload){
+  if (!payload || payload.app !== 'wa-clone-backup' || !payload.state || !Array.isArray(payload.state.chats)){ toast('That is not a valid backup file'); return; }
+  const when = new Date(payload.createdAt).toLocaleString();
+  if (!confirm(`Replace all chats on this device with the backup from ${when}?`)) return;
+  state = payload.state; current = null; typing.clear();
+  await flush(); closeChat(); renderList(); renderBackup(); toast('Backup restored');
+}
+async function restoreLast(){
+  const p = await kvGet('backup:latest');
+  if (!p){ toast('No backup found yet'); return; }
+  applyRestore(p);
+}
+async function restoreFromFile(file){
+  try { applyRestore(JSON.parse(await file.text())); } catch (e){ toast('Could not read that file'); }
+}
+
+function renderBackup(){
+  $('#auto').checked = meta.auto;
+  $('#kLast').textContent = meta.lastBackupAt ? new Date(meta.lastBackupAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'No backup yet';
+  const nm = new Date(); nm.setHours(24, 0, 0, 0);
+  $('#kNext').textContent = meta.auto ? nm.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'Off';
+  $('#kCount').textContent = state ? String(state.chats.length) : '—';
+  $('#kFile').textContent = meta.fileName || 'Not chosen';
+  $('#btnForget').hidden = !meta.fileName;
+  $('#permWarn').hidden = !meta.needsPermission;
+  $('#backupDot').hidden = !meta.needsPermission;
+  if (!window.showSaveFilePicker){
+    $('#btnPick').hidden = true;
+    $('#fileHint').textContent = 'This browser cannot write to a chosen file. Use Download backup; the internal backup still refreshes every midnight.';
+  }
+}
+
+/* ---------- drawer ---------- */
+function drawer(on){
+  $('#drawer').classList.toggle('on', on); $('#scrim').classList.toggle('on', on);
+  $('#drawer').setAttribute('aria-hidden', String(!on));
+  if (on) renderBackup();
+}
+
+/* ---------- call preview ---------- */
+let stream;
+async function startCall(kind){
+  const c = chatById(current); if (!c) return;
+  $('#callAvatar').replaceWith(Object.assign(avatar(c), { id: 'callAvatar' }));
+  $('#callAvatar').className = 'avatar';
+  $('#callName').textContent = c.name;
+  $('#callState').textContent = kind === 'video' ? 'Starting camera…' : 'Starting microphone…';
+  $('#localVideo').hidden = kind !== 'video';
+  $('#call').classList.add('on');
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: kind === 'video', audio: true });
+    $('#localVideo').srcObject = stream;
+    $('#callState').textContent = kind === 'video' ? 'Camera preview is live' : 'Microphone is live';
+  } catch (e){
+    $('#callState').textContent = 'Could not access your ' + (kind === 'video' ? 'camera' : 'microphone') + '. Check browser permissions.';
+  }
+}
+function endCall(){
+  if (stream){ stream.getTracks().forEach(t => t.stop()); stream = null; }
+  $('#localVideo').srcObject = null; $('#call').classList.remove('on');
+}
+
+/* ---------- boot ---------- */
+function bind(){
+  put('#icoSearch', 'search', 18); put('#icoLock', 'lock', 14); put('#splashLogo', 'logo', 44, 1.8);
+  put('#icoBackup', 'backup');
+  put('#btnNew', 'chat'); put('#btnBack', 'back'); put('#btnVideo', 'video'); put('#btnVoice', 'phone');
+  put('#btnAttach', 'clip'); put('#btnSend', 'send', 20); put('#btnClose', 'close');
+
+  $('#q').addEventListener('input', renderList);
+  $('#btnNew').onclick = () => {
+    const name = (prompt('Name for the new chat') || '').trim(); if (!name) return;
+    const id = Math.max(0, ...state.chats.map(c => c.id)) + 1;
+    state.chats.push({ id, name, about: '', unread: 0, color: PALETTE[id % PALETTE.length], messages: [] });
+    save(); openChat(id);
+  };
+  $('#btnBack').onclick = closeChat;
+  $('#btnSend').onclick = sendText;
+  $('#msg').addEventListener('keydown', e => { if (e.key === 'Enter') sendText(); });
+  $('#btnAttach').onclick = () => $('#file').click();
+  $('#file').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f || !current) return;
+    try { pushOut(chatById(current), 'img', await toDataUrl(f)); } catch { toast('Pick an image file'); }
+  };
+  $('#btnVoice').onclick = () => startCall('voice');
+  $('#btnVideo').onclick = () => startCall('video');
+  $('#btnEnd').onclick = endCall;
+
+  $('#btnBackup').onclick = () => drawer(true);
+  $('#btnClose').onclick = () => drawer(false);
+  $('#scrim').onclick = () => drawer(false);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape'){ drawer(false); if ($('#call').classList.contains('on')) endCall(); } });
+  $('#auto').onchange = async e => { meta.auto = e.target.checked; await saveMeta(); scheduleMidnight(); toast(meta.auto ? 'Midnight backup is on' : 'Midnight backup is off'); };
+  $('#btnNow').onclick = () => runBackup('manual', true);
+  $('#btnAllow').onclick = () => runBackup('allow', true);
+  $('#btnPick').onclick = pickFile;
+  $('#btnForget').onclick = forgetFile;
+  $('#btnDownload').onclick = downloadBackup;
+  $('#btnRestoreLast').onclick = restoreLast;
+  $('#btnRestoreFile').onclick = () => $('#restoreInput').click();
+  $('#restoreInput').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) restoreFromFile(f); };
+}
+
+async function registerWorker(){
+  if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) return;
+  try {
+    const reg = await navigator.serviceWorker.register('sw.js');
+    await navigator.serviceWorker.ready;
+    if ('periodicSync' in reg){
+      const st = await navigator.permissions.query({ name: 'periodic-background-sync' });
+      if (st.state === 'granted') await reg.periodicSync.register('midnight-backup', { minInterval: 24 * 60 * 60 * 1000 });
+    }
+  } catch (e){ /* offline support is optional */ }
+}
+
+(async function boot(){
+  bind();
+  try {
+    state = (await kvGet('state')) || seed();
+    Object.assign(meta, (await kvGet('meta')) || {});
+  } catch (e){
+    state = seed(); toast('Storage is unavailable. Chats will not be saved.');
+  }
+  state.chats.forEach(c => c.messages.forEach(m => { if (m.from === 'out') m.status = 'read'; }));
+  renderList(); renderBackup();
+  try { await flush(); } catch {}
+  scheduleMidnight();
+  await catchUp();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden){ scheduleMidnight(); catchUp(); } });
+  window.addEventListener('pagehide', () => { kvSet('state', state); });
+  registerWorker();
+})();
+</script>
 </body>
 </html>
