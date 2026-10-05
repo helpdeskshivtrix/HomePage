@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b14">
+<meta name="description" content="ShivTrix Play — music, games, live rooms, QR join and everyday tools.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>ShivTrix Play</title>
+<style>
+:root{--bg:#070b14;--panel:#0d1422;--panel2:#111b2d;--line:#20304a;--text:#eef5ff;--muted:#8fa2bd;--blue:#00eaff;--green:#4dff9a;--red:#ff5577;--gold:#ffd45a;--shadow:0 14px 50px #0008}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#12304b 0,#070b14 45%);color:var(--text);font:14px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{max-width:1250px;margin:auto;padding:14px 14px 90px}.top{position:sticky;top:0;z-index:20;background:#070b14dd;backdrop-filter:blur(14px);border-bottom:1px solid #1c2a40;margin:0 -14px;padding:12px 14px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:40px;height:40px;border:1px solid #00eaff66;border-radius:13px;display:grid;place-items:center;background:#071522;box-shadow:0 0 25px #00eaff22;font-size:22px}.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted)}
+.toprow{display:flex;justify-content:space-between;align-items:center;gap:12px}.actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#101a2b;color:var(--text);padding:9px 12px;border-radius:10px}.btn:hover{border-color:#00eaff88}.primary{background:#00d9ef;color:#001015;border-color:#00eaff;font-weight:800}.danger{border-color:#ff557766;color:#ff8aa0}.good{border-color:#4dff9a55;color:#8dffbd}
+.nav{display:flex;gap:7px;overflow:auto;padding:12px 0 2px}.nav button{white-space:nowrap}
+.nav .active{background:#00eaff;color:#001015;border-color:#00eaff;font-weight:800}
+.page{display:none}.page.active{display:block}
+.hero{margin-top:18px;padding:22px;border:1px solid #20334d;border-radius:20px;background:linear-gradient(145deg,#0c1829,#0b111d);box-shadow:var(--shadow)}
+.hero h2{font-size:clamp(24px,5vw,42px);margin:0 0 8px}.hero p{color:var(--muted);max-width:700px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:linear-gradient(145deg,#0e1726,#0b121e);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 8px 30px #0004}.card h3{margin:0 0 6px}.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.game-icon{font-size:28px;margin-bottom:9px}.game-card{min-height:165px;display:flex;flex-direction:column;justify-content:space-between}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin:25px 0 11px}.section-title h2{margin:0}.muted{color:var(--muted)}
+.room-layout{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:16px}.room-code{font-size:34px;letter-spacing:7px;font-weight:900;color:var(--blue);text-align:center;padding:15px}.players{display:grid;gap:8px}.player{display:flex;align-items:center;gap:10px;background:#0a1220;border:1px solid #1d2c43;padding:10px;border-radius:11px}.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#16283e}.online{margin-left:auto;color:var(--green);font-size:11px}.room-game{min-height:260px;display:grid;place-items:center;text-align:center}.game-board{display:grid;gap:7px;margin:14px auto}.ttt{grid-template-columns:repeat(3,70px)}.cell{width:70px;height:70px;background:#09111e;border:1px solid #24405c;border-radius:12px;color:var(--blue);font-size:28px;font-weight:900}.result{font-size:25px;font-weight:900;color:var(--gold);margin:10px}
+.music{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.now{display:flex;gap:15px;align-items:center}.cover{width:105px;height:105px;border-radius:16px;background:linear-gradient(135deg,#00eaff,#7c4dff);display:grid;place-items:center;font-size:40px}.progress{width:100%;accent-color:var(--blue)}.queue{display:grid;gap:7px;max-height:270px;overflow:auto}.track{padding:10px;border:1px solid #1d2b42;border-radius:10px;display:flex;justify-content:space-between}
+input,textarea,select{width:100%;background:#08101c;color:var(--text);border:1px solid #263750;border-radius:10px;padding:10px;outline:none}input:focus,textarea:focus{border-color:#00eaff88}.row{display:flex;gap:8px}.row>*{flex:1}
+.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;z-index:50;padding:18px}.modal.show{display:grid}.modal-box{width:min(520px,100%);background:#0c1523;border:1px solid #2b4160;border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.qrbox{background:#fff;border-radius:12px;min-height:220px;display:grid;place-items:center;overflow:hidden}.qrbox img{width:220px;height:220px}.token{font-family:monospace;letter-spacing:3px;color:var(--gold);background:#070c14;padding:12px;border-radius:10px;text-align:center}
+.credits{font-size:26px;color:var(--gold);font-weight:900}.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tool textarea{min-height:90px}.footer{text-align:center;color:#657992;font-size:11px;margin-top:35px}
+.toast{position:fixed;right:18px;bottom:18px;background:#0d1b2c;border:1px solid #00eaff66;color:#e9fbff;padding:12px 15px;border-radius:12px;display:none;z-index:100}.toast.show{display:block}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.room-layout,.music{grid-template-columns:1fr}.tools{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.app{padding:10px 10px 80px}.top{margin:0 -10px;padding:10px}.toprow{align-items:flex-start}.actions .btn{padding:7px 9px;font-size:12px}.grid{grid-template-columns:1fr}.tools{grid-template-columns:1fr}.hero{padding:17px}.ttt{grid-template-columns:repeat(3,62px)}.cell{width:62px;height:62px}.row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="toprow">
+    <div class="brand"><div class="logo">🎮</div><div><h1>ShivTrix Play</h1><small>Music • Games • Live Rooms • Useful Tools</small></div></div>
+    <div class="actions"><button class="btn" onclick="openCreate()">＋ Room</button><button class="btn primary" onclick="openJoin()">Join</button></div>
+  </div>
+  <nav class="nav">
+    <button class="btn active" data-page="home">Home</button>
+    <button class="btn" data-page="games">🎮 Games</button>
+    <button class="btn" data-page="music">🎵 Music</button>
+    <button class="btn" data-page="rooms">🔴 Rooms</button>
+    <button class="btn" data-page="tools">🧰 Tools</button>
+  </nav>
+</header>
+
+<section id="home" class="page active">
+  <div class="hero"><h2>Play together. Listen together.</h2><p>A simple, mobile-friendly entertainment hub. Create a room, share the QR, start a game or sync music with friends.</p><div class="actions"><button class="btn primary" onclick="openCreate()">Create Live Room</button><button class="btn" onclick="openJoin()">Join with QR / Code</button></div></div>
+  <div class="section-title"><h2>Quick games</h2><span class="muted">2–4 players</span></div>
+  <div class="grid" id="homeGames"></div>
+  <div class="section-title"><h2>Room features</h2></div>
+  <div class="grid">
+    <div class="card"><div class="game-icon">🎵</div><h3>Music Sync</h3><p>Shared play, pause, seek and queue while volume stays local.</p></div>
+    <div class="card"><div class="game-icon">📷</div><h3>QR Join</h3><p>Share a room invitation through a QR code.</p></div>
+    <div class="card"><div class="game-icon">🛡️</div><h3>Room Admin</h3><p>Owner token controls room settings and players.</p></div>
+    <div class="card"><div class="game-icon">🎟️</div><h3>Room Credits</h3><p>Virtual points for game rounds and fun rewards.</p></div>
+  </div>
+</section>
+
+<section id="games" class="page">
+  <div class="section-title"><h2>🎮 Games</h2><span class="muted">Free-play / virtual points</span></div>
+  <div class="grid" id="gamesGrid"></div>
+</section>
+
+<section id="music" class="page">
+  <div class="section-title"><h2>🎵 Music Player</h2><span class="muted">Room-ready</span></div>
+  <div class="music">
+    <div class="card">
+      <div class="now"><div class="cover">♫</div><div><h2 id="songTitle">No song loaded</h2><p class="muted">Choose an audio file or add a direct audio URL.</p></div></div>
+      <audio id="audio" controls style="width:100%;margin-top:18px"></audio>
+      <div class="row" style="margin-top:10px"><input type="file" id="audioFile" accept="audio/*"><button class="btn" onclick="addUrlTrack()">Add URL</button></div>
+      <div class="row" style="margin-top:10px"><button class="btn" onclick="roomMusic('play')">▶ Sync Play</button><button class="btn" onclick="roomMusic('pause')">⏸ Sync Pause</button><button class="btn" onclick="roomMusic('seek')">🔄 Sync Position</button></div>
+    </div>
+    <div class="card"><h3>Queue</h3><div class="queue" id="queue"></div></div>
+  </div>
+</section>
+
+<section id="rooms" class="page">
+  <div class="section-title"><h2>🔴 Live Rooms</h2><button class="btn primary" onclick="openCreate()">Create</button></div>
+  <div class="card" id="roomPanel"><p class="muted">No room joined. Create a room or join with a code.</p></div>
+</section>
+
+<section id="tools" class="page">
+  <div class="section-title"><h2>🧰 Useful Tools</h2></div>
+  <div class="tools">
+    <div class="card tool"><h3>🎙️ Speech Notes</h3><button class="btn" onclick="speechNote()">Start microphone</button><textarea id="speechOut" placeholder="Your speech appears here..."></textarea></div>
+    <div class="card tool"><h3>📝 Text Cleanup</h3><textarea id="cleanIn" placeholder="Paste text..."></textarea><button class="btn" onclick="cleanText()">Clean duplicate lines & spaces</button></div>
+    <div class="card tool"><h3>🧮 Percentage</h3><input id="pctA" type="number" placeholder="Value"><input id="pctB" type="number" placeholder="Percent"><button class="btn" onclick="calcPct()">Calculate</button><div id="pctOut" class="result">—</div></div>
+    <div class="card tool"><h3>🔗 QR Link</h3><input id="linkIn" placeholder="https://example.com"><button class="btn" onclick="showQR(document.getElementById('linkIn').value)">Generate QR</button></div>
+    <div class="card tool"><h3>⏱️ Countdown</h3><input id="timerSec" type="number" value="60"><button class="btn" onclick="startTimer()">Start</button><div id="timerOut" class="result">60</div></div>
+    <div class="card tool"><h3>🎲 Dice</h3><button class="btn primary" onclick="quickDice()">Roll D6</button><div id="diceOut" class="result">—</div></div>
+  </div>
+</section>
+
+<div class="footer">ShivTrix Play • PWA • Room data demo uses browser local sync/BroadcastChannel. A server/WebSocket is required for true internet-wide rooms.</div>
+</div>
+
+<div class="modal" id="modal">
+ <div class="modal-box">
+  <div class="toprow"><h2 id="modalTitle">Room</h2><button class="btn" onclick="closeModal()">✕</button></div>
+  <div id="modalBody"></div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const games=[
+ {id:'ttt',icon:'❌',name:'Tic-Tac-Toe',players:'2',desc:'Quick classic duel.'},
+ {id:'dice',icon:'🎲',name:'Dice Battle',players:'2–4',desc:'Roll and collect points.'},
+ {id:'higher',icon:'🃏',name:'Higher / Lower',players:'2–4',desc:'Guess the next card.'},
+ {id:'memory',icon:'🧠',name:'Memory Match',players:'2–4',desc:'Remember the sequence.'},
+ {id:'reaction',icon:'⚡',name:'Reaction Battle',players:'2–4',desc:'Who reacts fastest?'},
+ {id:'flash',icon:'🎴',name:'Flash',players:'2–4',desc:'Fast card party game.'},
+ {id:'patti',icon:'🃏',name:'2 Patti',players:'2–4',desc:'Free-play social card mode.'},
+ {id:'inout',icon:'🔴',name:'In / Out',players:'2–4',desc:'Prediction party game using virtual points.'},
+ {id:'ludo',icon:'🎲',name:'Ludo',players:'2–4',desc:'Room-ready board-game slot.'},
+ {id:'carrom',icon:'⭕',name:'Carrom',players:'2–4',desc:'Room-ready carrom slot.'}
+];
+let room=JSON.parse(localStorage.getItem('st_room')||'null');
+let queue=JSON.parse(localStorage.getItem('st_queue')||'[]');
+let bc=('BroadcastChannel' in window)?new BroadcastChannel('shivtrix-play-room'):null;
+const $=id=>document.getElementById(id);
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(b.dataset.page).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.page==='rooms')renderRoom()});
+function card(g){return `<div class="card game-card"><div><div class="game-icon">${g.icon}</div><h3>${g.name}</h3><p>${g.desc}</p></div><div class="actions"><span class="muted">${g.players} players</span><button class="btn" onclick="openGame('${g.id}')">Play</button></div></div>`}
+$('homeGames').innerHTML=games.slice(0,8).map(card).join('');
+$('gamesGrid').innerHTML=games.map(card).join('');
+function openCreate(){ $('modalTitle').textContent='Create Live Room'; $('modalBody').innerHTML=`<label>Game</label><select id="createGame">${games.map(g=>`<option value="${g.id}">${g.icon} ${g.name}</option>`).join('')}</select><br><br><label>Players</label><select id="createPlayers"><option>2</option><option>4</option><option>20</option></select><br><br><label>Room name</label><input id="createName" value="My Room"><br><br><button class="btn primary" onclick="createRoom()">Create Room</button>`;showModal()}
+function createRoom(){const code=crypto.randomUUID().slice(0,6).toUpperCase();const token=crypto.randomUUID().replaceAll('-','').slice(0,16).toUpperCase();room={code,token,game:$('createGame').value,name:$('createName').value,players:[{name:'You',owner:true}],credits:100,state:{}};saveRoom();closeModal();renderRoom();document.querySelector('[data-page="rooms"]').click();toast('Room '+code+' created')}
+function openJoin(){ $('modalTitle').textContent='Join Room'; $('modalBody').innerHTML=`<input id="joinCode" placeholder="Enter room code"><br><br><button class="btn primary" onclick="joinRoom()">Join Room</button><button class="btn" onclick="scanQR()">📷 Scan QR</button><p class="muted">On supported browsers, QR scanning uses the camera. The room invite can also be opened directly from its QR link.</p>`;showModal()}
+function joinRoom(){let c=$('joinCode').value.trim().toUpperCase();if(!c)return;room={code:c,token:null,game:'ttt',name:'Joined Room',players:[{name:'You'}],credits:100,state:{}};saveRoom();closeModal();renderRoom();document.querySelector('[data-page="rooms"]').click();toast('Joined '+c)}
+function inviteText(){return location.href.split('#')[0]+'#room='+room.code}
+function showQR(text){$('modalTitle').textContent='QR Code';$('modalBody').innerHTML=`<div class="qrbox"><img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(text)}"></div><br><input value="${text}" readonly><p class="muted">QR generation needs internet access; the PWA itself remains installable/offline.</p>`;showModal()}
+function renderRoom(){const p=$('roomPanel');if(!room){p.innerHTML='<p class="muted">No room joined. Create a room or join with a code.</p>';return}const g=games.find(x=>x.id===room.game)||games[0];p.innerHTML=`<div class="room-layout"><div><div class="card"><div class="muted">ROOM CODE</div><div class="room-code">${room.code}</div><div class="actions"><button class="btn primary" onclick="showQR(inviteText())">📱 Show QR</button><button class="btn" onclick="navigator.clipboard.writeText(inviteText());toast('Invite copied')">Copy Invite</button><button class="btn" onclick="openGame('${room.game}')">🎮 Open Game</button></div></div><div class="card" style="margin-top:12px"><h3>🎮 ${g.name}</h3><div class="room-game" id="roomGame"></div></div></div><div><div class="card"><h3>Players</h3><div class="players">${room.players.map(x=>`<div class="player"><div class="avatar">👤</div><b>${x.name}</b>${x.owner?'<span>👑</span>':''}<span class="online">● LIVE</span></div>`).join('')}</div></div><div class="card" style="margin-top:12px"><h3>🎟️ Credits</h3><div class="credits">${room.credits||0}</div><div class="actions"><button class="btn" onclick="credits(10)">+10</button><button class="btn" onclick="credits(50)">+50</button><button class="btn" onclick="credits(100)">+100</button></div></div>${room.token?`<div class="card" style="margin-top:12px"><h3>🛡️ Owner Token</h3><div class="token">${room.token}</div><small class="muted">Keep this private. It is for room administration.</small></div>`:''}</div></div>`;if($('roomGame'))renderGame(room.game,$('roomGame'))}
+function saveRoom(){localStorage.setItem('st_room',JSON.stringify(room));if(bc)bc.postMessage({type:'room',room})}
+if(bc)bc.onmessage=e=>{if(e.data?.type==='room'){room=e.data.room;localStorage.setItem('st_room',JSON.stringify(room));renderRoom()}}
+function credits(n){room.credits=(room.credits||0)+n;saveRoom();renderRoom()}
+function openGame(id){$('modalTitle').textContent=(games.find(g=>g.id===id)||games[0]).name;$('modalBody').innerHTML='<div id="gameMount" class="room-game"></div>';showModal();renderGame(id,$('gameMount'))}
+function renderGame(id,m){
+if(id==='ttt'){let b=Array(9).fill('');m.innerHTML='<div><div class="muted">You are X</div><div class="game-board ttt">'+b.map((_,i)=>`<button class="cell" onclick="ttt(${i},this)"></button>`).join('')+'</div><div id="gameStatus" class="result">Your turn</div></div>';window.tttb=b}
+else if(id==='dice'){m.innerHTML=`<div><button class="btn primary" onclick="rollRoomDice()">🎲 Roll D6</button><div id="gameResult" class="result">—</div></div>`}
+else if(id==='higher'){m.innerHTML=`<div><div class="result" id="cardValue">7</div><div class="actions"><button class="btn" onclick="higher('higher')">Higher</button><button class="btn" onclick="higher('lower')">Lower</button></div><div id="gameResult" class="result">—</div></div>`}
+else if(id==='reaction'){m.innerHTML=`<div><button id="reactGame" class="btn primary" onclick="reactionGame()">START</button><div id="gameResult" class="result">—</div></div>`}
+else if(id==='memory'){m.innerHTML=`<div><div id="memSeq" class="result">Press start</div><button class="btn primary" onclick="memoryGame()">Start sequence</button></div>`}
+else if(['flash','patti','inout','ludo','carrom'].includes(id)){m.innerHTML=`<div><div class="game-icon">${games.find(g=>g.id===id).icon}</div><div class="result">${games.find(g=>g.id===id).name}</div><p class="muted">Room-ready free-play mode. Start a round and share the result with the room.</p><button class="btn primary" onclick="partyRound('${id}')">Start Round</button><div id="gameResult" class="result">—</div></div>`}
+}
+window.tttb=[];
+function ttt(i,el){if(window.tttb[i])return;window.tttb[i]='X';el.textContent='X';if(checkWin(window.tttb,'X'))return $('gameStatus').textContent='You win! 🎉';let e=window.tttb.map((v,j)=>v?null:j).filter(x=>x!==null);if(!e.length)return $('gameStatus').textContent='Draw';let j=e[Math.floor(Math.random()*e.length)];window.tttb[j]='O';document.querySelectorAll('.cell')[j].textContent='O';if(checkWin(window.tttb,'O'))$('gameStatus').textContent='Computer wins';}
+function checkWin(b,x){return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(a=>a.every(i=>b[i]===x))}
+function rollRoomDice(){let n=Math.floor(Math.random()*6)+1;$('gameResult').textContent='🎲 '+n;if(room){room.state.lastDice=n;saveRoom()}}
+let cardNow=7;function higher(choice){let n=Math.floor(Math.random()*13)+1;let ok=choice==='higher'?n>cardNow:n<cardNow;$('gameResult').textContent=(ok?'✅ Correct ':'❌ Wrong ')+'Next: '+n;cardNow=n;$('cardValue').textContent=n}
+function reactionGame(){let b=$('reactGame');b.disabled=true;b.textContent='WAIT...';setTimeout(()=>{b.disabled=false;b.textContent='CLICK NOW!';let t=performance.now();b.onclick=()=>{$('gameResult').textContent=Math.round(performance.now()-t)+' ms';b.onclick=reactionGame;b.textContent='START'}},1000+Math.random()*2500)}
+function memoryGame(){let s=[...Array(5)].map(()=>Math.floor(Math.random()*4)+1);$('memSeq').textContent=s.join(' • ');setTimeout(()=>$('memSeq').textContent='Now repeat: '+s.join(' ? '),1300)}
+function partyRound(id){let n=Math.floor(Math.random()*100)+1;$('gameResult').textContent=id==='inout'?(n%2?'🔵 IN':'🔴 OUT'):'Round '+n; if(room){room.state.lastGame={id,n};saveRoom()}}
+function roomMusic(action){const a=$('audio');if(action==='play')a.play();if(action==='pause')a.pause();if(action==='seek'&&room){room.state.musicTime=a.currentTime;saveRoom()}}
+$('audioFile').onchange=e=>{let f=e.target.files[0];if(f){$('audio').src=URL.createObjectURL(f);$('songTitle').textContent=f.name;addQueue(f.name,'local')}}
+function addUrlTrack(){let u=prompt('Direct audio URL');if(!u)return;$('audio').src=u;$('songTitle').textContent='Online track';addQueue('Online track',u)}
+function addQueue(name,url){queue.push({name,url});localStorage.setItem('st_queue',JSON.stringify(queue));renderQueue()}
+function renderQueue(){$('queue').innerHTML=queue.length?queue.map((x,i)=>`<div class="track"><span>🎵 ${x.name}</span><button class="btn" onclick="playQueue(${i})">Play</button></div>`).join(''):'<span class="muted">Queue is empty</span>'}
+function playQueue(i){let x=queue[i];if(x.url==='local'){toast('Select the local file again to play it')}else{$('audio').src=x.url;$('songTitle').textContent=x.name;$('audio').play()}}
+renderQueue();
+function speechNote(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return toast('Speech recognition is not supported here');let r=new R();r.lang='en-IN';r.onresult=e=>$('speechOut').value+=(' '+e.results[0][0].transcript).trim();r.start()}
+function cleanText(){$('cleanIn').value=[...new Set($('cleanIn').value.split(/\n/).map(x=>x.trim()).filter(Boolean))].join('\n')}
+function calcPct(){let a=+$('pctA').value,b=+$('pctB').value;$('pctOut').textContent=isFinite(a*b/100)?a*b/100:'—'}
+function quickDice(){$('diceOut').textContent='🎲 '+(Math.floor(Math.random()*6)+1)}
+let timer;function startTimer(){clearInterval(timer);let n=+$('timerSec').value||60;$('timerOut').textContent=n;timer=setInterval(()=>{n--;$('timerOut').textContent=n;if(n<=0){clearInterval(timer);toast('Timer finished')}} ,1000)}
+function scanQR(){toast('Use a supported browser with camera QR scanning, or enter the room code.');if('BarcodeDetector' in window)toast('Camera QR detection is available in this browser')}
+function showModal(){$('modal').classList.add('show')}function closeModal(){$('modal').classList.remove('show')}
+window.addEventListener('load',()=>{if(location.hash.startsWith('#room=')){let c=location.hash.slice(6);$('joinCode').value=c;openJoin();}if(room)renderRoom()});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
