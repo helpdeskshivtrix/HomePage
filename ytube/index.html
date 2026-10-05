@@ -125,6 +125,20 @@ body.tv .pll{overflow:hidden}body.tv .pll h2,body.tv .pll .mut{display:none}
  .pll{overflow:visible;padding:0 14px}.plr{margin:16px 12px 0;min-height:420px}
  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 }
+
+/* ---------- precision room sync + QR ---------- */
+.qrbox{display:grid;place-items:center;padding:12px 0}
+.qrbox img{width:min(280px,72vw);aspect-ratio:1;border-radius:16px;background:#fff;padding:10px;image-rendering:auto}
+.roomcode{font-size:34px;font-weight:950;letter-spacing:7px;color:var(--neon);text-align:center;padding:6px 0 2px;text-shadow:0 0 18px rgba(0,234,255,.35)}
+.roommeta{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.roomdot{width:8px;height:8px;border-radius:50%;background:#35ff9b;box-shadow:0 0 12px #35ff9b}
+.scanbox{position:relative;overflow:hidden;border-radius:16px;border:1px solid #21405c;background:#02060b;aspect-ratio:1;display:grid;place-items:center}
+.scanbox video{width:100%;height:100%;object-fit:cover;display:block}
+.scanframe{position:absolute;inset:14%;border:2px solid var(--neon);border-radius:22px;box-shadow:0 0 0 999px rgba(0,0,0,.25),0 0 28px rgba(0,234,255,.35)}
+.scanframe:after{content:"";position:absolute;left:8%;right:8%;top:50%;height:2px;background:var(--neon);box-shadow:0 0 14px var(--neon);animation:scanline 1.5s ease-in-out infinite}
+@keyframes scanline{0%,100%{transform:translateY(-95px);opacity:.35}50%{transform:translateY(95px);opacity:1}}
+.syncbadge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid #1c3b52;border-radius:999px;background:#07121d;color:#8fefff;font-size:10px;font-weight:900;letter-spacing:.08em}
+.syncbadge .roomdot{width:6px;height:6px}
 </style>
 </head>
 <body>
@@ -325,7 +339,11 @@ function ytLoad(id,t){loadYT().then(()=>{
  if(!yt){const v={autoplay:1,playsinline:1,rel:0,modestbranding:1,enablejsapi:1,start:Math.floor(t||0)};if(/^https?:$/.test(location.protocol))v.origin=location.origin;
   yt=new YT.Player("ytp",{width:"100%",height:"100%",videoId:id,playerVars:v,events:{onReady:()=>{ytReady=true;if(pend){yt.loadVideoById({videoId:pend.id,startSeconds:pend.t});pend=null}},onStateChange:onState,onError:onErr}})}
  else if(!ytReady)pend={id,t:t||0};else yt.loadVideoById({videoId:id,startSeconds:t||0})}).catch(()=>toast("Couldn't load the YouTube player"))}
-function playAt(i){if(!LIST[i])return;follow=false;document.body.classList.remove("follow");Q=LIST.slice();qi=i;from=SRC;played.clear();rmod="";openPl();loadCur()}
+function playAt(i){
+ if(!LIST[i])return;
+ if(room&&!roomLeader){const it=LIST[i];bc({t:"cmd",c:"load",it,from:SRC});toast("Sent to room leader");return}
+ follow=false;document.body.classList.remove("follow");Q=LIST.slice();qi=i;from=SRC;played.clear();rmod="";openPl();loadCur()
+}
 function loadCur(start){
  const it=Q[qi];if(!it)return;played.add(it.videoId);userPaused=false;
  $("plT").textContent=it.title;$("plA").textContent=it.artist;$("plF").textContent=from;
@@ -339,7 +357,7 @@ function onState(e){const S=YT.PlayerState;
  if(e.data===S.PLAYING){userPaused=false;errs=0;ui(true);keepOn()}
  else if(e.data===S.PAUSED){ui(false);if(document.hidden&&!userPaused&&!follow)setTimeout(()=>{try{if(!userPaused&&yt.getPlayerState()===S.PAUSED)yt.playVideo()}catch(x){}},400);if(!document.hidden)userPaused=true}
  else if(e.data===S.ENDED)ended();
- if(!follow)bc({t:"s",p:e.data===S.PLAYING,c:time(),id:(Q[qi]||{}).videoId})}
+ if(!follow&&roomLeader)sendState()}
 function onErr(){errs++;toast("Can't play this video. Skipping…");if(follow||errs>=Math.min(Q.length,5))return;setTimeout(()=>next(true),800)}
 au.onplay=()=>ui(true);au.onpause=()=>ui(false);au.onended=()=>ended();
 function ended(){if(follow)return;if(rep===2){seekTo(0);resume();return}next(true)}
@@ -401,12 +419,12 @@ function playRel(i){const r=window.RL[i];if(!r)return;Q.splice(qi+1,0,r);qi++;lo
 function relNext(i){const r=window.RL[i];if(r){Q.splice(qi+1,0,r);toast("Will play next");renderTab()}}
 function openPl(){$("pl").classList.add("open");document.body.classList.remove("mini")}
 function minPl(){$("pl").classList.remove("open");if(Q.length)document.body.classList.add("mini")}
-function closePl(){try{if(yt&&ytReady)yt.stopVideo()}catch(e){}au.pause();Q=[];qi=-1;userPaused=true;keepOff();bc({t:"x"});
+function closePl(){try{if(yt&&ytReady)yt.stopVideo()}catch(e){}au.pause();Q=[];qi=-1;userPaused=true;keepOff();if(roomLeader)bc({t:"x"});
  $("pl").classList.remove("open");document.body.classList.remove("mini");try{navigator.mediaSession.metadata=null}catch(e){}}
 setInterval(()=>{if(!Q.length)return;const t=time(),d=dur();
  if(!drag&&d){$("seek").value=t/d*1000}$("t1").textContent=sec(t)||"0:00";$("t2").textContent=sec(d)||"0:00";
  try{if(document.hidden&&!userPaused&&!follow&&yt&&ytReady&&!(Q[qi]||{}).off&&yt.getPlayerState()===2)yt.playVideo()}catch(e){}},500);
-setInterval(()=>{const it=Q[qi];if(!follow&&it&&!it.off)bc({t:"s",p:playing(),c:time(),id:it.videoId})},8000);
+setInterval(()=>{const it=Q[qi];if(!follow&&roomLeader)sendState()},8000);
 $("seek").addEventListener("input",()=>drag=true);
 $("seek").addEventListener("change",e=>{drag=false;const d=dur();if(d)seekTo(e.target.value/1000*d)});
 
@@ -423,45 +441,156 @@ if("mediaSession" in navigator){const h={play:()=>{userPaused=false;resume()},pa
  for(const k in h)try{navigator.mediaSession.setActionHandler(k,h[k])}catch(e){}}
 document.addEventListener("pointerdown",()=>{if(Q.length&&!userPaused)keepOn()},{passive:true});
 
-/* ---------- rooms: multi-device play over the free ntfy.sh relay ---------- */
+/* ---------- rooms: real-time precision sync over the free ntfy.sh relay ---------- */
 const me=Math.random().toString(36).slice(2,8),NT="https://ntfy.sh/stxy-",AB="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-let room=null,es=null;
-function post(s){if(room)fetch(NT+room,{method:"POST",body:s}).catch(()=>{})}
+const SYNC_EVERY=750, HARD_SYNC=.35, SOFT_SYNC=.08;
+let room=null,es=null,roomLeader=false,syncTimer=null,pingTimer=null,clockOffset=0,lastSeq=0,scanStream=null;
+
+function post(s){if(room)fetch(NT+room,{method:"POST",body:s,keepalive:true}).catch(()=>{})}
 function bc(o){if(!room)return;o.f=me;post(JSON.stringify(o))}
 function cmd(c){bc({t:"cmd",c})}
-function sendLoad(){const it=Q[qi];if(room&&it&&!it.off)bc({t:"load",it,from,c:time()})}
-function onRoom(raw){let m;try{m=JSON.parse(raw)}catch(e){return}if(!m||m.f===me)return;
- if(m.t==="load"){follow=true;document.body.classList.add("follow");Q=[m.it];qi=0;from=m.from;openPl();loadCur(m.c)}
- else if(m.t==="s"){if(follow&&Q[qi]&&Q[qi].videoId===m.id&&yt&&ytReady)try{if(Math.abs(yt.getCurrentTime()-m.c)>2.5)yt.seekTo(m.c,true);if(m.p)yt.playVideo();else yt.pauseVideo()}catch(e){}}
+function roomNow(){return Date.now()+clockOffset}
+function predictedClock(m){return (Number(m.c)||0)+Math.max(0,(roomNow()-(Number(m.ts)||roomNow()))/1000)}
+function sendState(){
+ const it=Q[qi];if(!room||!roomLeader||!it||it.off)return;
+ bc({t:"s",id:it.videoId,p:playing(),c:time(),ts:Date.now(),seq:++lastSeq})
+}
+function sendLoad(){
+ const it=Q[qi];if(!room||!roomLeader||!it||it.off)return;
+ bc({t:"load",it,from,c:time(),p:playing(),ts:Date.now(),seq:++lastSeq})
+}
+function precisionApply(m){
+ if(!follow||!Q[qi]||Q[qi].videoId!==m.id||!yt||!ytReady)return;
+ try{
+   const target=predictedClock(m),now=yt.getCurrentTime(),diff=target-now;
+   if(Math.abs(diff)>=HARD_SYNC){yt.seekTo(Math.max(0,target),true)}
+   else if(Math.abs(diff)>=SOFT_SYNC&&yt.setPlaybackRate){
+     yt.setPlaybackRate(diff>0?1.05:.95);
+     clearTimeout(precisionApply._r);
+     precisionApply._r=setTimeout(()=>{try{yt.setPlaybackRate(1)}catch(e){}},900);
+   }else if(yt.setPlaybackRate)yt.setPlaybackRate(1);
+   const shouldPlay=!!m.p;
+   if(shouldPlay&&yt.getPlayerState()!==YT.PlayerState.PLAYING)yt.playVideo();
+   if(!shouldPlay&&yt.getPlayerState()===YT.PlayerState.PLAYING)yt.pauseVideo();
+ }catch(e){}
+}
+function syncPing(){if(room&&!roomLeader)bc({t:"ping",t0:Date.now()})}
+function onRoom(raw){
+ let m;try{m=JSON.parse(raw)}catch(e){return}
+ if(!m||m.f===me)return;
+ if(m.t==="pong"&&!roomLeader){
+   const t2=Date.now(),rtt=t2-m.t0;
+   const sample=m.t1-(m.t0+t2)/2;
+   clockOffset=clockOffset*.75+sample*.25;
+   return;
+ }
+ if(m.t==="ping"&&roomLeader){bc({t:"pong",t0:m.t0,t1:Date.now()});return}
+ if(m.t==="load"&& !roomLeader){
+   follow=true;document.body.classList.add("follow");lastSeq=Math.max(lastSeq,Number(m.seq)||0);
+   Q=[m.it];qi=0;from=m.from;openPl();loadCur(predictedClock(m)-m.c);
+   setTimeout(()=>precisionApply(m),250);
+ }
+ else if(m.t==="s"&&!roomLeader&&Number(m.seq||0)>=lastSeq){
+   lastSeq=Number(m.seq||0);precisionApply(m);
+ }
  else if(m.t==="x"){if(follow){try{yt.stopVideo()}catch(e){}ui(false)}}
- else if(m.t==="hi"){if(!follow)sendLoad()}
- else if(m.t==="cmd"){if(!follow&&Q.length){if(m.c==="toggle")togglePlay();else if(m.c==="next")next(false);else if(m.c==="prev")prev()}}}
-function enterRoom(id,creator){leaveRoom(true);room=id;
+ else if(m.t==="hi"&&roomLeader)sendLoad();
+ else if(m.t==="cmd"&&roomLeader&&Q.length){
+   if(m.c==="toggle")togglePlay();else if(m.c==="next")next(false);else if(m.c==="prev")prev()
+ }
+}
+function enterRoom(id,creator){
+ leaveRoom(true);room=id;roomLeader=!!creator;follow=!roomLeader;lastSeq=0;clockOffset=0;
  es=new EventSource(NT+id+"/sse");let first=true;
  es.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.event==="message")onRoom(d.message)}catch(x){}};
- es.onopen=()=>{if(first){first=false;bc({t:"hi"});if(creator)sendLoad()}};
+ es.onerror=()=>{};
+ es.onopen=()=>{
+   if(first){first=false;bc({t:"hi"});if(roomLeader)sendLoad();else syncPing()}
+ };
+ clearInterval(syncTimer);clearInterval(pingTimer);
+ if(roomLeader)syncTimer=setInterval(sendState,SYNC_EVERY);
+ else pingTimer=setInterval(syncPing,3000);
  try{history.replaceState(null,"","#room="+id)}catch(e){}
- $("castBtn").classList.add("on")}
-function leaveRoom(quiet){if(es)es.close();es=null;
+ $("castBtn").classList.add("on");
+}
+function leaveRoom(quiet){
+ if(es)es.close();es=null;clearInterval(syncTimer);clearInterval(pingTimer);syncTimer=pingTimer=null;
  if(room&&!quiet)toast("Left room "+room);
- room=null;follow=false;document.body.classList.remove("follow");$("castBtn").classList.remove("on");
- try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}
+ room=null;roomLeader=false;follow=false;clockOffset=0;lastSeq=0;document.body.classList.remove("follow");$("castBtn").classList.remove("on");
+ try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+}
 function createRoom(){let id="";for(let i=0;i<8;i++)id+=AB[Math.random()*AB.length|0];
- enterRoom(id,true);showCast();toast("Room created")}
-function joinRoom(){const id=($("jc").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+ enterRoom(id,true);showCast();toast("Precision room created")}
+function joinRoom(){
+ const id=($("jc").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
  if(id.length!==8)return toast("Room ID has 8 letters/numbers");
- enterRoom(id,false);closeDlg();toast("Joined room "+id)}
+ enterRoom(id,false);closeDlg();toast("Joined room "+id)
+}
 function copyRoom(){navigator.clipboard.writeText(room).then(()=>toast("Room ID copied")).catch(()=>toast("Copy failed"))}
-function shareRoom(){const url=location.href.split("#")[0]+"#room="+room;
+function roomInvite(){return location.href.split("#")[0]+"#room="+room}
+function shareRoom(){const url=roomInvite();
  if(navigator.share)navigator.share({title:"Join my ShivTrixYouTube room",text:"Room ID: "+room,url}).catch(()=>{});
  else navigator.clipboard.writeText(url).then(()=>toast("Invite link copied")).catch(()=>toast(url))}
+function qrSrc(){
+ return "https://quickchart.io/qr?text="+encodeURIComponent(roomInvite())+"&size=320&margin=2&ecLevel=H";
+}
+function openRoomScan(){
+ closeDlg();
+ dlg(`<h3>Scan room QR</h3>
+   <div class="scanbox"><video id="qrVideo" autoplay muted playsinline></video><div class="scanframe"></div></div>
+   <p id="scanStatus" class="mut" style="font-size:12px;line-height:1.5;text-align:center">Point the camera at the room QR code.</p>
+   <button class="btn" onclick="stopRoomScan();showCast()">Cancel</button>`);
+ startRoomScan();
+}
+async function startRoomScan(){
+ const status=$("scanStatus"),video=$("qrVideo");
+ if(!("BarcodeDetector" in window)){if(status)status.textContent="QR camera scanning is not supported here. Use the Room ID below.";return}
+ try{
+   const supported=await BarcodeDetector.getSupportedFormats();
+   if(!supported.includes("qr_code"))throw 0;
+   scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
+   video.srcObject=scanStream;await video.play();
+   const detector=new BarcodeDetector({formats:["qr_code"]});
+   const scan=async()=>{
+     if(!scanStream||!$("qrVideo"))return;
+     try{
+       const hits=await detector.detect(video);
+       const raw=hits[0]&&hits[0].rawValue;
+       if(raw){
+         const m=/#room=([A-Z0-9]{8})/i.exec(raw)||/^[A-Z0-9]{8}$/i.exec(raw.trim());
+         if(m){stopRoomScan();enterRoom((m[1]||m[0]).toUpperCase(),false);closeDlg();toast("Joined room by QR");return}
+       }
+     }catch(e){}
+     requestAnimationFrame(scan);
+   };
+   requestAnimationFrame(scan);
+ }catch(e){if(status)status.textContent="Camera unavailable. Allow camera access or enter the Room ID manually."}
+}
+function stopRoomScan(){
+ if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}
+ const v=$("qrVideo");if(v)v.srcObject=null;
+}
 function showCast(){
- if(room){dlg(`<h3>You’re in a room</h3><div class="code">${room}</div><p class="mut" style="font-size:13px;line-height:1.6;margin:0 0 6px">Every device that enters this Room ID plays the same song in sync. Play a song on any device to make it the leader. Next, previous and pause from the other devices control the leader.</p><button class="btn pri" onclick="shareRoom()">🔗 Share invite link</button><button class="btn" onclick="copyRoom()">⧉ Copy Room ID</button><button class="btn" onclick="leaveRoom();closeDlg()">⏏ Leave room</button>`);return}
- dlg(`<h3>Cast to device</h3><p class="mut" style="font-size:13px;line-height:1.6;margin:0">Create a room, then enter its Room ID on your other devices. They all play the same song together.</p>
- <button class="btn pri" onclick="createRoom()">＋ Create room</button>
- <input id="jc" placeholder="Room ID" autocapitalize="characters" autocomplete="off" maxlength="12">
- <button class="btn" onclick="joinRoom()">🔗 Join room</button>
- <p class="mut" style="font-size:12px;line-height:1.6">To show it on the Mi TV: in Chrome use ⋮ → Cast → your TV.</p>`)}
+ if(room){
+   const role=roomLeader?"LEADER":"FOLLOWER";
+   dlg(`<h3>Precision Room</h3>
+     <div class="qrbox"><img src="${qrSrc()}" alt="Room QR code"></div>
+     <div class="roomcode">${room}</div>
+     <div class="roommeta"><span class="roomdot"></span>${role} · REAL-TIME SYNC</div>
+     <p class="mut" style="font-size:13px;line-height:1.6;margin:12px 0 6px">QR join is instant. Playback state is broadcast every ${SYNC_EVERY} ms with clock compensation and sub-second drift correction.</p>
+     <button class="btn pri" onclick="shareRoom()">🔗 Share invite</button>
+     <button class="btn" onclick="copyRoom()">⧉ Copy Room ID</button>
+     <button class="btn" onclick="leaveRoom();closeDlg()">⏏ Leave room</button>`);
+   return
+ }
+ dlg(`<h3>Room Sync</h3>
+   <p class="mut" style="font-size:13px;line-height:1.6;margin:0">Create a room and show the QR on one screen. Other devices can scan it for a fast precision-synced join.</p>
+   <button class="btn pri" onclick="createRoom()">＋ Create room + QR</button>
+   <button class="btn" onclick="openRoomScan()">▣ Scan QR to join</button>
+   <input id="jc" placeholder="Room ID" autocapitalize="characters" autocomplete="off" maxlength="8">
+   <button class="btn" onclick="joinRoom()">🔗 Join by Room ID</button>
+   <p class="mut" style="font-size:12px;line-height:1.6">Tip: open the QR on the host device, then scan it with a phone/tablet camera inside this app.</p>`)
+}
 
 /* ---------- init ---------- */
 function resize(){$("menuBtn").style.display=innerWidth<=900?"grid":"none"}
