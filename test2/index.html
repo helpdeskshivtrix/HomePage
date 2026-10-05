@@ -34,7 +34,7 @@ input,textarea,select{width:100%;background:#08101c;color:var(--text);border:1px
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.room-layout,.music{grid-template-columns:1fr}.tools{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.app{padding:10px 10px 80px}.top{margin:0 -10px;padding:10px}.toprow{align-items:flex-start}.actions .btn{padding:7px 9px;font-size:12px}.grid{grid-template-columns:1fr}.tools{grid-template-columns:1fr}.hero{padding:17px}.ttt{grid-template-columns:repeat(3,62px)}.cell{width:62px;height:62px}.row{flex-direction:column}}
 
-.patti{width:min(760px,100%);background:radial-gradient(circle at center,#123a2d 0,#062016 55%,#04140f 100%);border:1px solid #2b765b;border-radius:28px;padding:22px;box-shadow:inset 0 0 70px #0008,0 18px 60px #0009}
+.room-code{letter-spacing:.18em;font-size:2.2rem;font-weight:900;word-break:break-all}.qrbox{text-align:center}.qrbox img{border-radius:14px;background:#fff;padding:10px}.patti{width:min(760px,100%);background:radial-gradient(circle at center,#123a2d 0,#062016 55%,#04140f 100%);border:1px solid #2b765b;border-radius:28px;padding:22px;box-shadow:inset 0 0 70px #0008,0 18px 60px #0009}
 .patti .cell{box-shadow:0 6px 14px #0008;transition:.2s}.patti .cell:hover{transform:translateY(-4px)}
 #chatBox>div{background:#091421;border:1px solid #1d2b42;border-radius:9px;padding:7px 9px}
 
@@ -137,12 +137,19 @@ const games=[
 const $=id=>document.getElementById(id), STORE='shivtrix-v3';
 const me={id:(localStorage.getItem(STORE+':pid')||crypto.randomUUID()).slice(0,12),name:localStorage.getItem(STORE+':name')||'Player '+Math.floor(100+Math.random()*900)};
 localStorage.setItem(STORE+':pid',me.id);localStorage.setItem(STORE+':name',me.name);
-let peer=null,hostConn=null,connections=new Map(),heartbeat=null,reconnectTimer=null;
+let peer=null,hostConn=null,connections=new Map(),heartbeat=null,reconnectTimer=null,joinRetryTimer=null,joinAttempts=0;
 let room=null,roomCode='',isHost=false,chat=[],queue=JSON.parse(localStorage.getItem(STORE+':queue')||'[]');
+const ROOM_ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const PEER_PREFIX='shivtrix-room-';
+function makeRoomCode(){let out='';for(let i=0;i<8;i++)out+=ROOM_ALPHABET[Math.floor(Math.random()*ROOM_ALPHABET.length)];return out}
+function normalizeRoomCode(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8)}
+function validRoomCode(v){return /^[A-Z0-9]{8}$/.test(v)}
+function roomPeerId(c){return PEER_PREFIX+normalizeRoomCode(c).toLowerCase()}
+
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function now(){return Date.now()} function idFor(c){return 'shivtrix-room-'+c.toUpperCase()}
+function now(){return Date.now()} function idFor(c){return roomPeerId(c)}
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(b.dataset.page).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.page==='rooms')renderRoom()});
 function card(g){return `<div class="card game-card"><div><div class="game-icon">${g.icon}</div><h3>${g.name}</h3><p>${g.desc}</p></div><div class="actions"><span class="muted">${g.players} players</span><button class="btn" onclick="openGame('${g.id}')">Play</button></div></div>`}
 $('homeGames').innerHTML=games.slice(0,8).map(card).join('');$('gamesGrid').innerHTML=games.map(card).join('');
@@ -158,29 +165,55 @@ function openCreate(){
 }
 async function createRoom(){
  me.name=$('createPlayer').value.trim()||me.name;localStorage.setItem(STORE+':name',me.name);
- roomCode=Array.from({length:6},()=>Math.floor(Math.random()*10)).join('');
- room=defaultRoom(roomCode,$('createName').value.trim()||'Live Room',$('createGame').value,+$('createPlayers').value);
- room.adminToken=crypto.randomUUID().replaceAll('-','').slice(0,16).toUpperCase();isHost=true;
- try{await startPeer(idFor(roomCode));saveLocalRoom();closeModal();document.querySelector('[data-page="rooms"]').click();toast('Live room '+roomCode+' created');broadcast({type:'snapshot',room})}catch(e){toast('Could not create room')}
+ let created=false;
+ for(let attempt=0;attempt<6 && !created;attempt++){
+  roomCode=makeRoomCode();
+  room=defaultRoom(roomCode,$('createName').value.trim()||'Live Room',$('createGame').value,+$('createPlayers').value);
+  room.adminToken=crypto.randomUUID().replaceAll('-','').slice(0,16).toUpperCase();isHost=true;
+  try{await startPeer(idFor(roomCode));created=true}catch(e){if(e?.type!=='unavailable-id')throw e;cleanupPeer()}
+ }
+ if(!created){isHost=false;toast('Could not reserve a unique room. Try again.');return}
+ saveLocalRoom();closeModal();document.querySelector('[data-page="rooms"]').click();toast('Live room '+roomCode+' created');
+ broadcast({type:'snapshot',room});
 }
 function openJoin(){
  $('modalTitle').textContent='Join Real-Time Room';
- $('modalBody').innerHTML=`<label>Room code</label><input id="joinCode" placeholder="6 digit code" inputmode="numeric" maxlength="6"><br><br><label>Your name</label><input id="joinPlayer" value="${esc(me.name)}"><br><br><button class="btn primary" onclick="joinRoom()">Join Live Room</button><p class="muted">Internet-wide room sync uses WebRTC. No BroadcastChannel/local-only room state.</p>`;showModal();
+ $('modalBody').innerHTML=`<label>Room code</label><input id="joinCode" placeholder="8-character code" inputmode="text" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="this.value=normalizeRoomCode(this.value)" onkeydown="if(event.key==='Enter')joinRoom()"><br><br><label>Your name</label><input id="joinPlayer" value="${esc(me.name)}"><br><br><button class="btn primary" onclick="joinRoom()">Join Live Room</button><p class="muted">8-character live room code • WebRTC • camera permission is not required.</p>`;showModal();
 }
 async function joinRoom(){
- const c=$('joinCode').value.trim().toUpperCase();if(!c)return toast('Enter a room code');
- me.name=$('joinPlayer').value.trim()||me.name;localStorage.setItem(STORE+':name',me.name);roomCode=c;isHost=false;
+ const c=normalizeRoomCode($('joinCode').value);if(!validRoomCode(c))return toast('Room code must be exactly 8 letters/numbers');
+ me.name=$('joinPlayer').value.trim()||me.name;localStorage.setItem(STORE+':name',me.name);roomCode=c;isHost=false;joinAttempts=0;
  try{await startPeer('guest-'+me.id);connectToHost()}catch(e){toast('Could not start connection')}
 }
 function startPeer(peerId){
  return new Promise((resolve,reject)=>{
-  cleanupPeer();peer=new Peer(peerId,{debug:0});
-  peer.on('open',resolve);peer.on('error',e=>{console.error(e);reject(e);toast('Peer error: '+e.type)});
+  cleanupPeer();
+  peer=new Peer(peerId,{
+   debug:0,
+   config:{iceServers:[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun.cloudflare.com:3478'}
+   ]}
+  });
+  let settled=false;
+  peer.on('open',()=>{settled=true;startHeartbeat();resolve()});
+  peer.on('error',e=>{console.error('Peer error',e);if(!settled){settled=true;reject(e)}else if(e?.type==='network')toast('Signalling network issue — retrying…')});
   peer.on('connection',c=>{if(isHost)setupConn(c);else c.close()});
-  peer.on('disconnected',()=>{if(!isHost){clearTimeout(reconnectTimer);reconnectTimer=setTimeout(()=>{try{peer.reconnect()}catch{}},1000)}});
+  peer.on('disconnected',()=>{if(!isHost){try{peer.reconnect()}catch{}}});
+  peer.on('close',()=>{if(!isHost&&!room)toast('Connection closed')});
  });
 }
-function connectToHost(){const c=peer.connect(idFor(roomCode),{reliable:true,serialization:'json'});hostConn=c;setupConn(c)}
+
+function connectToHost(){
+ clearTimeout(joinRetryTimer);if(!peer||peer.destroyed)return;
+ joinAttempts++;
+ const c=peer.connect(idFor(roomCode),{reliable:true,serialization:'json',metadata:{room:roomCode,client:me.id}});hostConn=c;
+ let opened=false;
+ const retry=()=>{if(opened||isHost)return;if(joinAttempts>=8){toast('Room not found or host is offline');return}toast('Connecting to room… '+joinAttempts+'/8');clearTimeout(joinRetryTimer);joinRetryTimer=setTimeout(connectToHost,1200*Math.min(joinAttempts,4))};
+ c.on('open',()=>{opened=true;joinAttempts=0;setupConn(c)});
+ c.on('error',e=>{console.warn('Room connection error',e);try{c.close()}catch{};retry()});
+ c.on('close',retry);
+}
 function setupConn(c){
  c.on('open',()=>{connections.set(c.peer,c);c.__last=now();if(isHost){send(c,{type:'snapshot',room})}else send(c,{type:'join',player:{id:me.id,name:me.name}});renderRoom();startHeartbeat()});
  c.on('data',m=>handlePacket(c,m));c.on('close',()=>handleDisconnect(c.peer));c.on('error',()=>handleDisconnect(c.peer));
@@ -308,10 +341,10 @@ function cleanText(){$('cleanIn').value=[...new Set($('cleanIn').value.split(/\n
 function calcPct(){let a=+$('pctA').value,b=+$('pctB').value;$('pctOut').textContent=isFinite(a*b/100)?a*b/100:'—'}
 function quickDice(){$('diceOut').textContent='🎲 '+(Math.floor(Math.random()*6)+1)}
 let timer;function startTimer(){clearInterval(timer);let n=+$('timerSec').value||60;$('timerOut').textContent=n;timer=setInterval(()=>{n--;$('timerOut').textContent=n;if(n<=0){clearInterval(timer);toast('Timer finished')}},1000)}
-function scanQR(){toast('Open the QR invite with your phone camera or enter the room code.')}
+function scanQR(){toast('QR scanner is optional. Camera permission is never requested for room joining. Use the 8-character room code if preferred.')}
 function showModal(){$('modal').classList.add('show')}function closeModal(){$('modal').classList.remove('show')}
 
-window.addEventListener('load',()=>{const h=location.hash.match(/^#room=(.+)$/);if(h){roomCode=decodeURIComponent(h[1]);openJoin();setTimeout(()=>{$('joinCode').value=roomCode},0)}});
+window.addEventListener('load',()=>{const h=location.hash.match(/^#room=(.+)$/);if(h){roomCode=decodeURIComponent(h[1]);openJoin();setTimeout(()=>{$('joinCode').value=normalizeRoomCode(roomCode)},0)}});
 window.addEventListener('beforeunload',()=>cleanupPeer());
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
