@@ -1,267 +1,319 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
-<title>RoyalRoom</title>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b14">
+<meta name="description" content="ShivTrix Play — music, games, live rooms, QR join and everyday tools.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>ShivTrix Play</title>
 <style>
-:root{--bl:#4169e1;--bl2:#6f8cff;--bg:#000;--pn:#05070f;--cd:#0a0f1f;--ln:#14204a;--tx:#e8edff;--t2:#7f8bb5;--glow:0 0 14px rgba(65,105,225,.55);--red:#ff3b5c}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-input{font:inherit;color:inherit}
-[hidden]{display:none!important}
-.app{display:grid;grid-template-columns:minmax(300px,340px) 1fr;height:100dvh}
-.side{background:var(--pn);border-right:1px solid var(--ln);display:flex;flex-direction:column;min-height:0}
-.main{display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
-.me{padding:16px;border-bottom:1px solid var(--ln);background:linear-gradient(180deg,#07102e,var(--pn))}
-.me .nm{font-weight:600;font-size:17px;cursor:pointer}
-.rid{display:inline-block;margin-top:6px;padding:5px 10px;border:1px solid var(--bl);border-radius:8px;color:var(--bl2);letter-spacing:2px;font-family:ui-monospace,monospace;box-shadow:var(--glow);cursor:pointer}
-.st{font-size:12px;color:var(--t2);margin-top:6px}.st i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px}.st.on i{background:#3dffa0;box-shadow:0 0 8px #3dffa0}
-.row{display:flex;gap:8px;margin-top:12px}
-.btn{padding:9px 14px;border-radius:10px;border:1px solid var(--ln);background:var(--cd);color:var(--tx)}
-.btn:hover{border-color:var(--bl)}
-.btn.p{background:var(--bl);border-color:var(--bl);box-shadow:var(--glow);font-weight:600}
-.join{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--ln)}
-.join input,.foot input[type=text]{flex:1;min-width:0;background:var(--cd);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;outline:0;text-transform:none}
-.join input:focus,.foot input:focus{border-color:var(--bl);box-shadow:var(--glow)}
-.list{flex:1;overflow-y:auto}
-.it{display:flex;gap:12px;align-items:center;width:100%;padding:12px 16px;text-align:left;border-bottom:1px solid #0b1230}
-.it:hover,.it.a{background:var(--cd)}
-.av{width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:700;background:#0d1a4d;border:1px solid var(--bl);box-shadow:var(--glow)}
-.it .b{flex:1;min-width:0}.it .n{display:flex;justify-content:space-between;gap:8px}.it .p2{color:var(--t2);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bd{background:var(--bl);border-radius:10px;min-width:20px;height:20px;font-size:12px;display:grid;place-items:center;padding:0 6px;box-shadow:var(--glow)}
-.empty{padding:28px;text-align:center;color:var(--t2)}
-.splash{flex:1;display:grid;place-items:center;text-align:center;color:var(--t2);padding:24px}
-.splash h1{color:var(--bl2);text-shadow:0 0 22px var(--bl);font-weight:300;font-size:30px;margin-bottom:8px}
-.chat{display:flex;flex-direction:column;flex:1;min-height:0}
-.hd{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--pn);border-bottom:1px solid var(--ln)}
-.hd .t{flex:1;min-width:0}.hd .n{font-weight:600}.hd .s{font-size:12px;color:var(--t2);font-family:ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ib{width:40px;height:40px;border-radius:50%;font-size:18px}.ib:hover{background:var(--cd);box-shadow:var(--glow)}
-.back{display:none}
-.stream{flex:1;overflow-y:auto;padding:16px max(4%,12px);display:flex;flex-direction:column;gap:6px;background:radial-gradient(circle at 50% 0,#06102e 0,#000 60%)}
-.m{max-width:min(72%,520px);padding:8px 11px;border-radius:12px;background:var(--cd);border:1px solid var(--ln);align-self:flex-start;word-break:break-word;white-space:pre-wrap}
-.m.o{align-self:flex-end;background:linear-gradient(135deg,#2e52d6,var(--bl));border-color:var(--bl2);box-shadow:var(--glow)}
-.m small{display:block;text-align:right;font-size:11px;opacity:.65;margin-top:3px}
-.m img,.m video{display:block;max-width:100%;max-height:320px;border-radius:8px}
-.m a{color:#fff}
-.sys{align-self:center;color:var(--t2);font-size:12px;border:1px solid var(--ln);border-radius:8px;padding:4px 10px}
-.foot{display:flex;gap:8px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--pn);border-top:1px solid var(--ln)}
-.send{width:42px;height:42px;border-radius:50%;background:var(--bl);box-shadow:var(--glow);font-size:18px}
-.ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.88);display:grid;place-items:center;padding:16px}
-.card{background:var(--pn);border:1px solid var(--bl);border-radius:16px;box-shadow:0 0 30px rgba(65,105,225,.4);padding:20px;max-width:380px;width:100%;text-align:center}
-.card h2{font-weight:500;margin-bottom:12px}.card .qr{background:#fff;border-radius:12px;padding:12px;display:inline-block}.card .qr svg{display:block;width:230px;height:230px}
-.card video{width:100%;border-radius:12px;background:#000;max-height:50dvh;object-fit:cover}
-.card p{color:var(--t2);font-size:13px;margin-top:10px}
-.call{position:fixed;inset:0;z-index:60;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(20px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
-#rv{width:100%;flex:1;min-height:0;object-fit:contain;border-radius:14px;background:#050a1c;box-shadow:inset 0 0 40px rgba(65,105,225,.25)}
-#lv{position:absolute;right:20px;top:calc(76px + env(safe-area-inset-top));width:110px;border-radius:10px;border:1px solid var(--bl);box-shadow:var(--glow);transform:scaleX(-1)}
-.call h2{font-weight:400;margin:6px 0 12px;text-shadow:0 0 14px var(--bl)}
-.ctl{display:flex;gap:16px;margin-top:16px}.ctl button{width:58px;height:58px;border-radius:50%;background:var(--cd);border:1px solid var(--bl);font-size:22px}
-.ctl .end{background:var(--red);border-color:var(--red)}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0d1a4d;border:1px solid var(--bl);box-shadow:var(--glow);padding:10px 16px;border-radius:10px;z-index:90;opacity:0;pointer-events:none;transition:.2s}.toast.on{opacity:1}
-@media(max-width:760px){.app{grid-template-columns:1fr}.main{display:none}.app.open .side{display:none}.app.open .main{display:flex}.back{display:inline-block}.m{max-width:86%}}
-</style></head><body>
-<div class="app" id="app">
-<aside class="side">
-  <div class="me">
-    <div class="nm" id="nm" title="Tap to rename"></div>
-    <div class="rid" id="rid" title="Copy your room ID"></div>
-    <div class="st" id="st"><i></i><span>Connecting…</span></div>
-    <div class="row"><button class="btn p" id="bQR">My QR</button><button class="btn" id="bScan">Scan QR</button></div>
+:root{--bg:#070b14;--panel:#0d1422;--panel2:#111b2d;--line:#20304a;--text:#eef5ff;--muted:#8fa2bd;--blue:#00eaff;--green:#4dff9a;--red:#ff5577;--gold:#ffd45a;--shadow:0 14px 50px #0008}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#12304b 0,#070b14 45%);color:var(--text);font:14px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{max-width:1250px;margin:auto;padding:14px 14px 90px}.top{position:sticky;top:0;z-index:20;background:#070b14dd;backdrop-filter:blur(14px);border-bottom:1px solid #1c2a40;margin:0 -14px;padding:12px 14px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:40px;height:40px;border:1px solid #00eaff66;border-radius:13px;display:grid;place-items:center;background:#071522;box-shadow:0 0 25px #00eaff22;font-size:22px}.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted)}
+.toprow{display:flex;justify-content:space-between;align-items:center;gap:12px}.actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#101a2b;color:var(--text);padding:9px 12px;border-radius:10px}.btn:hover{border-color:#00eaff88}.primary{background:#00d9ef;color:#001015;border-color:#00eaff;font-weight:800}.danger{border-color:#ff557766;color:#ff8aa0}.good{border-color:#4dff9a55;color:#8dffbd}
+.nav{display:flex;gap:7px;overflow:auto;padding:12px 0 2px}.nav button{white-space:nowrap}
+.nav .active{background:#00eaff;color:#001015;border-color:#00eaff;font-weight:800}
+.page{display:none}.page.active{display:block}
+.hero{margin-top:18px;padding:22px;border:1px solid #20334d;border-radius:20px;background:linear-gradient(145deg,#0c1829,#0b111d);box-shadow:var(--shadow)}
+.hero h2{font-size:clamp(24px,5vw,42px);margin:0 0 8px}.hero p{color:var(--muted);max-width:700px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:linear-gradient(145deg,#0e1726,#0b121e);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 8px 30px #0004}.card h3{margin:0 0 6px}.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.game-icon{font-size:28px;margin-bottom:9px}.game-card{min-height:165px;display:flex;flex-direction:column;justify-content:space-between}
+.section-title{display:flex;justify-content:space-between;align-items:end;margin:25px 0 11px}.section-title h2{margin:0}.muted{color:var(--muted)}
+.room-layout{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:16px}.room-code{font-size:34px;letter-spacing:7px;font-weight:900;color:var(--blue);text-align:center;padding:15px}.players{display:grid;gap:8px}.player{display:flex;align-items:center;gap:10px;background:#0a1220;border:1px solid #1d2c43;padding:10px;border-radius:11px}.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#16283e}.online{margin-left:auto;color:var(--green);font-size:11px}.room-game{min-height:260px;display:grid;place-items:center;text-align:center}.game-board{display:grid;gap:7px;margin:14px auto}.ttt{grid-template-columns:repeat(3,70px)}.cell{width:70px;height:70px;background:#09111e;border:1px solid #24405c;border-radius:12px;color:var(--blue);font-size:28px;font-weight:900}.result{font-size:25px;font-weight:900;color:var(--gold);margin:10px}
+.music{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.now{display:flex;gap:15px;align-items:center}.cover{width:105px;height:105px;border-radius:16px;background:linear-gradient(135deg,#00eaff,#7c4dff);display:grid;place-items:center;font-size:40px}.progress{width:100%;accent-color:var(--blue)}.queue{display:grid;gap:7px;max-height:270px;overflow:auto}.track{padding:10px;border:1px solid #1d2b42;border-radius:10px;display:flex;justify-content:space-between}
+input,textarea,select{width:100%;background:#08101c;color:var(--text);border:1px solid #263750;border-radius:10px;padding:10px;outline:none}input:focus,textarea:focus{border-color:#00eaff88}.row{display:flex;gap:8px}.row>*{flex:1}
+.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;z-index:50;padding:18px}.modal.show{display:grid}.modal-box{width:min(520px,100%);background:#0c1523;border:1px solid #2b4160;border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.qrbox{background:#fff;border-radius:12px;min-height:220px;display:grid;place-items:center;overflow:hidden}.qrbox img{width:220px;height:220px}.token{font-family:monospace;letter-spacing:3px;color:var(--gold);background:#070c14;padding:12px;border-radius:10px;text-align:center}
+.credits{font-size:26px;color:var(--gold);font-weight:900}.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tool textarea{min-height:90px}.footer{text-align:center;color:#657992;font-size:11px;margin-top:35px}
+.toast{position:fixed;right:18px;bottom:18px;background:#0d1b2c;border:1px solid #00eaff66;color:#e9fbff;padding:12px 15px;border-radius:12px;display:none;z-index:100}.toast.show{display:block}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.room-layout,.music{grid-template-columns:1fr}.tools{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.app{padding:10px 10px 80px}.top{margin:0 -10px;padding:10px}.toprow{align-items:flex-start}.actions .btn{padding:7px 9px;font-size:12px}.grid{grid-template-columns:1fr}.tools{grid-template-columns:1fr}.hero{padding:17px}.ttt{grid-template-columns:repeat(3,62px)}.cell{width:62px;height:62px}.row{flex-direction:column}}
+
+.patti{width:min(760px,100%);background:radial-gradient(circle at center,#123a2d 0,#062016 55%,#04140f 100%);border:1px solid #2b765b;border-radius:28px;padding:22px;box-shadow:inset 0 0 70px #0008,0 18px 60px #0009}
+.patti .cell{box-shadow:0 6px 14px #0008;transition:.2s}.patti .cell:hover{transform:translateY(-4px)}
+#chatBox>div{background:#091421;border:1px solid #1d2b42;border-radius:9px;padding:7px 9px}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="toprow">
+    <div class="brand"><div class="logo">🎮</div><div><h1>ShivTrix Play</h1><small>Music • Games • Live Rooms • Useful Tools</small></div></div>
+    <div class="actions"><button class="btn" onclick="openCreate()">＋ Room</button><button class="btn primary" onclick="openJoin()">Join</button></div>
   </div>
-  <div class="join"><input id="jid" placeholder="Enter a room ID to join" autocomplete="off" autocapitalize="characters"><button class="btn p" id="bJoin">Join</button></div>
-  <div class="list" id="list"></div>
-</aside>
-<main class="main">
-  <div class="splash" id="splash"><div><h1>RoyalRoom</h1>Share your room ID or QR, or scan someone's.<br>When two people join, the room ID becomes both IDs combined.</div></div>
-  <section class="chat" id="chat" hidden>
-    <div class="hd"><button class="ib back" id="bBack">‹</button><div class="av" id="cav"></div>
-      <div class="t"><div class="n" id="cn"></div><div class="s" id="cs"></div></div>
-      <button class="ib" id="bVid" title="Video call">🎥</button><button class="ib" id="bVoi" title="Voice call">📞</button></div>
-    <div class="stream" id="stream"></div>
-    <div class="foot"><button class="ib" id="bAtt" title="Share photo, video or file">📎</button><input type="file" id="file" hidden>
-      <input type="text" id="msg" placeholder="Type a message" autocomplete="off"><button class="send" id="bSend">➤</button></div>
-  </section>
-</main></div>
-<div id="ovs"></div>
+  <nav class="nav">
+    <button class="btn active" data-page="home">Home</button>
+    <button class="btn" data-page="games">🎮 Games</button>
+    <button class="btn" data-page="music">🎵 Music</button>
+    <button class="btn" data-page="rooms">🔴 Rooms</button>
+    <button class="btn" data-page="tools">🧰 Tools</button>
+  </nav>
+</header>
+
+<section id="home" class="page active">
+  <div class="hero"><h2>Play together. Listen together.</h2><p>A simple, mobile-friendly entertainment hub. Create a room, share the QR, start a game or sync music with friends.</p><div class="actions"><button class="btn primary" onclick="openCreate()">Create Live Room</button><button class="btn" onclick="openJoin()">Join with QR / Code</button></div></div>
+  <div class="section-title"><h2>Quick games</h2><span class="muted">2–4 players</span></div>
+  <div class="grid" id="homeGames"></div>
+  <div class="section-title"><h2>Room features</h2></div>
+  <div class="grid">
+    <div class="card"><div class="game-icon">🎵</div><h3>Music Sync</h3><p>Shared play, pause, seek and queue while volume stays local.</p></div>
+    <div class="card"><div class="game-icon">📷</div><h3>QR Join</h3><p>Share a room invitation through a QR code.</p></div>
+    <div class="card"><div class="game-icon">🛡️</div><h3>Room Admin</h3><p>Owner token controls room settings and players.</p></div>
+    <div class="card"><div class="game-icon">🎟️</div><h3>Room Credits</h3><p>Virtual points for game rounds and fun rewards.</p></div>
+  </div>
+</section>
+
+<section id="games" class="page">
+  <div class="section-title"><h2>🎮 Games</h2><span class="muted">Free-play / virtual points</span></div>
+  <div class="grid" id="gamesGrid"></div>
+</section>
+
+<section id="music" class="page">
+  <div class="section-title"><h2>🎵 Music Player</h2><span class="muted">Room-ready</span></div>
+  <div class="music">
+    <div class="card">
+      <div class="now"><div class="cover">♫</div><div><h2 id="songTitle">No song loaded</h2><p class="muted">Choose an audio file or add a direct audio URL.</p></div></div>
+      <audio id="audio" controls style="width:100%;margin-top:18px"></audio>
+      <div class="row" style="margin-top:10px"><input type="file" id="audioFile" accept="audio/*"><button class="btn" onclick="addUrlTrack()">Add URL</button></div>
+      <div class="row" style="margin-top:10px"><button class="btn" onclick="roomMusic('play')">▶ Sync Play</button><button class="btn" onclick="roomMusic('pause')">⏸ Sync Pause</button><button class="btn" onclick="roomMusic('seek')">🔄 Sync Position</button></div>
+    </div>
+    <div class="card"><h3>Queue</h3><div class="queue" id="queue"></div></div>
+  </div>
+</section>
+
+<section id="rooms" class="page">
+  <div class="section-title"><h2>🔴 Live Rooms</h2><button class="btn primary" onclick="openCreate()">Create</button></div>
+  <div class="card" id="roomPanel"><p class="muted">No room joined. Create a room or join with a code.</p></div>
+</section>
+
+<section id="tools" class="page">
+  <div class="section-title"><h2>🧰 Useful Tools</h2></div>
+  <div class="tools">
+    <div class="card tool"><h3>🎙️ Speech Notes</h3><button class="btn" onclick="speechNote()">Start microphone</button><textarea id="speechOut" placeholder="Your speech appears here..."></textarea></div>
+    <div class="card tool"><h3>📝 Text Cleanup</h3><textarea id="cleanIn" placeholder="Paste text..."></textarea><button class="btn" onclick="cleanText()">Clean duplicate lines & spaces</button></div>
+    <div class="card tool"><h3>🧮 Percentage</h3><input id="pctA" type="number" placeholder="Value"><input id="pctB" type="number" placeholder="Percent"><button class="btn" onclick="calcPct()">Calculate</button><div id="pctOut" class="result">—</div></div>
+    <div class="card tool"><h3>🔗 QR Link</h3><input id="linkIn" placeholder="https://example.com"><button class="btn" onclick="showQR(document.getElementById('linkIn').value)">Generate QR</button></div>
+    <div class="card tool"><h3>⏱️ Countdown</h3><input id="timerSec" type="number" value="60"><button class="btn" onclick="startTimer()">Start</button><div id="timerOut" class="result">60</div></div>
+    <div class="card tool"><h3>🎲 Dice</h3><button class="btn primary" onclick="quickDice()">Roll D6</button><div id="diceOut" class="result">—</div></div>
+  </div>
+</section>
+
+<div class="footer">ShivTrix Play • PWA • Real-time rooms use WebRTC data channels with PeerJS signalling. Chat, game state and music sync between browsers.</div>
+</div>
+
+<div class="modal" id="modal">
+ <div class="modal-box">
+  <div class="toprow"><h2 id="modalTitle">Room</h2><button class="btn" onclick="closeModal()">✕</button></div>
+  <div id="modalBody"></div>
+ </div>
+</div>
 <div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
-'use strict';
-const $=s=>document.querySelector(s);
-const LS=(k,v)=>v===undefined?JSON.parse(localStorage.getItem(k)||'null'):localStorage.setItem(k,JSON.stringify(v,(a,b)=>a==='url'?undefined:b));
-const PID=id=>'royalroom-'+id;
-const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),3000)};
-const rnd=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',a=crypto.getRandomValues(new Uint8Array(8));return[...a].map(x=>c[x%c.length]).join('')};
-let me=LS('me');if(!me){me={id:rnd(),name:'User '+Math.floor(Math.random()*900+100)};LS('me',me)}
-let rooms=LS('rooms')||{},cur=null,peer,conns={},online=new Set(),call=null,lstream=null,pendingCall=null;
-const roomId=pid=>[me.id,pid].sort().join('-');           // combined unique id of both users
-const hasPeer=pid=>online.has(pid);
-const save=()=>LS('rooms',rooms);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const tm=ts=>new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+/*
+ ShivTrix Play — GitHub Pages real-time edition.
+ PeerJS provides signalling; room/game/chat/music data uses WebRTC.
+ No Node/PHP server is required for this frontend.
+*/
+const games=[
+{id:'ttt',icon:'❌',name:'Tic-Tac-Toe',players:'2',desc:'Quick classic duel.'},
+{id:'dice',icon:'🎲',name:'Dice Battle',players:'2–4',desc:'Roll and collect points.'},
+{id:'higher',icon:'🃏',name:'High Card',players:'2–4',desc:'Highest card wins.'},
+{id:'memory',icon:'🧠',name:'Memory Match',players:'2–4',desc:'Remember the sequence.'},
+{id:'reaction',icon:'⚡',name:'Reaction Battle',players:'2–4',desc:'Who reacts fastest?'},
+{id:'flash',icon:'🎴',name:'Flash',players:'2–4',desc:'Fast card party game.'},
+{id:'patti',icon:'🃏',name:'3 Patti',players:'2–4',desc:'Teen Patti with virtual chips.'},
+{id:'inout',icon:'🔴',name:'In / Out',players:'2–4',desc:'Prediction game using virtual chips.'},
+{id:'ludo',icon:'🎲',name:'Ludo',players:'2–4',desc:'Room-ready board-game slot.'},
+{id:'carrom',icon:'⭕',name:'Carrom',players:'2–4',desc:'Room-ready carrom slot.'}
+];
+const $=id=>document.getElementById(id), STORE='shivtrix-v3';
+const me={id:(localStorage.getItem(STORE+':pid')||crypto.randomUUID()).slice(0,12),name:localStorage.getItem(STORE+':name')||'Player '+Math.floor(100+Math.random()*900)};
+localStorage.setItem(STORE+':pid',me.id);localStorage.setItem(STORE+':name',me.name);
+let peer=null,hostConn=null,connections=new Map(),heartbeat=null,reconnectTimer=null;
+let room=null,roomCode='',isHost=false,chat=[],queue=JSON.parse(localStorage.getItem(STORE+':queue')||'[]');
 
-/* ---------- peer / signaling ---------- */
-function start(){
-  peer=new Peer(PID(me.id));
-  peer.on('open',()=>{$('#st').classList.add('on');$('#st span').textContent='Online · room is open';Object.keys(rooms).forEach(p=>link(p,true))});
-  peer.on('disconnected',()=>{$('#st').classList.remove('on');$('#st span').textContent='Reconnecting…';peer.reconnect()});
-  peer.on('error',e=>{
-    if(e.type==='unavailable-id')toast('This ID is open in another tab or device.');
-    else if(e.type==='peer-unavailable')toast('That room is offline or the ID is wrong.');
-    else if(e.type!=='network')toast('Connection error: '+e.type)});
-  peer.on('connection',c=>wire(c));
-  peer.on('call',c=>{pendingCall=c;incoming(c)});
-}
-function link(pid,quiet){
-  if(conns[pid]&&conns[pid].open)return conns[pid];
-  if(!peer||!peer.open){if(!quiet)toast('Still connecting…');return}
-  return wire(peer.connect(PID(pid),{reliable:true}));
-}
-function wire(c){
-  const pid=c.peer.replace('royalroom-','');
-  c.on('open',()=>{conns[pid]=c;online.add(pid);c.send({t:'hello',name:me.name});if(!rooms[pid])addRoom(pid);ui()});
-  c.on('data',d=>got(pid,d));
-  c.on('close',()=>{online.delete(pid);if(conns[pid]===c)delete conns[pid];ui()});
-  c.on('error',()=>{online.delete(pid);ui()});
-  return c;
-}
-function addRoom(pid,name){
-  if(!rooms[pid]){rooms[pid]={name:name||pid,msgs:[],unread:0,ts:Date.now()};
-    rooms[pid].msgs.push({sys:1,text:'Room created: '+roomId(pid),ts:Date.now()});save()}
-}
-function got(pid,d){
-  addRoom(pid);const r=rooms[pid];
-  if(d.t==='hello'){if(d.name&&r.name!==d.name){r.name=d.name;save()}ui();return}
-  let m={me:0,ts:Date.now()};
-  if(d.t==='msg')m.text=d.text;
-  else if(d.t==='file'){m.file={name:d.name,mime:d.mime};m.url=URL.createObjectURL(new Blob([d.buf],{type:d.mime}))}
-  else return;
-  r.msgs.push(m);r.ts=m.ts;if(cur!==pid)r.unread++;save();ui()
-}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function now(){return Date.now()} function idFor(c){return 'shivtrix-room-'+c.toUpperCase()}
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(b.dataset.page).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.page==='rooms')renderRoom()});
+function card(g){return `<div class="card game-card"><div><div class="game-icon">${g.icon}</div><h3>${g.name}</h3><p>${g.desc}</p></div><div class="actions"><span class="muted">${g.players} players</span><button class="btn" onclick="openGame('${g.id}')">Play</button></div></div>`}
+$('homeGames').innerHTML=games.slice(0,8).map(card).join('');$('gamesGrid').innerHTML=games.map(card).join('');
 
-/* ---------- joining ---------- */
-function join(raw){
-  const id=(raw||'').trim().toUpperCase().replace(/^ROYALROOM:/,'');
-  if(!/^[A-Z0-9]{8}$/.test(id))return toast('Room IDs are 8 characters.');
-  if(id===me.id)return toast('That is your own room ID.');
-  addRoom(id);link(id);open(id);
+function defaultRoom(code,name,game,maxPlayers){
+ return {code,name,game,maxPlayers,hostId:me.id,dealerId:me.id,createdAt:now(),
+ players:[{id:me.id,name:me.name,online:true,owner:true,joinedAt:now(),chips:1000}],
+ credits:{[me.id]:1000},state:{},music:{src:'',title:'',playing:false,time:0,at:now()},turn:me.id,version:1};
 }
+function openCreate(){
+ $('modalTitle').textContent='Create Live Room';
+ $('modalBody').innerHTML=`<label>Game</label><select id="createGame">${games.map(g=>`<option value="${g.id}">${g.icon} ${g.name}</option>`).join('')}</select><br><br><label>Players</label><select id="createPlayers"><option>2</option><option>3</option><option selected>4</option></select><br><br><label>Room name</label><input id="createName" value="My Live Room"><br><br><label>Your name</label><input id="createPlayer" value="${esc(me.name)}"><br><br><button class="btn primary" onclick="createRoom()">Create Real-Time Room</button>`;showModal();
+}
+async function createRoom(){
+ me.name=$('createPlayer').value.trim()||me.name;localStorage.setItem(STORE+':name',me.name);
+ roomCode=Array.from({length:6},()=>Math.floor(Math.random()*10)).join('');
+ room=defaultRoom(roomCode,$('createName').value.trim()||'Live Room',$('createGame').value,+$('createPlayers').value);
+ room.adminToken=crypto.randomUUID().replaceAll('-','').slice(0,16).toUpperCase();isHost=true;
+ try{await startPeer(idFor(roomCode));saveLocalRoom();closeModal();document.querySelector('[data-page="rooms"]').click();toast('Live room '+roomCode+' created');broadcast({type:'snapshot',room})}catch(e){toast('Could not create room')}
+}
+function openJoin(){
+ $('modalTitle').textContent='Join Real-Time Room';
+ $('modalBody').innerHTML=`<label>Room code</label><input id="joinCode" placeholder="6 digit code" inputmode="numeric" maxlength="6"><br><br><label>Your name</label><input id="joinPlayer" value="${esc(me.name)}"><br><br><button class="btn primary" onclick="joinRoom()">Join Live Room</button><p class="muted">Internet-wide room sync uses WebRTC. No BroadcastChannel/local-only room state.</p>`;showModal();
+}
+async function joinRoom(){
+ const c=$('joinCode').value.trim().toUpperCase();if(!c)return toast('Enter a room code');
+ me.name=$('joinPlayer').value.trim()||me.name;localStorage.setItem(STORE+':name',me.name);roomCode=c;isHost=false;
+ try{await startPeer('guest-'+me.id);connectToHost()}catch(e){toast('Could not start connection')}
+}
+function startPeer(peerId){
+ return new Promise((resolve,reject)=>{
+  cleanupPeer();peer=new Peer(peerId,{debug:0});
+  peer.on('open',resolve);peer.on('error',e=>{console.error(e);reject(e);toast('Peer error: '+e.type)});
+  peer.on('connection',c=>{if(isHost)setupConn(c);else c.close()});
+  peer.on('disconnected',()=>{if(!isHost){clearTimeout(reconnectTimer);reconnectTimer=setTimeout(()=>{try{peer.reconnect()}catch{}},1000)}});
+ });
+}
+function connectToHost(){const c=peer.connect(idFor(roomCode),{reliable:true,serialization:'json'});hostConn=c;setupConn(c)}
+function setupConn(c){
+ c.on('open',()=>{connections.set(c.peer,c);c.__last=now();if(isHost){send(c,{type:'snapshot',room})}else send(c,{type:'join',player:{id:me.id,name:me.name}});renderRoom();startHeartbeat()});
+ c.on('data',m=>handlePacket(c,m));c.on('close',()=>handleDisconnect(c.peer));c.on('error',()=>handleDisconnect(c.peer));
+}
+function send(c,m){try{if(c&&c.open)c.send(m)}catch{}}
+function broadcast(m,except){connections.forEach((c,id)=>{if(id!==except)send(c,m)})}
+function handlePacket(c,m){
+ c.__last=now();if(!m?.type)return;
+ if(isHost){
+  if(m.type==='join'){
+   if(room.players.some(p=>p.id===m.player.id))return;
+   if(room.players.length>=room.maxPlayers)return send(c,{type:'error',message:'Room is full'});
+   room.players.push({id:m.player.id,name:m.player.name||'Player',online:true,owner:false,joinedAt:now(),chips:1000});room.credits[m.player.id]=1000;
+   broadcast({type:'snapshot',room});systemChat((m.player.name||'Player')+' joined');renderRoom();
+  } else if(m.type==='event')applyHostEvent(m.event,c.peer);
+ } else {
+  if(m.type==='snapshot'){room=m.room;roomCode=room.code;renderRoom();syncMusicFromRoom()}
+  else if(m.type==='chat'){chat.push(m.message);renderChat()}
+  else if(m.type==='event')applyClientEvent(m.event)
+  else if(m.type==='error')toast(m.message)
+  else if(m.type==='heartbeat'){}
+ }
+}
+function playerName(id){return room?.players.find(p=>p.id===id)?.name||'Player'}
+function systemChat(text){const m={id:crypto.randomUUID(),playerId:'system',name:'SYSTEM',text,at:now()};chat.push(m);broadcast({type:'chat',message:m});renderChat()}
+function sendEvent(event){event.playerId=me.id;if(isHost)applyHostEvent(event,me.id);else if(hostConn?.open)send(hostConn,{type:'event',event});else toast('Not connected')}
+function applyHostEvent(ev,from){
+ if(ev.kind==='chat'){const m={id:crypto.randomUUID(),playerId:from,name:playerName(from),text:String(ev.text||'').slice(0,500),at:now()};chat.push(m);broadcast({type:'chat',message:m});renderChat();return}
+ if(ev.kind==='music'){if(from!==room.hostId)return;room.music=ev.music;broadcast({type:'snapshot',room});syncMusicFromRoom();return}
+ if(ev.kind==='credit'){const p=room.players.find(p=>p.id===from);if(!p)return;p.chips=Math.max(0,(p.chips||0)+Math.max(-1000,Math.min(1000,+ev.amount||0)));room.credits[from]=p.chips}
+ if(ev.kind==='game')applyGameEvent(ev,from);room.version++;broadcast({type:'snapshot',room});renderRoom();
+}
+function applyClientEvent(ev){if(ev.kind==='chat'){chat.push(ev.message);renderChat()}else if(ev.kind==='game')applyGameEvent(ev,ev.playerId);else if(ev.kind==='music'){room.music=ev.music;syncMusicFromRoom()}}
+function applyGameEvent(ev,from){room.state??={};if(ev.game==='patti')room.state.patti=ev.state;else room.state[ev.game]=ev.state}
+function handleDisconnect(id){
+ connections.delete(id);const p=room?.players.find(p=>p.id===id);if(p)p.online=false;renderRoom();
+ if(!isHost&&!hostConn?.open)electHost();else if(isHost){room.version++;broadcast({type:'snapshot',room})}
+}
+function startHeartbeat(){
+ clearInterval(heartbeat);heartbeat=setInterval(()=>{if(isHost)connections.forEach(c=>send(c,{type:'heartbeat',t:now()}));else if(hostConn?.open)send(hostConn,{type:'heartbeat',t:now()})},5000);
+}
+function electHost(){
+ if(!room)return;const ids=room.players.filter(p=>p.online!==false).map(p=>p.id).concat(me.id).sort();if(ids[0]===me.id)becomeHost();else if(!hostConn?.open)connectToHost();
+}
+async function becomeHost(){
+ isHost=true;room.hostId=me.id;room.players.forEach(p=>p.owner=p.id===me.id);
+ try{await startPeer(idFor(room.code))}catch{}broadcast({type:'snapshot',room});renderRoom();toast('Host handover complete');
+}
+function cleanupPeer(){clearInterval(heartbeat);connections.forEach(c=>{try{c.close()}catch{}});connections.clear();try{peer?.destroy()}catch{}peer=null;hostConn=null}
+function saveLocalRoom(){localStorage.setItem(STORE+':lastRoom',JSON.stringify({code:room.code,name:room.name,game:room.game}))}
 
-/* ---------- UI ---------- */
-function ui(){
-  $('#nm').textContent=me.name;$('#rid').textContent=me.id;
-  const ids=Object.keys(rooms).sort((a,b)=>rooms[b].ts-rooms[a].ts),L=$('#list');L.replaceChildren();
-  if(!ids.length)L.innerHTML='<div class="empty">No rooms yet.<br>Join one by ID or scan a QR.</div>';
-  for(const p of ids){
-    const r=rooms[p],l=[...r.msgs].reverse().find(m=>!m.sys),b=document.createElement('button');
-    b.className='it'+(cur===p?' a':'');
-    b.innerHTML=`<div class="av">${esc(r.name.slice(0,2).toUpperCase())}</div><div class="b"><div class="n"><span>${esc(r.name)}</span><span>${hasPeer(p)?'🟢':''}</span></div><div class="p2">${esc(roomId(p))}${l?' · '+esc(l.file?'📎 '+l.file.name:l.text):''}</div></div>${r.unread?`<span class="bd">${r.unread}</span>`:''}`;
-    b.onclick=()=>{open(p);link(p)};L.append(b)}
-  if(cur&&rooms[cur])chat()
-}
-function open(p){cur=p;rooms[p].unread=0;save();$('#app').classList.add('open');$('#splash').hidden=true;$('#chat').hidden=false;ui()}
-function chat(){
-  const r=rooms[cur];$('#cn').textContent=r.name;$('#cav').textContent=r.name.slice(0,2).toUpperCase();
-  $('#cs').textContent='Room '+roomId(cur)+' · '+(hasPeer(cur)?'online':'offline');
-  const s=$('#stream');s.replaceChildren();
-  for(const m of r.msgs){
-    const d=document.createElement('div');
-    if(m.sys){d.className='sys';d.textContent=m.text}
-    else{d.className='m'+(m.me?' o':'');
-      let body='';
-      if(m.file){
-        if(!m.url)body='📎 '+esc(m.file.name)+' (not stored)';
-        else if(m.file.mime.startsWith('image/'))body=`<img src="${m.url}">`;
-        else if(m.file.mime.startsWith('video/'))body=`<video src="${m.url}" controls playsinline></video>`;
-        else body=`<a href="${m.url}" download="${esc(m.file.name)}">📎 ${esc(m.file.name)}</a>`}
-      else body=esc(m.text);
-      d.innerHTML=body+`<small>${tm(m.ts)}</small>`}
-    s.append(d)}
-  s.scrollTop=s.scrollHeight
-}
-function send(){
-  const v=$('#msg').value.trim();if(!v||!cur)return;
-  const c=conns[cur];if(!c||!c.open){link(cur);return toast('Peer is offline. Trying to reconnect…')}
-  c.send({t:'msg',text:v});$('#msg').value='';
-  rooms[cur].msgs.push({me:1,text:v,ts:Date.now()});rooms[cur].ts=Date.now();save();ui()
-}
-async function sendFile(f){
-  const c=conns[cur];if(!c||!c.open)return toast('Peer is offline.');
-  if(f.size>64*1048576)return toast('Max file size is 64 MB.');
-  const buf=await f.arrayBuffer();c.send({t:'file',name:f.name,mime:f.type||'application/octet-stream',buf});
-  const m={me:1,ts:Date.now(),file:{name:f.name,mime:f.type||'application/octet-stream'},url:URL.createObjectURL(f)};
-  rooms[cur].msgs.push(m);rooms[cur].ts=m.ts;save();ui()
-}
+function inviteText(){return location.href.split('#')[0]+'#room='+room.code}
+function showQR(text){$('modalTitle').textContent='QR Room Invite';$('modalBody').innerHTML=`<div class="qrbox"><img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(text)}"></div><br><input value="${esc(text)}" readonly>`;showModal()}
 
-/* ---------- QR ---------- */
-function overlay(html){const o=document.createElement('div');o.className='ov';o.innerHTML=`<div class="card">${html}</div>`;o.onclick=e=>{if(e.target===o)o.close()};o.close=()=>{o.stream&&o.stream.getTracks().forEach(t=>t.stop());o.stop=1;o.remove()};$('#ovs').append(o);return o}
-function showQR(){
-  const q=qrcode(0,'M');q.addData('royalroom:'+me.id);q.make();
-  const o=overlay(`<h2>Your room</h2><div class="qr">${q.createSvgTag(4)}</div><p style="font-size:20px;letter-spacing:3px;color:var(--bl2)">${me.id}</p><p>Ask a friend to scan this or type the ID. Keep this page open so they can connect.</p><div class="row" style="justify-content:center"><button class="btn" id="cp">Copy ID</button><button class="btn p" id="x">Close</button></div>`);
-  o.querySelector('#cp').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(me.id);toast('ID copied')};o.querySelector('#x').onclick=o.close
+function renderRoom(){
+ const p=$('roomPanel');if(!room){p.innerHTML='<p class="muted">No live room joined. Create a room or join with a code.</p>';return}
+ const g=games.find(x=>x.id===room.game)||games[0];
+ p.innerHTML=`<div class="room-layout"><div><div class="card"><div class="muted">LIVE ROOM • ${isHost||hostConn?.open?'CONNECTED':'CONNECTING'}</div><div class="room-code">${esc(room.code)}</div><div class="actions"><button class="btn primary" onclick="showQR(inviteText())">📱 QR Invite</button><button class="btn" onclick="navigator.clipboard.writeText(inviteText());toast('Invite copied')">Copy Invite</button><button class="btn" onclick="openGame('${room.game}')">🎮 Open Game</button></div></div><div class="card" style="margin-top:12px"><h3>🎮 ${g.name}</h3><div class="room-game" id="roomGame"></div></div><div class="card" style="margin-top:12px"><h3>💬 Real-Time Chat</h3><div id="chatBox" style="height:180px;overflow:auto;display:grid;gap:6px;margin-bottom:8px"></div><div class="row"><input id="chatInput" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn primary" onclick="sendChat()">Send</button></div></div></div><div><div class="card"><h3>👥 Players (${room.players.length}/${room.maxPlayers})</h3><div class="players">${room.players.map(x=>`<div class="player"><div class="avatar">👤</div><b>${esc(x.name)}</b>${x.id===room.hostId?'<span>👑</span>':''}<span class="online">${x.online===false?'● OFFLINE':'● LIVE'}</span></div>`).join('')}</div></div><div class="card" style="margin-top:12px"><h3>🪙 Virtual Chips</h3>${room.players.map(x=>`<div class="row" style="margin:6px 0"><span>${esc(x.name)}</span><b>${x.chips??1000}</b><span class="muted">chips</span></div>`).join('')}</div>${isHost?`<div class="card" style="margin-top:12px"><h3>🛡️ Host/Admin</h3><div class="token">${esc(room.adminToken||'HOST')}</div><small class="muted">Keep this private.</small></div>`:''}</div></div>`;
+ if($('roomGame'))renderGame(room.game,$('roomGame'));renderChat();
 }
-async function scan(){
-  const o=overlay('<h2>Scan a room QR</h2><video playsinline muted></video><p>Point the camera at their QR code.</p><div class="row" style="justify-content:center"><button class="btn p" id="x">Cancel</button></div>');
-  o.querySelector('#x').onclick=o.close;const v=o.querySelector('video'),cv=document.createElement('canvas');
-  try{o.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=o.stream;await v.play()}
-  catch{o.close();return toast('Camera not available. Use https or localhost and allow access.')}
-  (function tick(){
-    if(o.stop)return;
-    if(v.videoWidth){cv.width=v.videoWidth;cv.height=v.videoHeight;const x=cv.getContext('2d');x.drawImage(v,0,0);
-      const r=jsQR(x.getImageData(0,0,cv.width,cv.height).data,cv.width,cv.height);
-      if(r&&/^royalroom:/i.test(r.data)){o.close();return join(r.data)}}
-    requestAnimationFrame(tick)})()
-}
+function renderChat(){const b=$('chatBox');if(!b)return;b.innerHTML=chat.slice(-60).map(m=>`<div><b>${esc(m.name)}</b> <span class="muted">${new Date(m.at).toLocaleTimeString()}</span><br>${esc(m.text)}</div>`).join('');b.scrollTop=b.scrollHeight}
+function sendChat(){const t=$('chatInput')?.value.trim();if(!t)return;$('chatInput').value='';sendEvent({kind:'chat',text:t})}
+function credits(n){sendEvent({kind:'credit',amount:n})}
 
-/* ---------- calls ---------- */
-async function media(kind){return navigator.mediaDevices.getUserMedia({audio:true,video:kind==='video'})}
-function callUI(name){
-  const d=document.createElement('div');d.className='call';d.id='callui';
-  d.innerHTML=`<div><h2>${esc(name)}</h2></div><video id="rv" autoplay playsinline></video><video id="lv" autoplay playsinline muted></video><div class="ctl"><button id="mic">🎙</button><button id="cam">📷</button><button class="end" id="end">✕</button></div>`;
-  document.body.append(d);$('#lv').srcObject=lstream;
-  $('#mic').onclick=()=>lstream.getAudioTracks().forEach(t=>t.enabled=!t.enabled);
-  $('#cam').onclick=()=>lstream.getVideoTracks().forEach(t=>t.enabled=!t.enabled);
-  $('#end').onclick=endCall
+function openGame(id){$('modalTitle').textContent=(games.find(g=>g.id===id)||games[0]).name;$('modalBody').innerHTML='<div id="gameMount" class="room-game"></div>';showModal();renderGame(id,$('gameMount'))}
+function renderGame(id,m){
+ if(id==='patti')return renderPatti(m);if(id==='inout')return renderInOut(m);if(id==='higher')return renderHighCard(m);
+ if(id==='dice'){m.innerHTML=`<div><button class="btn primary" onclick="rollRoomDice()">🎲 Roll D6</button><div id="gameResult" class="result">—</div></div>`;return}
+ if(id==='ttt'){m.innerHTML='<div><div class="game-board ttt">'+Array(9).fill('').map((_,i)=>`<button class="cell" onclick="ttt(${i},this)"></button>`).join('')+'</div><div id="gameStatus" class="result">Your turn</div></div>';window.tttb=Array(9).fill('');return}
+ if(id==='reaction'){m.innerHTML=`<button id="reactGame" class="btn primary" onclick="reactionGame()">START</button><div id="gameResult" class="result">—</div>`;return}
+ if(id==='memory'){m.innerHTML=`<div id="memSeq" class="result">Press start</div><button class="btn primary" onclick="memoryGame()">Start sequence</button>`;return}
+ m.innerHTML=`<div><div class="game-icon">${games.find(g=>g.id===id).icon}</div><div class="result">${games.find(g=>g.id===id).name}</div><button class="btn primary" onclick="partyRound('${id}')">Start Round</button><div id="gameResult" class="result">—</div></div>`;
 }
-function hook(c){
-  call=c;c.on('stream',s=>{const r=$('#rv');if(r)r.srcObject=s});c.on('close',endCall);c.on('error',endCall)
-}
-async function startCall(kind){
-  if(!cur)return;if(!hasPeer(cur))return toast('Peer is offline.');
-  try{lstream=await media(kind)}catch{return toast('Allow camera/microphone access (https or localhost required).')}
-  callUI(rooms[cur].name);hook(peer.call(PID(cur),lstream,{metadata:{kind}}))
-}
-function incoming(c){
-  const pid=c.peer.replace('royalroom-',''),kind=c.metadata&&c.metadata.kind||'voice';
-  addRoom(pid);
-  const o=overlay(`<h2>Incoming ${kind} call</h2><p style="font-size:18px;color:var(--tx)">${esc(rooms[pid].name)}</p><div class="row" style="justify-content:center"><button class="btn" id="no">Decline</button><button class="btn p" id="yes">Answer</button></div>`);
-  o.onclick=null;
-  o.querySelector('#no').onclick=()=>{c.close();o.close()};
-  o.querySelector('#yes').onclick=async()=>{o.close();
-    try{lstream=await media(kind)}catch{c.close();return toast('Could not access camera/microphone.')}
-    open(pid);callUI(rooms[pid].name);c.answer(lstream);hook(c)};
-  c.on('close',()=>o.isConnected&&o.close())
-}
-function endCall(){
-  if(call){const c=call;call=null;try{c.close()}catch{}}
-  if(lstream){lstream.getTracks().forEach(t=>t.stop());lstream=null}
-  const d=$('#callui');if(d)d.remove()
-}
+function rollRoomDice(){const n=Math.floor(Math.random()*6)+1;$('gameResult').textContent='🎲 '+n;sendEvent({kind:'game',game:'dice',state:{last:n,by:me.id,at:now()}})}
+function partyRound(id){const n=Math.floor(Math.random()*100)+1;$('gameResult').textContent=id==='inout'?(n%2?'🔵 IN':'🔴 OUT'):'Round '+n;sendEvent({kind:'game',game:id,state:{n,by:me.id,at:now()}})}
+function ttt(i,e){if(window.tttb[i])return;window.tttb[i]='X';e.textContent='X';sendEvent({kind:'game',game:'ttt',state:{board:window.tttb,at:now()}});if(checkWin(window.tttb,'X'))$('gameStatus').textContent='You win! 🎉'}
+function checkWin(b,x){return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(a=>a.every(i=>b[i]===x))}
+function renderHighCard(m){m.innerHTML=`<div><div id="cardValue" class="result">—</div><button class="btn primary" onclick="dealHighCard()">Deal High Card</button><div id="gameResult" class="result">Waiting...</div></div>`}
+function dealHighCard(){const c=Math.floor(Math.random()*13)+1;$('cardValue').textContent=c;$('gameResult').textContent=c>=11?'👑 High Card!':'🃏 Card dealt';sendEvent({kind:'game',game:'higher',state:{card:c,by:me.id,at:now()}})}
 
-/* ---------- events ---------- */
-$('#bQR').onclick=showQR;$('#bScan').onclick=scan;
-$('#bJoin').onclick=()=>{join($('#jid').value);$('#jid').value=''};
-$('#jid').onkeydown=e=>{if(e.key==='Enter')$('#bJoin').click()};
-$('#rid').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(me.id);toast('Room ID copied')};
-$('#nm').onclick=()=>{const n=(prompt('Your name',me.name)||'').trim();if(n){me.name=n.slice(0,24);LS('me',me);Object.values(conns).forEach(c=>c.open&&c.send({t:'hello',name:me.name}));ui()}};
-$('#bSend').onclick=send;$('#msg').onkeydown=e=>{if(e.key==='Enter')send()};
-$('#bAtt').onclick=()=>$('#file').click();
-$('#file').onchange=e=>{const f=e.target.files[0];e.target.value='';f&&sendFile(f)};
-$('#bVid').onclick=()=>startCall('video');$('#bVoi').onclick=()=>startCall('voice');
-$('#bBack').onclick=()=>{cur=null;$('#app').classList.remove('open');$('#chat').hidden=true;$('#splash').hidden=false;ui()};
-ui();start();
-</script></body></html>
+function newDeck(){const d=[],s=['♠','♥','♦','♣'];for(const x of s)for(let r=2;r<=14;r++)d.push({r,s:x});return d.sort(()=>Math.random()-.5)}
+function renderPatti(m){
+ const s=room?.state?.patti||{phase:'waiting',pot:0,currentBet:10,turn:room?.dealerId,players:{},hands:{}};
+ m.innerHTML=`<div class="patti"><div class="muted">🃏 3 PATTI • VIRTUAL CHIPS ONLY</div><div class="result">POT ${s.pot||0}</div><div id="pattiPlayers" class="players"></div><div class="card"><div id="pattiHand" class="actions"></div></div><div class="actions" style="margin-top:10px"><button class="btn primary" onclick="pattiStart()">Start Hand</button><button class="btn" onclick="pattiAction('chaal')">Chaal</button><button class="btn" onclick="pattiAction('blind')">Blind</button><button class="btn danger" onclick="pattiAction('fold')">Fold</button><button class="btn good" onclick="pattiAction('show')">Show</button></div><div id="pattiStatus" class="result"></div></div>`;
+ renderPattiState(s);
+}
+function renderPattiState(s){
+ if(!$('pattiPlayers'))return;
+ $('pattiPlayers').innerHTML=(room.players||[]).map(p=>{const q=s.players?.[p.id]||{};return `<div class="player"><b>${esc(p.name)}</b><span>${q.folded?'FOLDED':q.blind?'BLIND':'IN'}</span><span class="online">${p.id===s.turn?'🟢 TURN':''}</span></div>`}).join('');
+ const h=s.hands?.[me.id]||[];$('pattiHand').innerHTML=h.map(c=>`<div class="cell" style="width:58px;height:78px;display:grid;place-items:center;background:#f7f7f7;color:#111">🂠</div>`).join('');
+ $('pattiStatus').textContent=s.winner?`Winner: ${playerName(s.winner)}`:`Bet ${s.currentBet||10} • ${s.phase||'waiting'}`;
+}
+function pattiStart(){
+ if(!isHost)return toast('Only host starts a hand');
+ const ids=room.players.map(p=>p.id),d=newDeck(),hands={};ids.forEach(id=>hands[id]=d.splice(0,3));
+ const players=Object.fromEntries(ids.map(id=>[id,{blind:false,folded:false,bet:10}]));
+ sendEvent({kind:'game',game:'patti',state:{phase:'chaal',pot:ids.length*10,currentBet:10,turn:ids[0],players,hands,dealer:room.dealerId,startedAt:now()}});
+}
+function pattiAction(type){
+ const s=room?.state?.patti;if(!s||s.turn!==me.id)return toast('Wait for your turn');
+ const ns=structuredClone(s),p=ns.players[me.id]||{};
+ if(type==='blind')p.blind=true;if(type==='chaal'){p.bet=(p.bet||0)+ns.currentBet;ns.pot+=ns.currentBet}if(type==='fold')p.folded=true;
+ ns.players[me.id]=p;const alive=Object.keys(ns.players).filter(id=>!ns.players[id].folded);
+ if(type==='show'||alive.length===1){ns.winner=alive[0];ns.phase='finished'}else{const i=alive.indexOf(ns.turn);ns.turn=alive[(i+1)%alive.length]}
+ sendEvent({kind:'game',game:'patti',state:ns});
+}
+function renderInOut(m){m.innerHTML=`<div><div id="ioResult" class="result">IN / OUT</div><p class="muted">Virtual chips only.</p><div class="actions"><button class="btn primary" onclick="io('IN')">🔵 IN</button><button class="btn danger" onclick="io('OUT')">🔴 OUT</button><button class="btn" onclick="ioResolve()">🎲 Resolve</button></div></div>`}
+function io(c){const s=room.state.inout||{bets:{}};s.bets[me.id]=c;sendEvent({kind:'game',game:'inout',state:s});$('ioResult').textContent='Your pick: '+c}
+function ioResolve(){if(!isHost)return toast('Only host resolves');const r=Math.random()<.5?'IN':'OUT';sendEvent({kind:'game',game:'inout',state:{result:r,bets:room.state.inout?.bets||{},at:now()}});$('ioResult').textContent='Result: '+r}
+
+function reactionGame(){let b=$('reactGame');b.disabled=true;b.textContent='WAIT...';setTimeout(()=>{b.disabled=false;b.textContent='CLICK NOW!';let t=performance.now();b.onclick=()=>{$('gameResult').textContent=Math.round(performance.now()-t)+' ms';b.onclick=reactionGame;b.textContent='START'}},1000+Math.random()*2500)}
+function memoryGame(){let s=[...Array(5)].map(()=>Math.floor(Math.random()*4)+1);$('memSeq').textContent=s.join(' • ');setTimeout(()=>$('memSeq').textContent='Now repeat: '+s.join(' ? '),1300)}
+
+function roomMusic(a){const x=$('audio');if(a==='play')x.play();if(a==='pause')x.pause();if(a==='seek')sendMusic(!x.paused,x.currentTime)}
+function sendMusic(playing,time){sendEvent({kind:'music',music:{src:$('audio').src,title:$('songTitle').textContent,playing,time,at:now()}})}
+function syncMusicFromRoom(){if(!room?.music?.src)return;const a=$('audio');if(a.src!==room.music.src)a.src=room.music.src;$('songTitle').textContent=room.music.title||'Shared track';const t=(room.music.time||0)+(room.music.playing?(now()-room.music.at)/1000:0);if(Math.abs(a.currentTime-t)>1)a.currentTime=t;if(room.music.playing)a.play().catch(()=>{});else a.pause()}
+$('audioFile').onchange=e=>{const f=e.target.files[0];if(!f)return;$('audio').src=URL.createObjectURL(f);$('songTitle').textContent=f.name;addQueue(f.name,$('audio').src)}
+function addUrlTrack(){const u=prompt('Direct audio URL');if(!u)return;$('audio').src=u;$('songTitle').textContent='Online track';addQueue('Online track',u)}
+function addQueue(n,u){queue.push({name:n,url:u});localStorage.setItem(STORE+':queue',JSON.stringify(queue));renderQueue()}
+function renderQueue(){$('queue').innerHTML=queue.length?queue.map((x,i)=>`<div class="track"><span>🎵 ${esc(x.name)}</span><button class="btn" onclick="playQueue(${i})">Play</button></div>`).join(''):'<span class="muted">Queue is empty</span>'}
+function playQueue(i){const x=queue[i];$('audio').src=x.url;$('songTitle').textContent=x.name;$('audio').play();if(isHost)sendMusic(true,0)}renderQueue();
+
+function speechNote(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return toast('Speech recognition is not supported here');let r=new R();r.lang='en-IN';r.onresult=e=>$('speechOut').value+=(' '+e.results[0][0].transcript).trim();r.start()}
+function cleanText(){$('cleanIn').value=[...new Set($('cleanIn').value.split(/\n/).map(x=>x.trim()).filter(Boolean))].join('\n')}
+function calcPct(){let a=+$('pctA').value,b=+$('pctB').value;$('pctOut').textContent=isFinite(a*b/100)?a*b/100:'—'}
+function quickDice(){$('diceOut').textContent='🎲 '+(Math.floor(Math.random()*6)+1)}
+let timer;function startTimer(){clearInterval(timer);let n=+$('timerSec').value||60;$('timerOut').textContent=n;timer=setInterval(()=>{n--;$('timerOut').textContent=n;if(n<=0){clearInterval(timer);toast('Timer finished')}},1000)}
+function scanQR(){toast('Open the QR invite with your phone camera or enter the room code.')}
+function showModal(){$('modal').classList.add('show')}function closeModal(){$('modal').classList.remove('show')}
+
+window.addEventListener('load',()=>{const h=location.hash.match(/^#room=(.+)$/);if(h){roomCode=decodeURIComponent(h[1]);openJoin();setTimeout(()=>{$('joinCode').value=roomCode},0)}});
+window.addEventListener('beforeunload',()=>cleanupPeer());
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
