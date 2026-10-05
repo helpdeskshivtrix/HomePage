@@ -102,7 +102,7 @@ body.mini #mini{display:flex}
 .qi img{width:100%;height:100%;object-fit:cover}.qi .art{font-size:20px}
 .qi .tx{flex:1;min-width:0}.qi .t{font-size:13px;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .qi .a{font-size:12px;color:var(--muted)}.qx{border:0;background:none;font-size:18px;color:var(--muted)}
-.lyr{white-space:pre-wrap;line-height:1.9;font-size:16px;padding:8px 10px}.lyLine{padding:3px 0;color:var(--muted);transition:.2s}.lyLine.active{color:var(--neon);font-weight:900;text-shadow:0 0 12px rgba(0,234,255,.4);transform:scale(1.02)}
+.lyr{white-space:pre-wrap;line-height:1.9;font-size:16px;padding:8px 10px}
 .cm{padding:10px 8px;border-bottom:1px solid #111b29;font-size:13px;line-height:1.5}.cm b{font-size:12px;color:var(--neon)}
 body.follow .ctl .nf,body.follow #seek{pointer-events:none;opacity:.5}
 /* dialog */
@@ -114,8 +114,6 @@ body.follow .ctl .nf,body.follow #seek{pointer-events:none;opacity:.5}
 .code{font-size:32px;font-weight:900;letter-spacing:6px;color:var(--neon);text-align:center;padding:10px}
 #toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:400;max-width:90vw;padding:11px 16px;border-radius:12px;border:1px solid #1e3349;background:#0b1320;transition:.25s}
 #toast.show{opacity:1;transform:translate(-50%,0)}
-#cyberViz{position:fixed;inset:0;z-index:500;display:none;background:#010308}
-#cyberViz.open{display:block}.vizFull{position:absolute;inset:0}.vizFull canvas{position:absolute;inset:0;width:100%;height:100%}.vizFullTop{position:absolute;top:0;left:0;right:0;padding:18px;display:flex;justify-content:space-between;align-items:center;color:var(--neon);letter-spacing:.12em}.vizModes{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
 /* tv receiver */
 body.tv #top,body.tv #side,body.tv #main,body.tv #mini,body.tv .plh,body.tv .plr,body.tv .ctl,body.tv #seek,body.tv .tm{display:none!important}
 body.tv .plb{display:block;padding:0}body.tv #pl{transform:none}body.tv .vbox{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0}
@@ -127,47 +125,6 @@ body.tv .pll{overflow:hidden}body.tv .pll h2,body.tv .pll .mut{display:none}
  .pll{overflow:visible;padding:0 14px}.plr{margin:16px 12px 0;min-height:420px}
  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 }
-
-/* ---------- precision room sync + QR ---------- */
-.qrbox{display:grid;place-items:center;padding:12px 0}
-.qrbox img{width:min(280px,72vw);aspect-ratio:1;border-radius:16px;background:#fff;padding:10px;image-rendering:auto}
-.roomcode{font-size:34px;font-weight:950;letter-spacing:7px;color:var(--neon);text-align:center;padding:6px 0 2px;text-shadow:0 0 18px rgba(0,234,255,.35)}
-.roommeta{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
-.roomdot{width:8px;height:8px;border-radius:50%;background:#35ff9b;box-shadow:0 0 12px #35ff9b}
-.scanbox{position:relative;overflow:hidden;border-radius:16px;border:1px solid #21405c;background:#02060b;aspect-ratio:1;display:grid;place-items:center}
-.scanbox video{width:100%;height:100%;object-fit:cover;display:block}
-.scanframe{position:absolute;inset:14%;border:2px solid var(--neon);border-radius:22px;box-shadow:0 0 0 999px rgba(0,0,0,.25),0 0 28px rgba(0,234,255,.35)}
-.scanframe:after{content:"";position:absolute;left:8%;right:8%;top:50%;height:2px;background:var(--neon);box-shadow:0 0 14px var(--neon);animation:scanline 1.5s ease-in-out infinite}
-@keyframes scanline{0%,100%{transform:translateY(-95px);opacity:.35}50%{transform:translateY(95px);opacity:1}}
-.syncbadge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid #1c3b52;border-radius:999px;background:#07121d;color:#8fefff;font-size:10px;font-weight:900;letter-spacing:.08em}
-.syncbadge .roomdot{width:6px;height:6px}
-
-/* ---------- Cyber Media Center add-ons ---------- */
-:root{--glass:rgba(12,20,32,.72);--glow:0 0 24px rgba(0,234,255,.14)}
-body.light{--bg:#eef4fb;--panel:#fff;--panel2:#f4f8fc;--line:#cbd8e6;--text:#0a1220;--muted:#53657a}
-body.light #top,body.light #side,body.light #mini{background:rgba(244,248,252,.92);color:var(--text)}
-body.light .nv,body.light .pill,body.light .btn,body.light .ar{color:#203047;background:#fff;border-color:#cbd8e6}
-body.light #q,.light .box,.light .plr{background:#fff;color:#0a1220}
-#viz{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.72;mix-blend-mode:screen}
-#vizHud{position:absolute;left:12px;right:12px;top:10px;display:flex;justify-content:space-between;pointer-events:none;font-size:9px;letter-spacing:.14em;font-weight:900;color:#8eefff;text-shadow:0 0 10px #00eaff}
-#vizHud b{color:#fff}
-body.focus #top,body.focus #side,body.focus #mini,body.focus .plh,body.focus .plr,body.focus .ctl,body.focus #seek,body.focus .tm,body.focus .pll h2,body.focus .pll>.mut{display:none!important}
-body.focus #pl{transform:none}
-body.focus .plb{display:block;padding:0}
-body.focus .pll{height:100%;justify-content:center;padding:18px}
-body.focus .vbox{width:min(1100px,94vw);max-height:78vh;aspect-ratio:16/9;box-shadow:0 0 80px rgba(0,160,255,.18)}
-.techGrid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-.techCard{grid-column:span 4;border:1px solid var(--line);background:linear-gradient(145deg,rgba(14,24,39,.95),rgba(7,12,20,.9));border-radius:16px;padding:16px;box-shadow:var(--glow)}
-.techCard.wide{grid-column:span 8}.techCard.full{grid-column:1/-1}
-.techCard h3{margin:0 0 6px;font-size:14px}.techCard p{margin:4px 0;color:var(--muted);font-size:12px;line-height:1.5}
-.metric{font-size:28px;font-weight:950;color:var(--neon);margin:8px 0}.meter{height:7px;border-radius:99px;background:#101b29;overflow:hidden}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--neon));box-shadow:0 0 12px var(--neon)}
-.techBtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.techBtns .btn{height:34px}
-.eqgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;align-items:end;height:170px}.eqband{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;font-size:9px;color:var(--muted)}.eqband input{writing-mode:vertical-lr;direction:rtl;height:130px;accent-color:var(--neon)}
-.searchTabs{display:flex;gap:6px;margin:10px 0;border-bottom:1px solid var(--line);overflow:auto}.searchTabs button{border:0;background:none;color:var(--muted);padding:10px;font-weight:800;white-space:nowrap}.searchTabs button.on{color:var(--neon);border-bottom:2px solid var(--neon)}
-.scanLine{display:flex;gap:8px}.scanLine input{flex:1}.queueDrop{outline:1px dashed transparent}.queueDrop.dragover{outline-color:var(--neon);background:rgba(0,234,255,.08)}
-#scanVideo{width:100%;border-radius:12px;background:#000;display:block;aspect-ratio:1}
-.qrbox{display:grid;place-items:center;padding:10px;border-radius:16px;background:#fff;margin:8px auto;width:240px}.qrbox img{width:220px;height:220px;display:block}
-@media(max-width:900px){.techCard,.techCard.wide{grid-column:1/-1}.eqgrid{gap:4px}}
 </style>
 </head>
 <body>
@@ -186,11 +143,6 @@ body.focus .vbox{width:min(1100px,94vw);max-height:78vh;aspect-ratio:16/9;box-sh
  <div class="sh">LIBRARY</div>
  <button class="nv" data-v="offline" onclick="go('offline')">⬇<span>Offline library<small>Songs from device storage</small></span></button>
  <button class="nv" data-v="liked" onclick="go('liked')">♥ Liked Music</button>
- <div class="sep"></div>
- <div class="sh">TECH CENTER</div>
- <button class="nv" data-v="tech" onclick="go('tech')">⚡ <span>Cyber Tech Center<small>Visualizer · EQ · Analytics</small></span></button>
- <button class="nv" data-v="search" onclick="openSearchHub()">⌕ Advanced Search</button>
- <button class="nv" data-v="network" onclick="openNetworkHub()">◉ Network Monitor</button>
  <div class="sep"></div>
  <div class="sh">PLAYLISTS</div>
  <button class="nv" onclick="newList()">＋ New playlist</button>
@@ -216,7 +168,7 @@ body.focus .vbox{width:min(1100px,94vw);max-height:78vh;aspect-ratio:16/9;box-sh
  </div>
  <div class="plb">
   <div class="pll">
-   <div class="vbox" id="vbox"><div id="ytp"></div><div class="oart">♪</div><audio id="au" controls></audio><canvas id="viz" aria-hidden="true"></canvas><div id="vizHud"><span>CYBER VISUALIZER</span><b id="vizMode">SPECTRUM</b></div></div>
+   <div class="vbox" id="vbox"><div id="ytp"></div><div class="oart">♪</div><audio id="au" controls></audio></div>
    <h2 id="plT">Nothing playing</h2>
    <div class="mut" id="plA"></div>
    <input id="seek" type="range" min="0" max="1000" value="0">
@@ -248,7 +200,6 @@ body.focus .vbox{width:min(1100px,94vw);max-height:78vh;aspect-ratio:16/9;box-sh
 
 <div id="dlg" onclick="if(event.target.id==='dlg')closeDlg()"><div class="box" id="dbox"></div></div>
 <div id="toast"></div>
-<div id="cyberViz" onclick="if(event.target.id==='cyberViz')toggleVisualizer(false)"><div class="vizFull"><canvas id="vizFullCanvas"></canvas><div class="vizFullTop"><b>SHIVTRIX // CYBER VISUALIZER</b><button class="btn" onclick="toggleVisualizer(false)">✕ Close</button></div><div class="vizModes"><button class="btn" onclick="setVizMode('SPECTRUM')">Spectrum</button><button class="btn" onclick="setVizMode('WAVE')">Wave</button><button class="btn" onclick="setVizMode('CIRCLE')">Circle</button><button class="btn" onclick="setVizMode('PARTICLES')">Particles</button></div></div></div>
 
 <script>
 "use strict";
@@ -295,7 +246,7 @@ const comments=async id=>await any([
 async function lyrics(it){
  const t=it.title.replace(/[\(\[].*?[\)\]]/g,"").replace(/official|video|audio|lyrics?|hd/gi,"").trim();
  const r=await j("https://lrclib.net/api/search?q="+encodeURIComponent(t+" "+it.artist.replace(/ - Topic$/,"")),9000);
- const h=r.find(x=>x.syncedLyrics||x.plainLyrics);return h?{plain:h.plainLyrics||"",synced:h.syncedLyrics||""}:null}
+ const h=r.find(x=>x.plainLyrics);return h?h.plainLyrics:""}
 
 /* ---------- offline library (device files kept in IndexedDB) ---------- */
 const idb=()=>new Promise((ok,no)=>{const r=indexedDB.open("stxy",1);r.onupgradeneeded=()=>r.result.createObjectStore("f",{keyPath:"id",autoIncrement:true});r.onsuccess=()=>ok(r.result);r.onerror=no});
@@ -341,8 +292,6 @@ async function paint(){
  }else if(view==="liked"){
   LIST=D.liked;SRC="Liked Music";
   m.innerHTML=`<h1 class="vt">Liked Music</h1>`+gridH(LIST,"Songs you like will show up here.");
- }else if(view==="tech"){
-  LIST=[];SRC="Cyber Media Center";m.innerHTML=techHTML();initNetMini();
  }else if(view[0]==="l"){
   const n=names()[+view.slice(1)];if(n===undefined){go("home");return}
   LIST=D.lists[n];SRC=n;
@@ -368,23 +317,19 @@ function savePick(it){if(!it)return;pendIt=it;
 function delList(i){const n=names()[+i];if(n&&confirm("Delete playlist “"+n+"”?")){delete D.lists[n];save();go("home")}}
 
 /* ---------- player ---------- */
-let Q=[],qi=-1,from="",yt=null,ytReady=false,ytApi=null,pend=null,userPaused=false,errs=0,shuf=false,rep=0,rmod="",busy=false,drag=false,follow=false,up=null,curTab="up";
+let Q=[],qi=-1,from="",yt=null,ytReady=false,ytApi=null,pend=null,userPaused=false,errs=0,shuf=false,rep=0,rmod="",busy=false,drag=false,follow=false,up=null,curTab="up",roomPendingPlay=false,roomNeedUnmute=false;
 const au=$("au"),played=new Set();
 function loadYT(){if(window.YT&&YT.Player)return Promise.resolve();
  return ytApi=ytApi||new Promise((ok,no)=>{window.onYouTubeIframeAPIReady=ok;const s=document.createElement("script");s.src="https://www.youtube.com/iframe_api";s.onerror=()=>{ytApi=null;no()};document.head.appendChild(s)})}
 function ytLoad(id,t){loadYT().then(()=>{
- if(!yt){const v={autoplay:1,playsinline:1,rel:0,modestbranding:1,enablejsapi:1,start:Math.floor(t||0)};if(/^https?:$/.test(location.protocol))v.origin=location.origin;
-  yt=new YT.Player("ytp",{width:"100%",height:"100%",videoId:id,playerVars:v,events:{onReady:()=>{ytReady=true;if(pend){yt.loadVideoById({videoId:pend.id,startSeconds:pend.t});pend=null}},onStateChange:onState,onError:onErr}})}
- else if(!ytReady)pend={id,t:t||0};else yt.loadVideoById({videoId:id,startSeconds:t||0})}).catch(()=>toast("Couldn't load the YouTube player"))}
-function playAt(i){
- if(!LIST[i])return;
- if(room&&!roomLeader){const it=LIST[i];bc({t:"cmd",c:"load",it,from:SRC});toast("Sent to room leader");return}
- follow=false;document.body.classList.remove("follow");Q=LIST.slice();qi=i;from=SRC;played.clear();rmod="";openPl();loadCur()
-}
+ const roomAuto=!!(room&&follow);
+ if(!yt){const v={autoplay:1,mute:roomAuto?1:0,playsinline:1,rel:0,modestbranding:1,enablejsapi:1,start:Math.floor(t||0)};if(/^https?:$/.test(location.protocol))v.origin=location.origin;
+  yt=new YT.Player("ytp",{width:"100%",height:"100%",videoId:id,playerVars:v,events:{onReady:()=>{ytReady=true;if(roomAuto){roomNeedUnmute=true;roomPendingPlay=true;try{yt.mute();yt.playVideo()}catch(e){}}if(pend){yt.loadVideoById({videoId:pend.id,startSeconds:pend.t});pend=null}},onStateChange:onState,onError:onErr}})}
+ else if(!ytReady)pend={id,t:t||0};else{try{if(roomAuto){roomNeedUnmute=true;roomPendingPlay=true;yt.mute();}else if(yt.isMuted&&yt.isMuted())yt.unMute();}catch(e){}yt.loadVideoById({videoId:id,startSeconds:t||0})}}).catch(()=>toast("Couldn't load the YouTube player"))}
+function playAt(i){if(!LIST[i])return;follow=false;document.body.classList.remove("follow");Q=LIST.slice();qi=i;from=SRC;played.clear();rmod="";openPl();loadCur()}
 function loadCur(start){
  const it=Q[qi];if(!it)return;played.add(it.videoId);userPaused=false;
- if(lastStatId!==it.videoId){lastStatId=it.videoId;statPlay(it)}
- statTick=Date.now();
+ if(follow&&room&&!it.off){roomPendingPlay=true;roomNeedUnmute=true}
  $("plT").textContent=it.title;$("plA").textContent=it.artist;$("plF").textContent=from;
  $("mT").textContent=it.title;$("mA").textContent=it.artist;$("mImg").src=it.thumbnail||"";
  $("vbox").classList.toggle("offl",!!it.off);
@@ -393,10 +338,10 @@ function loadCur(start){
  else{au.pause();ytLoad(it.videoId,start)}
  if(!follow){sendLoad();topUp()}}
 function onState(e){const S=YT.PlayerState;
- if(e.data===S.PLAYING){userPaused=false;errs=0;ui(true);keepOn()}
- else if(e.data===S.PAUSED){ui(false);if(document.hidden&&!userPaused&&!follow)setTimeout(()=>{try{if(!userPaused&&yt.getPlayerState()===S.PAUSED)yt.playVideo()}catch(x){}},400);if(!document.hidden)userPaused=true}
+ if(e.data===S.PLAYING){userPaused=false;errs=0;ui(true);keepOn();roomPendingPlay=false}
+ else if(e.data===S.PAUSED){ui(false);if(document.hidden&&!userPaused&&!follow)setTimeout(()=>{try{if(!userPaused&&yt.getPlayerState()===S.PAUSED)yt.playVideo()}catch(x){}},400);if(!document.hidden&&!follow)userPaused=true}
  else if(e.data===S.ENDED)ended();
- if(!follow&&roomLeader)sendState()}
+ if(!follow)bc({t:"s",p:e.data===S.PLAYING,c:time(),id:(Q[qi]||{}).videoId})}
 function onErr(){errs++;toast("Can't play this video. Skipping…");if(follow||errs>=Math.min(Q.length,5))return;setTimeout(()=>next(true),800)}
 au.onplay=()=>ui(true);au.onpause=()=>ui(false);au.onended=()=>ended();
 function ended(){if(follow)return;if(rep===2){seekTo(0);resume();return}next(true)}
@@ -405,7 +350,10 @@ function time(){try{const it=Q[qi];return it&&it.off?au.currentTime:(yt&&ytReady
 function dur(){try{const it=Q[qi];return it&&it.off?au.duration||0:(yt&&ytReady?yt.getDuration():0)||0}catch(e){return 0}}
 function seekTo(s){const it=Q[qi];if(it&&it.off)au.currentTime=s;else try{yt.seekTo(s,true)}catch(e){}}
 function playing(){const it=Q[qi];if(it&&it.off)return!au.paused;try{const s=yt.getPlayerState();return s===1||s===3}catch(e){return false}}
-function togglePlay(){if(follow&&room)return cmd("toggle");
+function roomWake(){if(!follow||!room||!yt||!ytReady||!Q[qi]||Q[qi].off)return;try{if(roomNeedUnmute){yt.unMute();roomNeedUnmute=false}yt.playVideo();roomPendingPlay=false;userPaused=false;ui(true);toast("Room playback unlocked")}catch(e){}}
+function bindRoomWake(){if(bindRoomWake.bound)return;bindRoomWake.bound=true;const wake=()=>{if(roomPendingPlay)roomWake()};["pointerdown","keydown","touchstart"].forEach(k=>document.addEventListener(k,wake,{passive:true}));}
+bindRoomWake();
+function togglePlay(){if(follow&&room){roomWake();return cmd("toggle");}
  if(playing()){userPaused=true;const it=Q[qi];if(it&&it.off)au.pause();else yt.pauseVideo()}else{userPaused=false;resume()}}
 function ui(p){$("bPP").textContent=p?"⏸":"▶";$("mPP").textContent=p?"⏸":"▶";try{navigator.mediaSession.playbackState=p?"playing":"paused"}catch(e){}}
 function nextIdx(){if(!Q.length)return-1;
@@ -437,10 +385,9 @@ async function topUp(force){
  busy=false;renderTab()}
 function radioPill(i){rmod=PILLS[i][1]==="FAM"?"":PILLS[i][1];pillIdx=i;Q=Q.slice(0,qi+1);topUp(true)}
 let pillIdx=0,cache={};
-function queueDragStart(e,i){e.dataTransfer.setData("text/plain",String(i))}function queueDragOver(e){e.preventDefault();e.currentTarget.classList.add("dragover")}function queueDragLeave(e){e.currentTarget.classList.remove("dragover")}function queueDrop(e,to){e.preventDefault();e.currentTarget.classList.remove("dragover");const fromI=+e.dataTransfer.getData("text/plain");if(Number.isNaN(fromI)||fromI===to)return;const item=Q.splice(fromI,1)[0];let dest=to;if(fromI<to)dest--;Q.splice(dest,0,item);if(qi===fromI)qi=dest;else if(fromI<qi&&dest>=qi)qi--;else if(fromI>qi&&dest<=qi)qi++;renderTab();toast("Queue reordered")}
 /* tabs */
 function tab(t){curTab=t;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));renderTab()}
-function qiH(q,i,cls,x){return `<div class="qi queueDrop ${cls}" draggable="true" ondragstart="queueDragStart(event,${i})" ondragover="queueDragOver(event)" ondragleave="queueDragLeave(event)" ondrop="queueDrop(event,${i})" onclick="${x[0]}"><div class="im">${q.thumbnail?`<img src="${esc(q.thumbnail)}" alt="" loading="lazy">`:'<div class="art">♪</div>'}</div><div class="tx"><div class="t">${esc(q.title)}</div><div class="a">${esc(q.artist)}</div></div>${x[1]||""}</div>`}
+function qiH(q,i,cls,x){return `<div class="qi ${cls}" onclick="${x[0]}"><div class="im">${q.thumbnail?`<img src="${esc(q.thumbnail)}" alt="" loading="lazy">`:'<div class="art">♪</div>'}</div><div class="tx"><div class="t">${esc(q.title)}</div><div class="a">${esc(q.artist)}</div></div>${x[1]||""}</div>`}
 async function renderTab(){
  const b=$("tb"),it=Q[qi],t=curTab;if(!it){b.innerHTML="";return}
  if(t==="up"){
@@ -452,21 +399,19 @@ async function renderTab(){
   let v;try{v=t==="ly"?await lyrics(it):t==="cm"?await comments(id):await related(id)}catch(e){v=null}
   if(!Q[qi]||Q[qi].videoId!==id)return;cache[t]=v}
  const v=cache[t];if(curTab!==t)return;
- if(t==="ly"){if(!v){b.innerHTML='<div class="empty">No lyrics found for this song.</div>'}else if(v.synced){window.syncedLines=parseLRC(v.synced);b.innerHTML=`<div class="lyr" id="syncedLyrics">${window.syncedLines.map((x,i)=>`<div class="lyLine" data-time="${x.t}" id="ly_${i}">${esc(x.text)}</div>`).join("")}</div>`}else b.innerHTML=`<div class="lyr">${esc(v.plain||"")}</div>`;}
+ if(t==="ly")b.innerHTML=v?`<div class="lyr">${esc(v)}</div>`:'<div class="empty">No lyrics found for this song.</div>';
  else if(t==="cm")b.innerHTML=v&&v.length?v.map(c=>`<div class="cm"><b>${esc(c.a)}</b> <span class="mut">${esc(c.d||"")}</span><div>${esc(c.t)}</div>${c.l?`<span class="mut">♥ ${esc(c.l)}</span>`:""}</div>`).join(""):'<div class="empty">Comments aren’t available right now.</div>';
  else{window.RL=v||[];b.innerHTML=RL.length?RL.map((q,i)=>qiH(q,i,"",[`playRel(${i})`,`<button class="qx" onclick="event.stopPropagation();relNext(${i})" title="Play next">⏭</button>`])).join(""):'<div class="empty">No related songs found.</div>'}}
-function parseLRC(raw){return String(raw||"").split(/\r?\n/).flatMap(line=>{const out=[];const re=/\[(\d+):(\d+(?:\.\d+)?)\]/g;let m,last=0;while((m=re.exec(line))){out.push({t:+m[1]*60 + +m[2],text:line.slice(re.lastIndex).trim()});last=re.lastIndex}return out}).filter(x=>x.text).sort((a,b)=>a.t-b.t)}
-function syncLyrics(){const lines=window.syncedLines||[];if(!lines.length)return;const t=time();let idx=0;for(let i=0;i<lines.length;i++){if(lines[i].t<=t)idx=i;else break}document.querySelectorAll(".lyLine").forEach((x,i)=>x.classList.toggle("active",i===idx));const el=$("ly_"+idx);if(el)el.scrollIntoView({block:"center",behavior:"smooth"})}
 function playRel(i){const r=window.RL[i];if(!r)return;Q.splice(qi+1,0,r);qi++;loadCur()}
 function relNext(i){const r=window.RL[i];if(r){Q.splice(qi+1,0,r);toast("Will play next");renderTab()}}
 function openPl(){$("pl").classList.add("open");document.body.classList.remove("mini")}
 function minPl(){$("pl").classList.remove("open");if(Q.length)document.body.classList.add("mini")}
-function closePl(){try{if(yt&&ytReady)yt.stopVideo()}catch(e){}au.pause();Q=[];qi=-1;userPaused=true;keepOff();if(roomLeader)bc({t:"x"});
+function closePl(){try{if(yt&&ytReady)yt.stopVideo()}catch(e){}au.pause();Q=[];qi=-1;userPaused=true;keepOff();bc({t:"x"});
  $("pl").classList.remove("open");document.body.classList.remove("mini");try{navigator.mediaSession.metadata=null}catch(e){}}
-setInterval(()=>{if(!Q.length)return;syncLyrics();const t=time(),d=dur();
+setInterval(()=>{if(!Q.length)return;const t=time(),d=dur();
  if(!drag&&d){$("seek").value=t/d*1000}$("t1").textContent=sec(t)||"0:00";$("t2").textContent=sec(d)||"0:00";
  try{if(document.hidden&&!userPaused&&!follow&&yt&&ytReady&&!(Q[qi]||{}).off&&yt.getPlayerState()===2)yt.playVideo()}catch(e){}},500);
-setInterval(()=>{const it=Q[qi];if(!follow&&roomLeader)sendState()},8000);
+setInterval(()=>{const it=Q[qi];if(!follow&&it&&!it.off)bc({t:"s",p:playing(),c:time(),id:it.videoId})},8000);
 $("seek").addEventListener("input",()=>drag=true);
 $("seek").addEventListener("change",e=>{drag=false;const d=dur();if(d)seekTo(e.target.value/1000*d)});
 
@@ -483,207 +428,52 @@ if("mediaSession" in navigator){const h={play:()=>{userPaused=false;resume()},pa
  for(const k in h)try{navigator.mediaSession.setActionHandler(k,h[k])}catch(e){}}
 document.addEventListener("pointerdown",()=>{if(Q.length&&!userPaused)keepOn()},{passive:true});
 
-/* ---------- rooms: real-time precision sync over the free ntfy.sh relay ---------- */
+/* ---------- rooms: multi-device play over the free ntfy.sh relay ---------- */
 const me=Math.random().toString(36).slice(2,8),NT="https://ntfy.sh/stxy-",AB="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-const SYNC_EVERY=750, HARD_SYNC=.35, SOFT_SYNC=.08;
-let room=null,es=null,roomLeader=false,syncTimer=null,pingTimer=null,clockOffset=0,lastSeq=0,scanStream=null;
-
-function post(s){if(room)fetch(NT+room,{method:"POST",body:s,keepalive:true}).catch(()=>{})}
+let room=null,es=null;
+function post(s){if(room)fetch(NT+room,{method:"POST",body:s}).catch(()=>{})}
 function bc(o){if(!room)return;o.f=me;post(JSON.stringify(o))}
 function cmd(c){bc({t:"cmd",c})}
-function roomNow(){return Date.now()+clockOffset}
-function predictedClock(m){return (Number(m.c)||0)+Math.max(0,(roomNow()-(Number(m.ts)||roomNow()))/1000)}
-function sendState(){
- const it=Q[qi];if(!room||!roomLeader||!it||it.off)return;
- bc({t:"s",id:it.videoId,p:playing(),c:time(),ts:Date.now(),seq:++lastSeq})
-}
-function sendLoad(){
- const it=Q[qi];if(!room||!roomLeader||!it||it.off)return;
- bc({t:"load",it,from,c:time(),p:playing(),ts:Date.now(),seq:++lastSeq})
-}
-function precisionApply(m){
- if(!follow||!Q[qi]||Q[qi].videoId!==m.id||!yt||!ytReady)return;
- try{
-   const target=predictedClock(m),now=yt.getCurrentTime(),diff=target-now;
-   if(Math.abs(diff)>=HARD_SYNC){yt.seekTo(Math.max(0,target),true)}
-   else if(Math.abs(diff)>=SOFT_SYNC&&yt.setPlaybackRate){
-     yt.setPlaybackRate(diff>0?1.05:.95);
-     clearTimeout(precisionApply._r);
-     precisionApply._r=setTimeout(()=>{try{yt.setPlaybackRate(1)}catch(e){}},900);
-   }else if(yt.setPlaybackRate)yt.setPlaybackRate(1);
-   const shouldPlay=!!m.p;
-   if(shouldPlay&&yt.getPlayerState()!==YT.PlayerState.PLAYING)yt.playVideo();
-   if(!shouldPlay&&yt.getPlayerState()===YT.PlayerState.PLAYING)yt.pauseVideo();
- }catch(e){}
-}
-function syncPing(){if(room&&!roomLeader)bc({t:"ping",t0:Date.now()})}
-function onRoom(raw){
- let m;try{m=JSON.parse(raw)}catch(e){return}
- if(!m||m.f===me)return;
- if(m.t==="pong"&&!roomLeader){
-   const t2=Date.now(),rtt=t2-m.t0;
-   const sample=m.t1-(m.t0+t2)/2;
-   clockOffset=clockOffset*.75+sample*.25;
-   return;
- }
- if(m.t==="ping"&&roomLeader){bc({t:"pong",t0:m.t0,t1:Date.now()});return}
- if(m.t==="load"&& !roomLeader){
-   follow=true;document.body.classList.add("follow");lastSeq=Math.max(lastSeq,Number(m.seq)||0);
-   Q=[m.it];qi=0;from=m.from;openPl();loadCur(predictedClock(m)-m.c);
-   setTimeout(()=>precisionApply(m),250);
- }
- else if(m.t==="s"&&!roomLeader&&Number(m.seq||0)>=lastSeq){
-   lastSeq=Number(m.seq||0);precisionApply(m);
- }
+function sendLoad(){const it=Q[qi];if(room&&it&&!it.off)bc({t:"load",it,from,c:time(),p:playing()})}
+function onRoom(raw){let m;try{m=JSON.parse(raw)}catch(e){return}if(!m||m.f===me)return;
+ if(m.t==="load"){follow=true;document.body.classList.add("follow");Q=[m.it];qi=0;from=m.from;openPl();loadCur(m.c);roomPendingPlay=!!m.p;roomNeedUnmute=true;if(roomPendingPlay)setTimeout(()=>roomWake(),150)}
+ else if(m.t==="s"){if(follow&&Q[qi]&&Q[qi].videoId===m.id&&yt&&ytReady)try{if(Math.abs(yt.getCurrentTime()-m.c)>1.25)yt.seekTo(m.c,true);if(m.p){roomPendingPlay=true;roomNeedUnmute=true;yt.mute();yt.playVideo();setTimeout(()=>roomWake(),100)}else{roomPendingPlay=false;yt.pauseVideo()}}catch(e){}}
  else if(m.t==="x"){if(follow){try{yt.stopVideo()}catch(e){}ui(false)}}
- else if(m.t==="hi"&&roomLeader)sendLoad();
- else if(m.t==="cmd"&&roomLeader&&Q.length){
-   if(m.c==="toggle")togglePlay();else if(m.c==="next")next(false);else if(m.c==="prev")prev()
- }
-}
-function enterRoom(id,creator){
- leaveRoom(true);room=id;roomLeader=!!creator;follow=!roomLeader;lastSeq=0;clockOffset=0;
+ else if(m.t==="hi"){if(!follow)sendLoad()}
+ else if(m.t==="cmd"){if(!follow&&Q.length){if(m.c==="toggle")togglePlay();else if(m.c==="next")next(false);else if(m.c==="prev")prev()}}}
+function enterRoom(id,creator){leaveRoom(true);room=id;roomPendingPlay=false;roomNeedUnmute=false;
  es=new EventSource(NT+id+"/sse");let first=true;
  es.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.event==="message")onRoom(d.message)}catch(x){}};
- es.onerror=()=>{};
- es.onopen=()=>{
-   if(first){first=false;bc({t:"hi"});if(roomLeader)sendLoad();else syncPing()}
- };
- clearInterval(syncTimer);clearInterval(pingTimer);
- if(roomLeader)syncTimer=setInterval(sendState,SYNC_EVERY);
- else pingTimer=setInterval(syncPing,3000);
+ es.onerror=()=>{toast("Room connection lost — retrying…")};
+ es.onopen=()=>{if(first){first=false;bc({t:"hi"});if(creator)sendLoad()}};
  try{history.replaceState(null,"","#room="+id)}catch(e){}
- $("castBtn").classList.add("on");
-}
-function leaveRoom(quiet){
- if(es)es.close();es=null;clearInterval(syncTimer);clearInterval(pingTimer);syncTimer=pingTimer=null;
+ $("castBtn").classList.add("on")}
+function leaveRoom(quiet){if(es)es.close();es=null;
  if(room&&!quiet)toast("Left room "+room);
- room=null;roomLeader=false;follow=false;clockOffset=0;lastSeq=0;document.body.classList.remove("follow");$("castBtn").classList.remove("on");
- try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
-}
+ room=null;roomPendingPlay=false;roomNeedUnmute=false;follow=false;document.body.classList.remove("follow");$("castBtn").classList.remove("on");
+ try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}
 function createRoom(){let id="";for(let i=0;i<8;i++)id+=AB[Math.random()*AB.length|0];
- enterRoom(id,true);showCast();toast("Precision room created")}
-function joinRoom(){
- const id=($("jc").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+ enterRoom(id,true);showCast();toast("Room created")}
+function joinRoom(){const id=($("jc").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
  if(id.length!==8)return toast("Room ID has 8 letters/numbers");
- enterRoom(id,false);closeDlg();toast("Joined room "+id)
-}
+ enterRoom(id,false);closeDlg();toast("Joined room "+id)}
 function copyRoom(){navigator.clipboard.writeText(room).then(()=>toast("Room ID copied")).catch(()=>toast("Copy failed"))}
-function roomInvite(){return location.href.split("#")[0]+"#room="+room}
-function shareRoom(){const url=roomInvite();
+function shareRoom(){const url=location.href.split("#")[0]+"#room="+room;
  if(navigator.share)navigator.share({title:"Join my ShivTrixYouTube room",text:"Room ID: "+room,url}).catch(()=>{});
  else navigator.clipboard.writeText(url).then(()=>toast("Invite link copied")).catch(()=>toast(url))}
-function qrSrc(){
- return "https://quickchart.io/qr?text="+encodeURIComponent(roomInvite())+"&size=320&margin=2&ecLevel=H";
-}
-function openRoomScan(){
- closeDlg();
- dlg(`<h3>Scan room QR</h3>
-   <div class="scanbox"><video id="qrVideo" autoplay muted playsinline></video><div class="scanframe"></div></div>
-   <p id="scanStatus" class="mut" style="font-size:12px;line-height:1.5;text-align:center">Point the camera at the room QR code.</p>
-   <button class="btn" onclick="stopRoomScan();showCast()">Cancel</button>`);
- startRoomScan();
-}
-async function startRoomScan(){
- const status=$("scanStatus"),video=$("qrVideo");
- if(!("BarcodeDetector" in window)){if(status)status.textContent="QR camera scanning is not supported here. Use the Room ID below.";return}
- try{
-   const supported=await BarcodeDetector.getSupportedFormats();
-   if(!supported.includes("qr_code"))throw 0;
-   scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
-   video.srcObject=scanStream;await video.play();
-   const detector=new BarcodeDetector({formats:["qr_code"]});
-   const scan=async()=>{
-     if(!scanStream||!$("qrVideo"))return;
-     try{
-       const hits=await detector.detect(video);
-       const raw=hits[0]&&hits[0].rawValue;
-       if(raw){
-         const m=/#room=([A-Z0-9]{8})/i.exec(raw)||/^[A-Z0-9]{8}$/i.exec(raw.trim());
-         if(m){stopRoomScan();enterRoom((m[1]||m[0]).toUpperCase(),false);closeDlg();toast("Joined room by QR");return}
-       }
-     }catch(e){}
-     requestAnimationFrame(scan);
-   };
-   requestAnimationFrame(scan);
- }catch(e){if(status)status.textContent="Camera unavailable. Allow camera access or enter the Room ID manually."}
-}
-function stopRoomScan(){
- if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}
- const v=$("qrVideo");if(v)v.srcObject=null;
-}
 function showCast(){
- if(room){
-   const role=roomLeader?"LEADER":"FOLLOWER";
-   dlg(`<h3>Precision Room</h3>
-     <div class="qrbox"><img src="${qrSrc()}" alt="Room QR code"></div>
-     <div class="roomcode">${room}</div>
-     <div class="roommeta"><span class="roomdot"></span>${role} · REAL-TIME SYNC</div>
-     <p class="mut" style="font-size:13px;line-height:1.6;margin:12px 0 6px">QR join is instant. Playback state is broadcast every ${SYNC_EVERY} ms with clock compensation and sub-second drift correction.</p>
-     <button class="btn pri" onclick="shareRoom()">🔗 Share invite</button>
-     <button class="btn" onclick="copyRoom()">⧉ Copy Room ID</button>
-     <button class="btn" onclick="leaveRoom();closeDlg()">⏏ Leave room</button>`);
-   return
- }
- dlg(`<h3>Room Sync</h3>
-   <p class="mut" style="font-size:13px;line-height:1.6;margin:0">Create a room and show the QR on one screen. Other devices can scan it for a fast precision-synced join.</p>
-   <button class="btn pri" onclick="createRoom()">＋ Create room + QR</button>
-   <button class="btn" onclick="openRoomScan()">▣ Scan QR to join</button>
-   <input id="jc" placeholder="Room ID" autocapitalize="characters" autocomplete="off" maxlength="8">
-   <button class="btn" onclick="joinRoom()">🔗 Join by Room ID</button>
-   <p class="mut" style="font-size:12px;line-height:1.6">Tip: open the QR on the host device, then scan it with a phone/tablet camera inside this app.</p>`)
-}
-
-/* ---------- Cyber Media Center ---------- */
-const STATS_KEY="stxy_stats_v2",THEME_KEY="stxy_theme_v1";
-let STATS={plays:0,seconds:0,history:[],hours:{},artists:{},songs:{}};
-try{Object.assign(STATS,JSON.parse(localStorage.getItem(STATS_KEY)||"{}"))}catch(e){}
-function saveStats(){try{localStorage.setItem(STATS_KEY,JSON.stringify(STATS))}catch(e){}}
-function statPlay(it){if(!it)return;STATS.plays=(STATS.plays||0)+1;const a=it.artist||"Unknown",k=it.videoId||it.title;STATS.artists[a]=(STATS.artists[a]||0)+1;STATS.songs[k]=(STATS.songs[k]||0)+1;const h=new Date().getHours();STATS.hours[h]=(STATS.hours[h]||0)+1;STATS.history.unshift({title:it.title,artist:a,videoId:it.videoId,at:Date.now()});STATS.history=STATS.history.slice(0,100);saveStats()}
-let lastStatId="",statTick=0;
-function trackListening(){const it=Q[qi];if(!it||!playing()||follow)return;const now=Date.now();STATS.seconds=(STATS.seconds||0)+Math.max(0,Math.min(3,(now-statTick)/1000));statTick=now;saveStats()}
-setInterval(trackListening,3000);
-function heuristic(it){const s=((it?.title||"")+" "+(it?.artist||"")).toLowerCase();let genre="Pop",mood="Chill",bpm=100;if(/phonk|drift/.test(s)){genre="Phonk";mood="Energy";bpm=150}else if(/edm|dance|remix|techno|house/.test(s)){genre="EDM";mood="Energy";bpm=128}else if(/rock|metal/.test(s)){genre="Rock";mood="Energy";bpm=132}else if(/lofi|lo-fi|sleep|ambient|calm/.test(s)){genre="Lo-Fi";mood=s.includes("sleep")?"Sleep":"Focus";bpm=72}else if(/romantic|love|sad|heart/.test(s)){genre="Romance";mood="Chill";bpm=82}else if(/rap|hip hop|hip-hop/.test(s)){genre="Rap";mood="Energy";bpm=94}else if(/bollywood|hindi/.test(s)){genre="Bollywood";mood="Chill";bpm=104}return{genre,mood,bpm}}
-function whySong(it){const h=heuristic(it);return `${h.genre} profile · ${h.mood} mood · estimated ${h.bpm} BPM. This is a local heuristic based on title/artist text, not a cloud AI classification.`}
-function openTech(){view="tech";document.body.classList.remove("menu");paint()}
-function techHTML(){const it=Q[qi],h=heuristic(it||{}),mins=Math.floor((STATS.seconds||0)/60),topA=Object.entries(STATS.artists||{}).sort((a,b)=>b[1]-a[1]).slice(0,5),topS=Object.entries(STATS.songs||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);return `<h1 class="vt">Cyber Media Center</h1><p class="mut">YouTube Music + futuristic OLED control deck. Local analytics stay in your browser.</p><div class="techGrid">
-<div class="techCard wide"><h3>🎧 AI Music Intelligence</h3><div class="metric">${h.genre} · ${h.mood}</div><p>Estimated BPM <b>${h.bpm}</b> · ${it?esc(it.title):"Nothing playing"}</p><p>${esc(whySong(it||{}))}</p><div class="techBtns"><button class="btn pri" onclick="smartRecommend()">✨ Smart recommendations</button><button class="btn" onclick="openAudioPanel()">🎚 Pro Audio</button></div></div>
-<div class="techCard"><h3>📊 Listening Analytics</h3><div class="metric">${mins}m</div><p>${STATS.plays||0} play starts · ${STATS.history?.length||0} recent events</p><div class="techBtns"><button class="btn" onclick="renderAnalytics()">Open analytics</button></div></div>
-<div class="techCard full"><h3>⚡ Real-time Visualizer</h3><p>Animated spectrum/wave/circle/particle modes. YouTube playback is visualized without attempting to bypass cross-origin audio security; local audio can use the native player.</p><div class="techBtns"><button class="btn pri" onclick="toggleVisualizer(true)">Launch Cyber Visualizer</button><button class="btn" onclick="setVizMode('SPECTRUM')">Spectrum</button><button class="btn" onclick="setVizMode('WAVE')">Wave</button><button class="btn" onclick="setVizMode('CIRCLE')">Circle</button></div></div>
-<div class="techCard full"><h3>🔊 10-Band Pro EQ</h3><div class="eqgrid">${[60,170,310,600,1000,3000,6000,10000,14000,16000].map((f,i)=>`<label class="eqband"><input type="range" min="-12" max="12" value="0" data-eq="${i}" oninput="setEq(${i},this.value)"><span>${f>=1000?(f/1000)+"k":f}</span></label>`).join("")}</div><div class="techBtns"><button class="btn" onclick="eqPreset('flat')">Flat</button><button class="btn" onclick="eqPreset('rock')">Rock</button><button class="btn" onclick="eqPreset('pop')">Pop</button><button class="btn" onclick="eqPreset('edm')">EDM</button><button class="btn" onclick="eqPreset('voice')">Voice</button><button class="btn" onclick="toggleBass()">Bass Boost</button><button class="btn" onclick="toggleNormalize()">Loudness</button></div></div>
-<div class="techCard"><h3>⌨️ Pro Controls</h3><p><b>Space</b> play/pause · <b>←/→</b> seek · <b>↑/↓</b> volume</p><p><b>M</b> mute · <b>F</b> fullscreen · <b>N/P</b> next/previous · <b>/</b> search · <b>Ctrl+K</b> command palette</p></div>
-<div class="techCard"><h3>🌐 Network Mode</h3><div id="netMini"><p>Checking network telemetry…</p></div><div class="techBtns"><button class="btn" onclick="openNetworkHub()">Open monitor</button><button class="btn" onclick="showCast()">Room sync</button></div></div>
-<div class="techCard"><h3>🧬 Futuristic Modes</h3><div class="techBtns"><button class="btn" onclick="toggleFocus()">Focus Mode</button><button class="btn" onclick="toggleTheme()">OLED / Light</button><button class="btn" onclick="openSearchHub()">Advanced Search</button></div></div>
-</div>`}
-function renderAnalytics(){const topA=Object.entries(STATS.artists||{}).sort((a,b)=>b[1]-a[1]).slice(0,5),topS=Object.entries(STATS.songs||{}).sort((a,b)=>b[1]-a[1]).slice(0,5);dlg(`<h3>📊 Music Analytics</h3><p class="mut">${Math.floor((STATS.seconds||0)/60)} minutes listened · ${STATS.plays||0} play starts</p><h4>Top artists</h4>${topA.length?topA.map(x=>`<p>${esc(x[0])} <b>· ${x[1]}</b></p>`).join(""):"<p class='mut'>No data yet.</p>"}<h4>Top songs</h4>${topS.length?topS.map(x=>`<p>${esc(x[0])} <b>· ${x[1]}</b></p>`).join(""):"<p class='mut'>No data yet.</p>"}<h4>Recent</h4>${(STATS.history||[]).slice(0,8).map(x=>`<p><b>${esc(x.title)}</b><br><span class='mut'>${esc(x.artist)} · ${new Date(x.at).toLocaleString()}</span></p>`).join("")||"<p class='mut'>Nothing yet.</p>"}<button class="btn" onclick="resetStats()">Reset analytics</button>`)}
-function resetStats(){if(confirm("Reset local listening analytics?")){STATS={plays:0,seconds:0,history:[],hours:{},artists:{},songs:{}};saveStats();renderAnalytics()}}
-async function smartRecommend(){const it=Q[qi];if(!it)return toast("Play a song first");const h=heuristic(it);const r=await search(`${h.genre} ${h.mood} music`);if(r?.length){Q.splice(qi+1,0,...r.filter(x=>!Q.some(q=>q.videoId===x.videoId)).slice(0,8));tab("up");toast("Smart queue updated")}}
-function toggleTheme(){document.body.classList.toggle("light");localStorage.setItem(THEME_KEY,document.body.classList.contains("light")?"light":"dark")}
-function toggleFocus(){document.body.classList.toggle("focus");if(document.body.classList.contains("focus"))openPl()}
-function setEq(i,v){localStorage.setItem("stxy_eq_"+i,v);const a=window.eqGains||Array(10).fill(0);a[i]=+v;window.eqGains=a;try{applyLocalEQ()}catch(e){}}
-function eqPreset(name){const p={flat:[0,0,0,0,0,0,0,0,0,0],rock:[4,3,2,0,-1,1,3,4,4,3],pop:[-1,1,3,4,3,1,-1,-2,-1,0],edm:[5,4,2,0,1,3,5,4,5,5],voice:[-3,-2,-1,3,5,5,3,1,0,0]}[name]||[];document.querySelectorAll('[data-eq]').forEach((x,i)=>{x.value=p[i];setEq(i,p[i])});toast(name.toUpperCase()+" EQ preset")}
-let bassOn=false,normOn=false;function toggleBass(){bassOn=!bassOn;toast("Bass Boost "+(bassOn?"ON":"OFF"));applyLocalEQ()}function toggleNormalize(){normOn=!normOn;toast("Loudness normalization "+(normOn?"ON":"OFF"));applyLocalEQ()}
-let acx=null,srcNode=null,filters=[];function applyLocalEQ(){if(!acx||!srcNode)return;filters.forEach((f,i)=>f.gain.value=(window.eqGains||Array(10).fill(0))[i]);if(filters[0])filters[0].gain.value+=(bassOn?5:0)}
-function initLocalAudio(){if(acx||!window.AudioContext)return;try{acx=new AudioContext();srcNode=acx.createMediaElementSource(au);filters=[60,170,310,600,1000,3000,6000,10000,14000,16000].map(f=>{const n=acx.createBiquadFilter();n.type="peaking";n.frequency.value=f;n.Q.value=1;n.gain.value=0;return n});let n=srcNode;filters.forEach(f=>{n.connect(f);n=f});n.connect(acx.destination);applyLocalEQ()}catch(e){acx=null}}
-au.addEventListener("play",()=>{initLocalAudio();if(acx&&acx.state==="suspended")acx.resume()});
-function openAudioPanel(){dlg(`<h3>🔊 Pro Audio</h3><p class="mut">10-band EQ, bass boost and normalization apply to local device audio. Browser security prevents routing YouTube iframe audio through Web Audio.</p><div class="eqgrid">${[60,170,310,600,1000,3000,6000,10000,14000,16000].map((f,i)=>`<label class="eqband"><input type="range" min="-12" max="12" value="${localStorage.getItem("stxy_eq_"+i)||0}" oninput="setEq(${i},this.value)"><span>${f>=1000?(f/1000)+"k":f}</span></label>`).join("")}</div><div class="techBtns"><button class="btn" onclick="eqPreset('rock')">Rock</button><button class="btn" onclick="eqPreset('pop')">Pop</button><button class="btn" onclick="eqPreset('edm')">EDM</button><button class="btn" onclick="toggleBass()">Bass</button><button class="btn" onclick="toggleNormalize()">Loudness</button></div>`)}
-function openSearchHub(){dlg(`<h3>🔎 Advanced Search</h3><div class="searchTabs"><button class="on" onclick="searchTab(this,'songs')">Songs</button><button onclick="searchTab(this,'artists')">Artists</button><button onclick="searchTab(this,'playlists')">Playlists</button><button onclick="searchTab(this,'history')">History</button><button onclick="searchTab(this,'local')">Local Library</button></div><input id="hubQ" placeholder="Search songs, artists, albums…" onkeydown="if(event.key==='Enter')runHubSearch()"><div id="hubResults" class="empty" style="padding:25px 0">Type a query and press Enter.</div>`)}
-let hubTab="songs";function searchTab(b,t){hubTab=t;b.parentNode.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");if(t!=="songs")renderHubStatic(t)}
-function renderHubStatic(t){const b=$("hubResults");if(!b)return;if(t==="playlists"){b.innerHTML=names().map(n=>`<p>☰ <b>${esc(n)}</b> · ${D.lists[n].length} songs</p>`).join("")||"<p class='mut'>No playlists.</p>"}else if(t==="history"){b.innerHTML=(STATS.history||[]).slice(0,20).map(x=>`<p><b>${esc(x.title)}</b><br><span class='mut'>${esc(x.artist)}</span></p>`).join("")||"<p class='mut'>No history.</p>"}else if(t==="local"){offAll().then(a=>b.innerHTML=a.map(x=>`<p>♪ <b>${esc(x.title)}</b></p>`).join("")||"<p class='mut'>No local songs.</p>")}else b.innerHTML="<p class='mut'>Enter a query above.</p>"}
-async function runHubSearch(){const q=$("hubQ")?.value.trim();if(!q)return;if(hubTab==="songs"||hubTab==="artists"){const r=await search(q);res=r;closeDlg();qry=q;view="home";paint();toast(`${r.length} results`)}else renderHubStatic(hubTab)}
-function openNetworkHub(){const render=async()=>{const b=$("netHub");if(!b)return;const t0=performance.now();try{await fetch(location.origin+location.pathname,{cache:"no-store"});const ping=Math.round(performance.now()-t0);const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;b.innerHTML=`<div class="metric">${ping} ms</div><p>Local app ping · online: <b>${navigator.onLine?"YES":"NO"}</b></p><p>Connection: <b>${esc(c?.effectiveType||"unknown")}</b> · downlink ${c?.downlink||"?"} Mbps</p><p>Device memory: <b>${navigator.deviceMemory||"?"} GB</b> · cores ${navigator.hardwareConcurrency||"?"}</p><p>Room: <b>${room?room+" · "+(roomLeader?"LEADER":"FOLLOWER"):"Not connected"}</b></p>`}catch(e){b.innerHTML="<p class='mut'>Network probe unavailable.</p>"}};dlg(`<h3>🌐 Tech Network Monitor</h3><div id="netHub"><div class="spin"></div></div><p class="mut">Browser APIs expose only information available to this web app. Server CPU/RAM/storage metrics require a ShivTrix backend endpoint.</p>`);render()}
-function initNetMini(){const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;const b=$("netMini");if(b)b.innerHTML=`<div class="metric">${navigator.onLine?"ONLINE":"OFFLINE"}</div><p>${esc(c?.effectiveType||"network unknown")} · ${c?.downlink||"?"} Mbps</p>`}
-function setVizMode(m){window.vizMode=m;const x=$("vizMode");if(x)x.textContent=m}
-let vizRAF=0;function drawViz(canvas){if(!canvas)return;const ctx=canvas.getContext("2d"),w=canvas.width=canvas.clientWidth*devicePixelRatio,h=canvas.height=canvas.clientHeight*devicePixelRatio,t=performance.now()/1000,mode=window.vizMode||"SPECTRUM";ctx.clearRect(0,0,w,h);ctx.save();ctx.scale(devicePixelRatio,devicePixelRatio);const W=canvas.clientWidth,H=canvas.clientHeight;ctx.strokeStyle="rgba(0,234,255,.65)";ctx.fillStyle="rgba(0,90,255,.08)";ctx.lineWidth=2;const amp=playing()?1:0.35;if(mode==="CIRCLE"){for(let r=90;r<Math.min(W,H)*.38;r+=28){ctx.beginPath();ctx.arc(W/2,H/2,r+Math.sin(t*3+r)*5,0,Math.PI*2);ctx.stroke()}}else if(mode==="PARTICLES"){for(let i=0;i<90;i++){const a=i*2.399+t*(.3+i%5*.02),r=(i*37+t*35)%Math.min(W,H)*.42;const x=W/2+Math.cos(a)*r,y=H/2+Math.sin(a)*r;ctx.fillStyle=`rgba(0,${140+i%100},255,.${.25+i%6/10})`;ctx.fillRect(x,y,2+i%4,2+i%4)}}else{ctx.beginPath();for(let i=0;i<80;i++){const x=i/79*W;const v=(Math.sin(i*.65+t*4)+Math.sin(i*.19-t*2)+Math.sin(i*.09+t))*0.33*amp;const y=H*.52+v*H*.28*(mode==="WAVE"?1.2:1);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();if(mode==="SPECTRUM"){for(let i=0;i<64;i++){const x=i/64*W,b=(Math.sin(i*.9+t*5)+1)*.5*H*.25*amp;ctx.fillStyle=`rgba(0,180,255,.${.18+(i%5)/12})`;ctx.fillRect(x,H*.9-b,W/100,b)}}}ctx.restore();vizRAF=requestAnimationFrame(()=>drawViz(canvas))}
-function toggleVisualizer(on){const el=$("cyberViz");if(on){el.classList.add("open");setVizMode(window.vizMode||"SPECTRUM");cancelAnimationFrame(vizRAF);drawViz($("vizFullCanvas"))}else{el.classList.remove("open");cancelAnimationFrame(vizRAF)}}
-let inlineVizStarted=false;function startInlineViz(){if(inlineVizStarted)return;inlineVizStarted=true;drawViz($("viz"))}
+ if(room){dlg(`<h3>You’re in a room</h3><div class="code">${room}</div><p class="mut" style="font-size:13px;line-height:1.6;margin:0 0 6px">Every device that enters this Room ID plays the same song in sync. Play a song on any device to make it the leader. Next, previous and pause from the other devices control the leader.</p><button class="btn pri" onclick="shareRoom()">🔗 Share invite link</button><button class="btn" onclick="copyRoom()">⧉ Copy Room ID</button><button class="btn" onclick="leaveRoom();closeDlg()">⏏ Leave room</button>`);return}
+ dlg(`<h3>Cast to device</h3><p class="mut" style="font-size:13px;line-height:1.6;margin:0">Create a room, then enter its Room ID on your other devices. They all play the same song together.</p>
+ <button class="btn pri" onclick="createRoom()">＋ Create room</button>
+ <input id="jc" placeholder="Room ID" autocapitalize="characters" autocomplete="off" maxlength="12">
+ <button class="btn" onclick="joinRoom()">🔗 Join room</button>
+ <p class="mut" style="font-size:12px;line-height:1.6">To show it on the Mi TV: in Chrome use ⋮ → Cast → your TV.</p>`)}
 
 /* ---------- init ---------- */
 function resize(){$("menuBtn").style.display=innerWidth<=900?"grid":"none"}
 addEventListener("resize",resize);resize();
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){if($("dlg").classList.contains("open"))closeDlg();else if($("cyberViz").classList.contains("open"))toggleVisualizer(false);else if($("pl").classList.contains("open"))minPl();return}if(e.ctrlKey&&e.key.toLowerCase()==="k"){e.preventDefault();openSearchHub();return}const tag=(e.target?.tagName||"").toLowerCase();if(tag==="input"||tag==="textarea")return;if(e.code==="Space"){e.preventDefault();togglePlay()}else if(e.key==="ArrowLeft"){e.preventDefault();seekTo(Math.max(0,time()-5))}else if(e.key==="ArrowRight"){e.preventDefault();seekTo(Math.min(dur(),time()+5))}else if(e.key==="ArrowUp"){e.preventDefault();au.volume=Math.min(1,au.volume+.05)}else if(e.key==="ArrowDown"){e.preventDefault();au.volume=Math.max(0,au.volume-.05)}else if(e.key.toLowerCase()==="m"){e.preventDefault();au.muted=!au.muted}else if(e.key.toLowerCase()==="f"){e.preventDefault();toggleFocus()}else if(e.key.toLowerCase()==="n"){e.preventDefault();next(false)}else if(e.key.toLowerCase()==="p"){e.preventDefault();prev()}else if(e.key==="/"){e.preventDefault();openSearchHub()}});
-if(localStorage.getItem(THEME_KEY)==="light")document.body.classList.add("light");
-load();paint();startInlineViz();
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if($("dlg").classList.contains("open"))closeDlg();else if($("pl").classList.contains("open"))minPl()}});
+load();paint();
 const rm=/#room=([A-Z0-9]{8})/.exec(location.hash);if(rm){enterRoom(rm[1],false);toast("Joined room "+rm[1])}
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
 </script>
