@@ -1,20 +1,29 @@
-# ShivTrix Play — GitHub Pages Real-Time Edition
+# ShivTrix Play — GitHub Pages Realtime
 
-## Deploy
-1. Upload all files in this folder to the root of a GitHub repository.
-2. Enable **Settings → Pages → Deploy from branch**.
-3. Open the generated HTTPS GitHub Pages URL.
-4. Open it on another device/browser and use the 8-character room code.
+Upload the contents of this folder to the root of a GitHub Pages repository.
 
-## Real-time architecture
-- Hosting: GitHub Pages only.
-- Signaling: PeerJS public cloud signaling through the PeerJS CDN client.
-- Game/chat/music payloads: WebRTC DataChannels.
-- ICE connectivity: public STUN servers.
-- Local queue/settings: browser localStorage.
-- No Firebase, Node.js, PHP, or database is required.
+Realtime uses **PeerJS from CDN for WebRTC signalling** and **WebRTC data channels** for room/game/chat/music traffic. There is no Firebase, Node.js, PHP, or database.
 
-## Important
-The PeerJS public signaling service is only used to introduce peers. It does not provide persistent game state. If a network blocks direct WebRTC connections, a TURN relay may be required; this package does not include a private TURN server.
+## Files
+- `index.html` — app shell
+- `app.js` — complete application/realtime logic
+- `sw.js` — PWA service worker
+- `manifest.json` — PWA manifest
+- `icon.svg` — app icon
 
-Room IDs are 8-character uppercase alphanumeric codes.
+## Room
+- 8-character room code
+- 2–4 players
+- QR invite/scanner
+- presence and reconnect handling
+- realtime chat
+- realtime game state
+- realtime 3 Patti state
+- realtime virtual chips
+- realtime music state
+
+## GitHub Pages
+Use the HTTPS GitHub Pages URL. Camera QR scanning requires HTTPS.
+
+## Network note
+WebRTC normally works directly with STUN. Some restrictive NAT/firewall networks require TURN; this package does not include a private TURN server.

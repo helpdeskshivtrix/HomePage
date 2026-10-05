@@ -1,0 +1,310 @@
+/* ShivTrix Play realtime client — GitHub Pages / PeerJS CDN / WebRTC. */
+/*
+ ShivTrix Play — GitHub Pages real-time edition.
+ PeerJS provides signalling; room/game/chat/music data uses WebRTC.
+ No Node/PHP server is required for this frontend.
+*/
+const games=[
+{id:'ttt',icon:'❌',name:'Tic-Tac-Toe',players:'2',desc:'Quick classic duel.'},
+{id:'dice',icon:'🎲',name:'Dice Battle',players:'2–4',desc:'Roll and collect points.'},
+{id:'higher',icon:'🃏',name:'High Card',players:'2–4',desc:'Highest card wins.'},
+{id:'memory',icon:'🧠',name:'Memory Match',players:'2–4',desc:'Remember the sequence.'},
+{id:'reaction',icon:'⚡',name:'Reaction Battle',players:'2–4',desc:'Who reacts fastest?'},
+{id:'flash',icon:'🎴',name:'Flash',players:'2–4',desc:'Fast card party game.'},
+{id:'patti',icon:'🃏',name:'3 Patti',players:'2–4',desc:'Teen Patti with virtual chips.'},
+{id:'inout',icon:'🔴',name:'In / Out',players:'2–4',desc:'Prediction game using virtual chips.'},
+{id:'ludo',icon:'🎲',name:'Ludo',players:'2–4',desc:'Room-ready board-game slot.'},
+{id:'carrom',icon:'⭕',name:'Carrom',players:'2–4',desc:'Room-ready carrom slot.'}
+];
+const $=id=>document.getElementById(id), STORE='shivtrix-v3';
+const me={id:(localStorage.getItem(STORE+':pid')||crypto.randomUUID()).slice(0,12),name:localStorage.getItem(STORE+':name')||'Player '+Math.floor(100+Math.random()*900)};
+localStorage.setItem(STORE+':pid',me.id);localStorage.setItem(STORE+':name',me.name);
+let peer=null,hostConn=null,connections=new Map(),heartbeat=null,reconnectTimer=null,joinRetryTimer=null,joinAttempts=0;
+let room=null,roomCode='',isHost=false,chat=[],queue=JSON.parse(localStorage.getItem(STORE+':queue')||'[]');
+const ROOM_ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const PEER_PREFIX='shivtrix-room-';
+function makeRoomCode(){let out='';for(let i=0;i<8;i++)out+=ROOM_ALPHABET[Math.floor(Math.random()*ROOM_ALPHABET.length)];return out}
+function normalizeRoomCode(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8)}
+function validRoomCode(v){return /^[A-Z0-9]{8}$/.test(v)}
+function roomPeerId(c){return PEER_PREFIX+normalizeRoomCode(c).toLowerCase()}
+
+
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function now(){return Date.now()} function idFor(c){return roomPeerId(c)}
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(b.dataset.page).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.page==='rooms')renderRoom()});
+function card(g){return `<div class="card game-card"><div><div class="game-icon">${g.icon}</div><h3>${g.name}</h3><p>${g.desc}</p></div><div class="actions"><span class="muted">${g.players} players</span><button class="btn" onclick="openGame('${g.id}')">Play</button></div></div>`}
+$('homeGames').innerHTML=games.slice(0,8).map(card).join('');$('gamesGrid').innerHTML=games.map(card).join('');
+
+function defaultRoom(code,name,game,maxPlayers){
+ return {code,name,game,maxPlayers,hostId:me.id,dealerId:me.id,createdAt:now(),
+ players:[{id:me.id,name:me.name,online:true,owner:true,joinedAt:now(),chips:1000}],
+ credits:{[me.id]:1000},state:{},music:{src:'',title:'',playing:false,time:0,at:now()},turn:me.id,version:1};
+}
+function openCreate(){
+ $('modalTitle').textContent='Create Live Room';
+ $('modalBody').innerHTML=`<label>Game</label><select id="createGame">${games.map(g=>`<option value="${g.id}">${g.icon} ${g.name}</option>`).join('')}</select><br><br><label>Players</label><select id="createPlayers"><option>2</option><option>3</option><option selected>4</option></select><br><br><label>Room name</label><input id="createName" value="My Live Room"><br><br><label>Your name</label><input id="createPlayer" value="${esc(me.name)}"><br><br><button class="btn primary" onclick="createRoom()">Create Real-Time Room</button>`;showModal();
+}
+async function createRoom(){
+ me.name=$('createPlayer').value.trim()||me.name;localStorage.setItem(STORE+':name',me.name);
+ let created=false;
+ for(let attempt=0;attempt<6 && !created;attempt++){
+  roomCode=makeRoomCode();
+  room=defaultRoom(roomCode,$('createName').value.trim()||'Live Room',$('createGame').value,+$('createPlayers').value);
+  room.adminToken=crypto.randomUUID().replaceAll('-','').slice(0,16).toUpperCase();isHost=true;
+  try{await startPeer(idFor(roomCode));created=true}catch(e){if(e?.type!=='unavailable-id')throw e;cleanupPeer()}
+ }
+ if(!created){isHost=false;toast('Could not reserve a unique room. Try again.');return}
+ saveLocalRoom();closeModal();document.querySelector('[data-page="rooms"]').click();toast('Live room '+roomCode+' created');
+ broadcast({type:'snapshot',room});
+}
+function openJoin(){
+ $('modalTitle').textContent='Join Real-Time Room';
+ $('modalBody').innerHTML=`<label>Room code</label><input id="joinCode" placeholder="8-character code" inputmode="text" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="this.value=normalizeRoomCode(this.value)" onkeydown="if(event.key==='Enter')joinRoom()"><br><br><div class="actions"><button class="btn primary" onclick="joinRoom()">Join Live Room</button><button class="btn" onclick="openQRScanner()">📷 Scan QR</button></div><br><label>Your name</label><input id="joinPlayer" value="${esc(me.name)}"><p class="muted">8-character live room code • WebRTC signaling • camera is used only when you tap Scan QR.</p>`;showModal();
+}
+async function joinRoom(){
+ const c=normalizeRoomCode($('joinCode').value);if(!validRoomCode(c))return toast('Room code must be exactly 8 letters/numbers');
+ me.name=$('joinPlayer').value.trim()||me.name;localStorage.setItem(STORE+':name',me.name);roomCode=c;isHost=false;joinAttempts=0;
+ try{await startPeer('guest-'+me.id);connectToHost()}catch(e){toast('Could not start connection')}
+}
+function startPeer(peerId){
+ return new Promise((resolve,reject)=>{
+  cleanupPeer();
+  let settled=false;
+  try{
+   peer=new Peer(peerId,{
+    host:'0.peerjs.com',
+    port:443,
+    path:'/',
+    secure:true,
+    debug:1,
+    config:{iceServers:[
+     {urls:'stun:stun.l.google.com:19302'},
+     {urls:'stun:stun.cloudflare.com:3478'},
+     {urls:'stun:stun1.l.google.com:19302'}
+    ]}
+   });
+  }catch(e){reject(e);return}
+  const fail=e=>{
+   console.error('PeerJS error',e);
+   if(!settled){settled=true;reject(e)}
+   else if(e?.type==='network'||e?.type==='server-error'||e?.type==='socket-error')toast('Signaling server connection lost. Retrying…');
+  };
+  peer.on('open',id=>{console.log('Peer open:',id);settled=true;startHeartbeat();resolve(id)});
+  peer.on('error',fail);
+  peer.on('connection',c=>{console.log('Incoming data connection:',c.peer);if(isHost)setupConn(c);else c.close()});
+  peer.on('disconnected',()=>{console.warn('PeerJS signaling disconnected');if(!peer.destroyed){try{peer.reconnect()}catch{}}});
+  peer.on('close',()=>console.warn('PeerJS closed'));
+ });
+}
+
+function connectToHost(){
+ clearTimeout(joinRetryTimer);
+ if(!peer||peer.destroyed)return;
+ joinAttempts++;
+ const target=idFor(roomCode);
+ console.log('Connecting to host peer:',target,'attempt',joinAttempts);
+ const c=peer.connect(target,{reliable:true,serialization:'json',metadata:{room:roomCode,client:me.id},label:'shivtrix-room'});
+ hostConn=c;
+ let opened=false, finished=false;
+ const retry=()=>{
+  if(opened||finished||isHost)return;
+  finished=true;
+  try{c.close()}catch{}
+  if(joinAttempts>=12){toast('Could not connect. Check the 8-character room code and make sure the host room is still open.');return}
+  toast('Connecting to live room… '+joinAttempts+'/12');
+  joinRetryTimer=setTimeout(connectToHost,Math.min(4000,700+joinAttempts*350));
+ };
+ const timeout=setTimeout(()=>{if(!opened)retry()},9000);
+ c.on('open',()=>{
+  clearTimeout(timeout);opened=true;finished=true;joinAttempts=0;
+  console.log('WebRTC data connection OPEN');setupConn(c);
+ });
+ c.on('error',e=>{clearTimeout(timeout);console.warn('Data connection error:',e);retry()});
+ c.on('close',()=>{clearTimeout(timeout);if(!opened)retry();else handleDisconnect(c.peer)});
+}
+
+function setupConn(c){
+ const register=()=>{connections.set(c.peer,c);c.__last=now();if(isHost){send(c,{type:'snapshot',room})}else send(c,{type:'join',player:{id:me.id,name:me.name}});renderRoom();startHeartbeat()};
+ if(c.open)register();else c.once('open',register);
+ c.on('data',m=>handlePacket(c,m));
+ c.on('close',()=>handleDisconnect(c.peer));
+ c.on('error',e=>{console.warn('Data channel error',e);handleDisconnect(c.peer)});
+}
+function send(c,m){try{if(c&&c.open)c.send(m)}catch{}}
+function broadcast(m,except){connections.forEach((c,id)=>{if(id!==except)send(c,m)})}
+function handlePacket(c,m){
+ c.__last=now();if(!m?.type)return;
+ if(isHost){
+  if(m.type==='join'){
+   if(room.players.some(p=>p.id===m.player.id))return;
+   if(room.players.length>=room.maxPlayers)return send(c,{type:'error',message:'Room is full'});
+   room.players.push({id:m.player.id,name:m.player.name||'Player',online:true,owner:false,joinedAt:now(),chips:1000});room.credits[m.player.id]=1000;
+   broadcast({type:'snapshot',room});systemChat((m.player.name||'Player')+' joined');renderRoom();
+  } else if(m.type==='event')applyHostEvent(m.event,c.peer);
+ } else {
+  if(m.type==='snapshot'){room=m.room;roomCode=room.code;renderRoom();syncMusicFromRoom()}
+  else if(m.type==='chat'){chat.push(m.message);renderChat()}
+  else if(m.type==='event')applyClientEvent(m.event)
+  else if(m.type==='error')toast(m.message)
+  else if(m.type==='heartbeat'){}
+ }
+}
+function playerName(id){return room?.players.find(p=>p.id===id)?.name||'Player'}
+function systemChat(text){const m={id:crypto.randomUUID(),playerId:'system',name:'SYSTEM',text,at:now()};chat.push(m);broadcast({type:'chat',message:m});renderChat()}
+function sendEvent(event){event.playerId=me.id;if(isHost)applyHostEvent(event,me.id);else if(hostConn?.open)send(hostConn,{type:'event',event});else toast('Not connected')}
+function applyHostEvent(ev,from){
+ if(ev.kind==='chat'){const m={id:crypto.randomUUID(),playerId:from,name:playerName(from),text:String(ev.text||'').slice(0,500),at:now()};chat.push(m);broadcast({type:'chat',message:m});renderChat();return}
+ if(ev.kind==='music'){if(from!==room.hostId)return;room.music=ev.music;broadcast({type:'snapshot',room});syncMusicFromRoom();return}
+ if(ev.kind==='credit'){const p=room.players.find(p=>p.id===from);if(!p)return;p.chips=Math.max(0,(p.chips||0)+Math.max(-1000,Math.min(1000,+ev.amount||0)));room.credits[from]=p.chips}
+ if(ev.kind==='game'){applyGameEvent(ev,from);room.version++;broadcast({type:'snapshot',room});broadcast({type:'event',event:ev});renderRoom();refreshActiveGame();return}
+ room.version++;broadcast({type:'snapshot',room});renderRoom();
+}
+function applyClientEvent(ev){
+ if(!room)return;
+ if(ev.kind==='chat'){chat.push(ev.message);renderChat();return}
+ if(ev.kind==='game'){applyGameEvent(ev,ev.playerId);refreshActiveGame();renderRoom();return}
+ if(ev.kind==='music'){room.music=ev.music;syncMusicFromRoom();return}
+ if(ev.kind==='credit'){const p=room.players.find(x=>x.id===ev.playerId);if(p){p.chips=Math.max(0,(p.chips||0)+Number(ev.amount||0));renderRoom()}}
+}
+function applyGameEvent(ev,from){room.state??={};if(ev.game==='patti')room.state.patti=ev.state;else room.state[ev.game]=ev.state}
+function refreshActiveGame(){if(window.activeGameId){const mount=$('gameMount');if(mount){renderGame(window.activeGameId,mount);refreshGameStateUI(window.activeGameId);}}}
+function refreshGameStateUI(id){const s=room?.state?.[id];if(id==='dice')renderDiceState(s);else if(id==='higher')renderHighState(s);else if(id==='ttt')renderTTTState(s);else if(id==='patti')renderPattiState(room?.state?.patti||{});else if(id==='inout')renderInOutState(room?.state?.inout||{});else renderPartyState(id,s)}
+function handleDisconnect(id){
+ connections.delete(id);const p=room?.players.find(p=>p.id===id);if(p)p.online=false;renderRoom();
+ if(!isHost&&!hostConn?.open)electHost();else if(isHost){room.version++;broadcast({type:'snapshot',room})}
+}
+function startHeartbeat(){
+ clearInterval(heartbeat);heartbeat=setInterval(()=>{if(isHost)connections.forEach(c=>send(c,{type:'heartbeat',t:now()}));else if(hostConn?.open)send(hostConn,{type:'heartbeat',t:now()})},5000);
+}
+function electHost(){
+ if(!room)return;const ids=room.players.filter(p=>p.online!==false).map(p=>p.id).concat(me.id).sort();if(ids[0]===me.id)becomeHost();else if(!hostConn?.open)connectToHost();
+}
+async function becomeHost(){
+ isHost=true;room.hostId=me.id;room.players.forEach(p=>p.owner=p.id===me.id);
+ try{await startPeer(idFor(room.code))}catch{}broadcast({type:'snapshot',room});renderRoom();toast('Host handover complete');
+}
+function cleanupPeer(){clearInterval(heartbeat);connections.forEach(c=>{try{c.close()}catch{}});connections.clear();try{peer?.destroy()}catch{}peer=null;hostConn=null}
+function saveLocalRoom(){localStorage.setItem(STORE+':lastRoom',JSON.stringify({code:room.code,name:room.name,game:room.game}))}
+
+function inviteText(){return location.href.split('#')[0]+'#room='+room.code}
+function showQR(text){
+ if(!text)return toast('No invite link available');
+ $('modalTitle').textContent='QR Room Invite';
+ $('modalBody').innerHTML=`<div class="qrbox"><img alt="QR room invite" src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(text)}"></div><br><input value="${esc(text)}" readonly><p class="muted">Scan this QR from another device, or copy the invite link.</p>`;
+ showModal();
+}
+
+let scanStream=null,scanRAF=0;
+async function openQRScanner(){
+ $('modalTitle').textContent='Scan Room QR';
+ $('modalBody').innerHTML=`<div class="qrscanner"><video id="qrVideo" autoplay muted playsinline></video><canvas id="qrCanvas" hidden></canvas></div><p id="qrStatus" class="muted">Requesting camera…</p><button class="btn" onclick="stopQRScanner();openJoin()">Cancel</button>`;
+ showModal();
+ try{
+  if(!navigator.mediaDevices?.getUserMedia)throw new Error('Camera API unavailable. Use HTTPS GitHub Pages.');
+  scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});
+  const v=$('qrVideo');v.srcObject=scanStream;await v.play();$('qrStatus').textContent='Point the camera at the room QR code…';scanFrame();
+ }catch(e){console.error(e);$('qrStatus').textContent='Camera unavailable. Enter the 8-character room code manually.';toast('Camera unavailable');}
+}
+function stopQRScanner(){cancelAnimationFrame(scanRAF);if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}}
+function scanFrame(){
+ const v=$('qrVideo'),canvas=$('qrCanvas');if(!v||v.readyState<2)return scanRAF=requestAnimationFrame(scanFrame);
+ canvas.width=v.videoWidth;canvas.height=v.videoHeight;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(v,0,0,canvas.width,canvas.height);let text=null;
+ if('BarcodeDetector' in window){
+  if(!scanFrame.detector)scanFrame.detector=new BarcodeDetector({formats:['qr_code']});
+  scanFrame.detector.detect(canvas).then(codes=>{if(codes[0]?.rawValue)handleScannedQR(codes[0].rawValue)}).catch(()=>{});
+ }else if(window.jsQR){const img=ctx.getImageData(0,0,canvas.width,canvas.height);const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});if(code)text=code.data;if(text)handleScannedQR(text)}
+ scanRAF=requestAnimationFrame(scanFrame);
+}
+function handleScannedQR(text){
+ if(!text||window._qrDone)return;
+ let code='';try{const u=new URL(text,location.href);code=normalizeRoomCode(u.hash.match(/(?:room|join)=([A-Za-z0-9]{8})/i)?.[1]||u.searchParams.get('room')||u.searchParams.get('code')||'')}catch{}
+ if(!code)code=normalizeRoomCode(text);
+ if(!validRoomCode(code))return;
+ window._qrDone=true;stopQRScanner();closeModal();openJoin();setTimeout(()=>{if($('joinCode'))$('joinCode').value=code},50);toast('QR scanned: '+code);setTimeout(()=>{window._qrDone=false},1000);
+}
+
+function renderRoom(){
+ const p=$('roomPanel');if(!room){p.innerHTML='<p class="muted">No live room joined. Create a room or join with a code.</p>';return}
+ const g=games.find(x=>x.id===room.game)||games[0];
+ p.innerHTML=`<div class="room-layout"><div><div class="card"><div class="muted">LIVE ROOM • ${isHost||hostConn?.open?'CONNECTED':'CONNECTING'}</div><div class="room-code">${esc(room.code)}</div><div class="actions"><button class="btn primary" onclick="showQR(inviteText())">📱 QR Invite</button><button class="btn" onclick="navigator.clipboard.writeText(inviteText());toast('Invite copied')">Copy Invite</button><button class="btn" onclick="openGame('${room.game}')">🎮 Open Game</button></div></div><div class="card" style="margin-top:12px"><h3>🎮 ${g.name}</h3><div class="room-game" id="roomGame"></div></div><div class="card" style="margin-top:12px"><h3>💬 Real-Time Chat</h3><div id="chatBox" style="height:180px;overflow:auto;display:grid;gap:6px;margin-bottom:8px"></div><div class="row"><input id="chatInput" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn primary" onclick="sendChat()">Send</button></div></div></div><div><div class="card"><h3>👥 Players (${room.players.length}/${room.maxPlayers})</h3><div class="players">${room.players.map(x=>`<div class="player"><div class="avatar">👤</div><b>${esc(x.name)}</b>${x.id===room.hostId?'<span>👑</span>':''}<span class="online">${x.online===false?'● OFFLINE':'● LIVE'}</span></div>`).join('')}</div></div><div class="card" style="margin-top:12px"><h3>🪙 Virtual Chips</h3>${room.players.map(x=>`<div class="row" style="margin:6px 0"><span>${esc(x.name)}</span><b>${x.chips??1000}</b><span class="muted">chips</span></div>`).join('')}</div>${isHost?`<div class="card" style="margin-top:12px"><h3>🛡️ Host/Admin</h3><div class="token">${esc(room.adminToken||'HOST')}</div><small class="muted">Keep this private.</small></div>`:''}</div></div>`;
+ if($('roomGame'))renderGame(room.game,$('roomGame'));renderChat();
+}
+function renderChat(){const b=$('chatBox');if(!b)return;b.innerHTML=chat.slice(-60).map(m=>`<div><b>${esc(m.name)}</b> <span class="muted">${new Date(m.at).toLocaleTimeString()}</span><br>${esc(m.text)}</div>`).join('');b.scrollTop=b.scrollHeight}
+function sendChat(){const t=$('chatInput')?.value.trim();if(!t)return;$('chatInput').value='';sendEvent({kind:'chat',text:t})}
+function credits(n){sendEvent({kind:'credit',amount:n})}
+
+function openGame(id){window.activeGameId=id;$('modalTitle').textContent=(games.find(g=>g.id===id)||games[0]).name;$('modalBody').innerHTML='<div id="gameMount" class="room-game"></div>';showModal();renderGame(id,$('gameMount'))}
+function renderGame(id,m){
+ if(id==='patti')return renderPatti(m);if(id==='inout')return renderInOut(m);if(id==='higher')return renderHighCard(m);
+ if(id==='dice'){m.innerHTML=`<div><button class="btn primary" onclick="rollRoomDice()">🎲 Roll D6</button><div id="gameResult" class="result">—</div></div>`;return}
+ if(id==='ttt'){m.innerHTML='<div><div class="game-board ttt">'+Array(9).fill('').map((_,i)=>`<button class="cell" onclick="ttt(${i},this)"></button>`).join('')+'</div><div id="gameStatus" class="result">Your turn</div></div>';window.tttb=Array(9).fill('');return}
+ if(id==='reaction'){m.innerHTML=`<button id="reactGame" class="btn primary" onclick="reactionGame()">START</button><div id="gameResult" class="result">—</div>`;return}
+ if(id==='memory'){m.innerHTML=`<div id="memSeq" class="result">Press start</div><button class="btn primary" onclick="memoryGame()">Start sequence</button>`;return}
+ m.innerHTML=`<div><div class="game-icon">${games.find(g=>g.id===id).icon}</div><div class="result">${games.find(g=>g.id===id).name}</div><button class="btn primary" onclick="partyRound('${id}')">Start Round</button><div id="gameResult" class="result">—</div></div>`;
+}
+function rollRoomDice(){const n=Math.floor(Math.random()*6)+1;sendEvent({kind:'game',game:'dice',state:{last:n,by:me.id,at:now()}});refreshActiveGame()}
+function renderDiceState(s){if($('gameResult'))$('gameResult').textContent=s?.last?('🎲 '+s.last+' • '+playerName(s.by||'')):'—'}
+function partyRound(id){const n=Math.floor(Math.random()*100)+1;sendEvent({kind:'game',game:id,state:{n,by:me.id,at:now()}});refreshActiveGame()}
+function renderPartyState(id,s){if($('gameResult'))$('gameResult').textContent=s?.n?(id==='inout'?(s.n%2?'🔵 IN':'🔴 OUT'):'Round '+s.n):'—'}
+function ttt(i,e){const board=room?.state?.ttt?.board||Array(9).fill('');if(board[i])return;board[i]='X';sendEvent({kind:'game',game:'ttt',state:{board,by:me.id,at:now()}});}
+function renderTTTState(s){if(!s)return;window.tttb=s.board||Array(9).fill('');document.querySelectorAll('.ttt .cell').forEach((b,i)=>b.textContent=window.tttb[i]||'');if($('gameStatus'))$('gameStatus').textContent=s.winner?('Winner: '+playerName(s.winner)):('Last move: '+playerName(s.by||''))}
+function checkWin(b,x){return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(a=>a.every(i=>b[i]===x))}
+function renderHighCard(m){m.innerHTML=`<div><div id="cardValue" class="result">—</div><button class="btn primary" onclick="dealHighCard()">Deal High Card</button><div id="gameResult" class="result">Waiting...</div></div>`}
+function dealHighCard(){const c=Math.floor(Math.random()*13)+1;sendEvent({kind:'game',game:'higher',state:{card:c,by:me.id,at:now()}});refreshActiveGame()}
+function renderHighState(s){if($('cardValue'))$('cardValue').textContent=s?.card??'—';if($('gameResult')&&s?.card)$('gameResult').textContent=(s.card>=11?'👑 High Card!':'🃏 Card dealt')+' • '+playerName(s.by||'')}
+
+function newDeck(){const d=[],s=['♠','♥','♦','♣'];for(const x of s)for(let r=2;r<=14;r++)d.push({r,s:x});return d.sort(()=>Math.random()-.5)}
+function renderPatti(m){
+ const s=room?.state?.patti||{phase:'waiting',pot:0,currentBet:10,turn:room?.dealerId,players:{},hands:{}};
+ m.innerHTML=`<div class="patti"><div class="muted">🃏 3 PATTI • VIRTUAL CHIPS ONLY</div><div class="result">POT ${s.pot||0}</div><div id="pattiPlayers" class="players"></div><div class="card"><div id="pattiHand" class="actions"></div></div><div class="actions" style="margin-top:10px"><button class="btn primary" onclick="pattiStart()">Start Hand</button><button class="btn" onclick="pattiAction('chaal')">Chaal</button><button class="btn" onclick="pattiAction('blind')">Blind</button><button class="btn danger" onclick="pattiAction('fold')">Fold</button><button class="btn good" onclick="pattiAction('show')">Show</button></div><div id="pattiStatus" class="result"></div></div>`;
+ renderPattiState(s);
+}
+function renderPattiState(s){
+ if(!$('pattiPlayers'))return;
+ $('pattiPlayers').innerHTML=(room.players||[]).map(p=>{const q=s.players?.[p.id]||{};return `<div class="player"><b>${esc(p.name)}</b><span>${q.folded?'FOLDED':q.blind?'BLIND':'IN'}</span><span class="online">${p.id===s.turn?'🟢 TURN':''}</span></div>`}).join('');
+ const h=s.hands?.[me.id]||[];$('pattiHand').innerHTML=h.map(c=>`<div class="cell" style="width:58px;height:78px;display:grid;place-items:center;background:#f7f7f7;color:#111">🂠</div>`).join('');
+ $('pattiStatus').textContent=s.winner?`Winner: ${playerName(s.winner)}`:`Bet ${s.currentBet||10} • ${s.phase||'waiting'}`;
+}
+function pattiStart(){
+ if(!isHost)return toast('Only host starts a hand');
+ const ids=room.players.map(p=>p.id),d=newDeck(),hands={};ids.forEach(id=>hands[id]=d.splice(0,3));
+ const players=Object.fromEntries(ids.map(id=>[id,{blind:false,folded:false,bet:10}]));
+ sendEvent({kind:'game',game:'patti',state:{phase:'chaal',pot:ids.length*10,currentBet:10,turn:ids[0],players,hands,dealer:room.dealerId,startedAt:now()}});
+}
+function pattiAction(type){
+ const s=room?.state?.patti;if(!s||s.turn!==me.id)return toast('Wait for your turn');
+ const ns=structuredClone(s),p=ns.players[me.id]||{};
+ if(type==='blind')p.blind=true;if(type==='chaal'){p.bet=(p.bet||0)+ns.currentBet;ns.pot+=ns.currentBet}if(type==='fold')p.folded=true;
+ ns.players[me.id]=p;const alive=Object.keys(ns.players).filter(id=>!ns.players[id].folded);
+ if(type==='show'||alive.length===1){ns.winner=alive[0];ns.phase='finished'}else{const i=alive.indexOf(ns.turn);ns.turn=alive[(i+1)%alive.length]}
+ sendEvent({kind:'game',game:'patti',state:ns});
+}
+function renderInOut(m){m.innerHTML=`<div><div id="ioResult" class="result">IN / OUT</div><p class="muted">Virtual chips only.</p><div class="actions"><button class="btn primary" onclick="io('IN')">🔵 IN</button><button class="btn danger" onclick="io('OUT')">🔴 OUT</button><button class="btn" onclick="ioResolve()">🎲 Resolve</button></div></div>`}
+function io(c){const s=room.state.inout||{bets:{}};s.bets[me.id]=c;sendEvent({kind:'game',game:'inout',state:s});$('ioResult').textContent='Your pick: '+c}
+function ioResolve(){if(!isHost)return toast('Only host resolves');const r=Math.random()<.5?'IN':'OUT';sendEvent({kind:'game',game:'inout',state:{result:r,bets:room.state.inout?.bets||{},at:now()}});refreshActiveGame()}
+function renderInOutState(s){if($('ioResult'))$('ioResult').textContent=s?.result?('Result: '+s.result):(s?.bets?.[me.id]?('Your pick: '+s.bets[me.id]):'IN / OUT')}
+
+function reactionGame(){let b=$('reactGame');b.disabled=true;b.textContent='WAIT...';setTimeout(()=>{b.disabled=false;b.textContent='CLICK NOW!';let t=performance.now();b.onclick=()=>{$('gameResult').textContent=Math.round(performance.now()-t)+' ms';b.onclick=reactionGame;b.textContent='START'}},1000+Math.random()*2500)}
+function memoryGame(){let s=[...Array(5)].map(()=>Math.floor(Math.random()*4)+1);$('memSeq').textContent=s.join(' • ');setTimeout(()=>$('memSeq').textContent='Now repeat: '+s.join(' ? '),1300)}
+
+function roomMusic(a){const x=$('audio');if(a==='play')x.play();if(a==='pause')x.pause();if(a==='seek')sendMusic(!x.paused,x.currentTime)}
+function sendMusic(playing,time){sendEvent({kind:'music',music:{src:$('audio').src,title:$('songTitle').textContent,playing,time,at:now()}})}
+function syncMusicFromRoom(){if(!room?.music?.src)return;const a=$('audio');if(a.src!==room.music.src)a.src=room.music.src;$('songTitle').textContent=room.music.title||'Shared track';const t=(room.music.time||0)+(room.music.playing?(now()-room.music.at)/1000:0);if(Math.abs(a.currentTime-t)>1)a.currentTime=t;if(room.music.playing)a.play().catch(()=>{});else a.pause()}
+$('audioFile').onchange=e=>{const f=e.target.files[0];if(!f)return;$('audio').src=URL.createObjectURL(f);$('songTitle').textContent=f.name;addQueue(f.name,$('audio').src)}
+function addUrlTrack(){const u=prompt('Direct audio URL');if(!u)return;$('audio').src=u;$('songTitle').textContent='Online track';addQueue('Online track',u)}
+function addQueue(n,u){queue.push({name:n,url:u});localStorage.setItem(STORE+':queue',JSON.stringify(queue));renderQueue()}
+function renderQueue(){$('queue').innerHTML=queue.length?queue.map((x,i)=>`<div class="track"><span>🎵 ${esc(x.name)}</span><button class="btn" onclick="playQueue(${i})">Play</button></div>`).join(''):'<span class="muted">Queue is empty</span>'}
+function playQueue(i){const x=queue[i];$('audio').src=x.url;$('songTitle').textContent=x.name;$('audio').play();if(isHost)sendMusic(true,0)}renderQueue();
+
+function speechNote(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return toast('Speech recognition is not supported here');let r=new R();r.lang='en-IN';r.onresult=e=>$('speechOut').value+=(' '+e.results[0][0].transcript).trim();r.start()}
+function cleanText(){$('cleanIn').value=[...new Set($('cleanIn').value.split(/\n/).map(x=>x.trim()).filter(Boolean))].join('\n')}
+function calcPct(){let a=+$('pctA').value,b=+$('pctB').value;$('pctOut').textContent=isFinite(a*b/100)?a*b/100:'—'}
+function quickDice(){$('diceOut').textContent='🎲 '+(Math.floor(Math.random()*6)+1)}
+let timer;function startTimer(){clearInterval(timer);let n=+$('timerSec').value||60;$('timerOut').textContent=n;timer=setInterval(()=>{n--;$('timerOut').textContent=n;if(n<=0){clearInterval(timer);toast('Timer finished')}},1000)}
+function scanQR(){toast('QR scanner is optional. Camera permission is never requested for room joining. Use the 8-character room code if preferred.')}
+function showModal(){$('modal').classList.add('show')}function closeModal(){window.activeGameId=null;$('modal').classList.remove('show')}
+
+window.addEventListener('load',()=>{const h=location.hash.match(/^#(?:room|join)=([A-Za-z0-9]{8})$/i);if(h){roomCode=decodeURIComponent(h[1]);openJoin();setTimeout(()=>{$('joinCode').value=normalizeRoomCode(roomCode)},0)}});
+window.addEventListener('beforeunload',()=>cleanupPeer());
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
