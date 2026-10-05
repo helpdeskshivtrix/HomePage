@@ -1,0 +1,16 @@
+{
+  "name": "RoyalRoom",
+  "short_name": "RoyalRoom",
+  "description": "End-to-end encrypted rooms for chat, calls and file sharing.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "categories": ["social", "communication"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
