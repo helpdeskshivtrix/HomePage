@@ -723,5 +723,215 @@ load();paint();
 const rm=roomFrom(location.hash);if(rm){enterRoom(rm,false);toast("Joined room "+rm)}
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
 </script>
+<style>
+#ironw{position:fixed;right:12px;bottom:calc(var(--bn,0px) + 84px);width:128px;height:128px;z-index:150;display:none;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;filter:drop-shadow(0 6px 12px rgba(0,234,255,.28))}
+#ironw.on{display:block}#ironw canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
+body.tv #ironw{display:none!important}
+</style>
+<div id="ironw" title="Tap: boost · Double-tap: sprite sheet"><canvas id="ironc" width="64" height="64"></canvas></div>
+<script>
+/* ===== Chibi Iron Man sprite engine (procedural, 64x64 cells, 16-colour indexed palette) ===== */
+const IRON=(()=>{
+const W=64,T=255;
+const PAL=["#0A1226","#B2182B","#6E0E1C","#E04A57","#FDB813","#B87A0C","#FFE680","#FF8C00","#151822","#2D3C5A","#5C7399","#0055FF","#00EAFF","#0097B8","#FFFFFF","#101A33"];
+const NV=0,CR=1,CD=2,CL=3,GO=4,GD=5,GL=6,AM=7,OB=8,SL=9,SH=10,CB=11,CY=12,CK=13,WH=14,FD=15;
+const RGB=PAL.map(h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]);
+let B;
+const nb=()=>new Uint8Array(W*W).fill(T);
+const P=(x,y,c)=>{x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<W&&y<W)B[y*W+x]=c};
+const R=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)P(x+i,y+j,c)};
+const LN=(x0,y0,x1,y1,t,c)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++)R(x0+(x1-x0)*i/n,y0+(y1-y0)*i/n,t,t,c)};
+const sp=(spans,y0,x0,c)=>spans.forEach((s,i)=>R(x0+s[0],y0+i,s[1]-s[0]+1,1,c));
+
+function pulseCols(l){return{ring:l<.34?CB:CY,core:l>=.75?WH:(l<.34?CB:CY)}}
+
+function head(p,by){
+ const hy=8+by+(p.nod|0),t=p.tilt||0,hc=20,lv=pulseCols(p.lvl);
+ const off=r=>Math.round(t*(hc-r)/hc);
+ const H=(lx,ly,w,h,c)=>{for(let j=0;j<h;j++){const r=ly+j;R(20+lx+off(r),hy+r,w,1,c)}};
+ const HP=(lx,ly,c)=>H(lx,ly,1,1,c);
+ const HS=[[6,17],[4,19],[3,20],[1,22],[1,22],[1,22],[1,22],[1,22],[1,22],[1,22],[1,22],[1,22],[1,22],[1,22],[1,22],[1,22],[2,21],[3,20],[4,19],[6,17],[8,15]];
+ HS.forEach((s,r)=>H(s[0],r,s[1]-s[0]+1,1,CR));
+ H(6,1,6,2,CL);H(1,4,1,8,CL);H(2,3,1,1,CL);
+ H(21,4,2,14,CD);H(19,1,1,1,CD);H(20,2,1,1,CD);H(19,18,1,1,CD);
+ /* faceplate */
+ const FS=[[6,17],[5,18],[5,18],[5,18],[5,18],[5,18],[5,18],[5,18],[5,18],[5,18],[5,18],[5,18],[6,17],[7,16],[8,15],[9,14]];
+ FS.forEach((s,i)=>H(s[0],4+i,s[1]-s[0]+1,1,GO));
+ H(5,5,1,10,GL);H(7,4,3,1,GL);H(18,6,1,9,GD);H(17,17,1,1,GD);H(16,18,1,1,GD);
+ H(6,8,12,3,FD);                       /* visor gap */
+ H(7,9,3,1,CY);H(8,10,3,1,CY);H(14,9,3,1,CY);H(13,10,3,1,CY);
+ HP(8,10,WH);HP(15,10,WH);HP(7,9,WH);HP(16,9,WH);
+ H(11,11,2,5,GD);H(9,16,6,1,GD);H(10,18,4,1,GD);H(7,13,2,1,GD);H(15,13,2,1,GD);
+ HP(8,12,GL);HP(7,6,GL);
+ /* headphones: band */
+ H(7,-3,10,1,CY);H(5,-2,14,1,OB);H(3,-1,18,1,OB);
+ [[2,3],[1,2],[0,1],[-1,0]].forEach((a,i)=>{H(a[0],i,2,1,OB);H(23-a[1]-1,i,2,1,OB)});
+ H(5,-2,2,1,SH);
+ /* ear cups (oversized) */
+ [[-3,1],[22,26]].forEach((c,k)=>{
+  H(c[0]+1,4,3,1,OB);H(c[0],5,5,10,OB);H(c[0]+1,15,3,1,OB);
+  H(k?c[1]:c[0],6,1,8,SH);H(k?c[0]:c[1],7,1,6,SL);
+  const x=k?22:-2; H(x,6,4,5,SL);
+  H(x+1,6,2,1,lv.ring);H(x,7,4,2,lv.ring);H(x+1,9,2,1,lv.ring);
+  H(x+1,7,2,2,lv.core);
+ });
+}
+
+function arm(p,side,pose,by,pal){
+ const L=side<0, c=pulseCols(p.lvl);
+ if(pose==="down"){const x=L?22:39;R(x,31+by,3,8,CR);R(x,31+by,1,8,CL);R(x+2,31+by,1,8,CD);R(x,39+by,3,3,GO);R(x,39+by,1,3,GL);R(x+(L?0:2),41+by,1,1,CY);}
+ else if(pose==="fwd"){LN(39,33+by,45,36+by,3,CR);R(45,34+by,4,4,GO);R(45,34+by,4,1,GL);R(48,35+by,1,2,c.core===WH?WH:CY);}
+ else if(pose==="spread"){const x=L?15:44;LN(L?23:39,33+by,L?19:44,36+by,3,CR);R(x,34+by,4,5,GO);R(x,34+by,4,1,GL);R(L?x:x+3,35+by,1,3,WH);}
+}
+function earArm(p,by,hdy){ /* left hand cupping the ear-piece */
+ LN(24,33+by,18,27+by,3,CR);LN(24,33+by,18,27+by,1,CL);
+ R(13,20+by+hdy,5,6,GO);R(13,20+by+hdy,5,1,GL);R(13,25+by+hdy,5,1,GD);R(14,22+by+hdy,1,2,pulseCols(p.lvl).core===WH?WH:CY);
+}
+
+function body(p){
+ B=p.bb;const by=p.by|0,lc=p.legc|0,nozzles=[];
+ /* legs + boots */
+ [[27,p.fL||[0,0]],[33,p.fR||[0,0]]].forEach(([lx,f])=>{
+  const dx=f[0],dy=f[1],lg=7-lc+dy;
+  R(lx,39+by,4,Math.max(2,lg),CR);R(lx,39+by,1,Math.max(2,lg),CL);R(lx+3,39+by,1,Math.max(2,lg),CD);
+  R(lx,42+by-lc+Math.min(dy,0),4,1,GO);
+  const bx=lx-1+dx,bY=46+by-lc+dy;
+  R(bx,bY,6,4,GO);R(bx,bY,6,1,GL);R(bx,bY+3,6,1,GD);R(bx+5,bY+1,1,2,GD);P(bx,bY+1,GL);
+  R(bx+2,bY+4,2,1,SL);nozzles.push([bx+2,bY+5]);
+ });
+ /* torso */
+ R(29,29+by,6,1,SL);
+ R(26,30+by,12,8,CR);R(26,30+by,1,8,CL);R(36,30+by,2,8,CD);R(27,30+by,4,1,CL);
+ R(26,38+by,12,1,GO);R(26,38+by,3,1,GL);R(36,38+by,2,1,GD);
+ R(24,30+by,3,3,GO);R(24,30+by,3,1,GL);R(37,30+by,3,3,GO);R(39,31+by,1,2,GD);
+ /* arc reactor */
+ const c=pulseCols(p.lvl);
+ if(p.lvl>=.45){R(29,31+by,6,6,CK);P(29,31+by,CR);P(34,31+by,CR);P(29,36+by,CR);P(34,36+by,CR);}
+ if(p.lvl>=.75){for(let i=0;i<8;i++)for(let j=0;j<8;j++){if((i==0||j==0||i==7||j==7)&&(i+j)%2==0&&!((i==0||i==7)&&(j==0||j==7)))P(28+i,30+by+j,CK)}}
+ R(30,32+by,4,4,SL);R(31,32+by,2,1,c.ring);R(30,33+by,4,2,c.ring);R(31,35+by,2,1,c.ring);R(31,33+by,2,2,c.core);
+ /* arms */
+ if(p.aL!=="ear")arm(p,-1,p.aL||"down",by);
+ arm(p,1,p.aR||"down",by);
+ head(p,by);
+ if(p.aL==="ear")earArm(p,by,p.nod|0);
+ return nozzles;
+}
+
+function flame(nz,len,kind,f,F){
+ B=F;const[x,y]=nz;
+ if(kind==="boost"){
+  for(let i=0;i<len;i++){const wide=i<len*.5,cx=wide?x-1:x,w=wide?4:2;
+   if(i===len-1){R(x,y+i,2,1,GO);continue}
+   R(cx,y+i,w,1,AM);if(i<len*.65)R(x,y+i,2,1,WH);else R(x,y+i,2,1,GO);}
+  if(f%2){P(x-2,y+2,GO);P(x+3,y+3,AM)}else{P(x+3,y+2,GO);P(x-2,y+4,AM)}
+ }else{
+  for(let i=0;i<len;i++){const last=i===len-1;
+   if(last){R(x,y+i,1+(f%2),1,CB)}else R(x,y+i,2,1,i===0?WH:i<len-2?CY:CK);}
+  if(len>3){P(x-1,y+1,CK);P(x+2,y+2,CB)}
+ }
+}
+
+function rot(src,deg,ox,oy){
+ if(!deg&&!ox&&!oy)return src;
+ const a=deg*Math.PI/180,cs=Math.cos(a),sn=Math.sin(a),cx=32,cy=36,o=nb();
+ for(let y=0;y<W;y++)for(let x=0;x<W;x++){
+  const dx=x-ox-cx+.5,dy=y-oy-cy+.5,sx=Math.floor(dx*cs+dy*sn+cx),sy=Math.floor(-dx*sn+dy*cs+cy);
+  if(sx>=0&&sy>=0&&sx<W&&sy<W)o[y*W+x]=src[sy*W+sx];}
+ return o;
+}
+function outline(b){
+ const o=b.slice();
+ for(let y=0;y<W;y++)for(let x=0;x<W;x++){if(b[y*W+x]!==T)continue;
+  if((x>0&&b[y*W+x-1]!==T)||(x<W-1&&b[y*W+x+1]!==T)||(y>0&&b[(y-1)*W+x]!==T)||(y<W-1&&b[(y+1)*W+x]!==T))o[y*W+x]=NV;}
+ return o;
+}
+
+/* ---- animation definitions ---- */
+const S1=Math.sin;
+function pose(state,f,lvlOv){
+ const TAU=Math.PI*2;
+ if(state==="idle"){
+  return{by:Math.round(2*S1(TAU*f/8)),nod:[0,1,1,0,0,1,1,0][f],tilt:Math.round(1.6*Math.cos(TAU*f/8)),lvl:.5,aL:"down",aR:"down",
+   fl:[f%2?4:6,f%2?4:6],kind:"idle"};
+ }
+ if(state==="boost"){
+  const T6=[
+   {by:3,legc:2,nod:2,tilt:0,lean:0,fl:[6,6],kind:"boost",dust:0},
+   {by:0,nod:0,tilt:0,lean:38,fl:[8,8],kind:"boost",dust:1},
+   {by:0,nod:0,tilt:0,lean:45,fl:[11,11],kind:"boost",dust:3},
+   {by:0,nod:0,tilt:0,lean:45,fl:[9,10],kind:"boost",dust:3},
+   {by:-1,nod:0,tilt:0,lean:20,fl:[4,4],kind:"idle",aL:"spread",aR:"spread",flare:1},
+   {by:0,nod:1,tilt:1,lean:6,fl:[5,5],kind:"idle"}][f];
+  return Object.assign({lvl:.6,aL:"down",aR:"down"},T6);
+ }
+ const l=[.15,.45,.8,1,.7,.35,.9,.55][f],k=f%4<2;
+ return{by:Math.round(S1(TAU*f/8)),nod:f%2,tilt:Math.round(1.5*S1(TAU*f/8)),lvl:lvlOv==null?l:lvlOv,aL:"ear",aR:"fwd",
+  fL:k?[-2,-2]:[0,0],fR:k?[0,0]:[-2,-2],fl:[3+(f%2),3+((f+1)%2)],kind:"idle"};
+}
+function frame(state,f,lvl){
+ const p=pose(state,f,lvl);p.bb=nb();p.fx=nb();
+ const nz=body(p);
+ nz.forEach((n,i)=>flame(n,p.fl[i],p.kind,f,p.fx));
+ B=p.fx;
+ if(p.dust){const d=[[nz[0][0]-4,nz[0][1]+p.fl[0]+2,SH],[nz[1][0]+1,nz[1][1]+p.fl[1]+4,WH],[nz[0][0]+2,nz[0][1]+p.fl[0]+6,SL]];
+  for(let i=0;i<p.dust;i++){const q=d[i];P(q[0]+(f%2)*i,q[1],q[2]);if(i==1)P(q[0]+1,q[1],q[2])}}
+ if(p.flare){R(11,35,3,1,WH);P(10,36,AM);P(13,36,AM);R(50,35,3,1,WH);P(52,36,AM);P(51,34,AM);}
+ const lean=p.lean||0;
+ const ox=lean?Math.round(-lean/45*1):0,oy=lean?Math.round(lean/45*-2):0;
+ const bd=outline(rot(p.bb,lean,ox,oy)),fx=rot(p.fx,lean,ox,oy);
+ const out=bd.slice();
+ for(let i=0;i<W*W;i++)if(fx[i]!==T)out[i]=fx[i];
+ return out;
+}
+const SPEC=[["idle",8],["boost",6],["vibe",8]];
+function toImage(idx,ctx){const id=ctx.createImageData(W,W);for(let i=0;i<W*W;i++){const c=idx[i];if(c!==T){const r=RGB[c];id.data.set([r[0],r[1],r[2],255],i*4)}}return id}
+function sheet(){
+ const cv=document.createElement("canvas");cv.width=8*W;cv.height=3*W;const x=cv.getContext("2d");
+ SPEC.forEach(([s,n],r)=>{for(let f=0;f<n;f++)x.putImageData(toImage(frame(s,f),x),f*W,r*W)});
+ return cv}
+return{frame,toImage,sheet,SPEC,PAL,RGB,W,T};
+})();
+
+(function(){
+ const w=document.getElementById("ironw"),cv=document.getElementById("ironc"),cx=cv.getContext("2d");
+ let st="idle",f=0,last=0,boostF=-1,lvl=.5,lastId=null,lastKey="",lastTap=0;
+ function level(t){
+  if(!playing())return .5;
+  const it=Q[qi];let target;
+  if(typeof an!=="undefined"&&an&&it&&it.off){const d=new Uint8Array(an.frequencyBinCount);an.getByteFrequencyData(d);let s=0;for(let i=0;i<14;i++)s+=d[i];target=Math.min(1,s/14/255*1.5)}
+  else{const b=Math.pow(Math.max(0,Math.cos(t*Math.PI*2*2.1)),3);target=.2+.8*b*(.75+.25*Math.sin(t*3.1))}
+  lvl+=(target-lvl)*(target>lvl?.6:.18);return lvl}
+ function boost(){boostF=0;f=0;last=0}
+ function tick(now){
+  requestAnimationFrame(tick);
+  const show=Q.length>0&&qi>=0;w.classList.toggle("on",show);if(!show)return;
+  const it=Q[qi],id=it&&it.videoId;
+  if(lastId!==null&&id!==lastId)boost();lastId=id;
+  const t=now/1000,isPlay=playing();
+  const s=boostF>=0?"boost":isPlay?"vibe":"idle";
+  if(s!==st){st=s;f=0;last=0}
+  const n=st==="boost"?6:8,step=st==="boost"?85:st==="vibe"?125:140;
+  let dirty=false;
+  if(now-last>=step){last=now;f++;dirty=true;
+   if(st==="boost"&&f>=6){boostF=-1;st=isPlay?"vibe":"idle";f=0}
+   else f%=n}
+  let l;if(st==="vibe"){l=Math.round(level(t)*10)/10;if(l!==lastKey){lastKey=l;dirty=true}}
+  if(dirty||lastKey==="")cx.putImageData(IRON.toImage(IRON.frame(st,f,st==="vibe"?l:undefined),cx),0,0),lastKey=lastKey===""?"x":lastKey;
+ }
+ requestAnimationFrame(tick);
+ /* tap = boost, drag = move, double tap = sprite sheet */
+ let sx,sy,ox,oy,mv=false;
+ w.addEventListener("pointerdown",e=>{w.setPointerCapture(e.pointerId);const r=w.getBoundingClientRect();sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;mv=false});
+ w.addEventListener("pointermove",e=>{if(sx==null)return;const dx=e.clientX-sx,dy=e.clientY-sy;
+  if(!mv&&Math.hypot(dx,dy)>6)mv=true;
+  if(mv){w.style.left=Math.max(0,Math.min(innerWidth-128,ox+dx))+"px";w.style.top=Math.max(0,Math.min(innerHeight-128,oy+dy))+"px";w.style.right="auto";w.style.bottom="auto"}});
+ w.addEventListener("pointerup",()=>{if(sx==null)return;sx=null;if(mv)return;
+  const n=Date.now();if(n-lastTap<350){lastTap=0;showSheet()}else{lastTap=n;boost()}});
+ function showSheet(){
+  const s=IRON.sheet(),u=s.toDataURL("image/png");
+  dlg(`<h3>Iron Man sprite sheet</h3><p class="mut" style="font-size:12px;line-height:1.5;margin:0 0 8px">64×64 cells · 16-colour palette · transparent background.<br>Row 1 Idle/Hover (8) · Row 2 Boost/Dash (6) · Row 3 DJ Vibe (8)</p><div style="background:repeating-conic-gradient(#1a2433 0 25%,#0d141f 0 50%) 0 0/16px 16px;border-radius:10px;padding:6px"><img src="${u}" style="width:100%;image-rendering:pixelated;display:block" alt="sprite sheet"></div><a class="btn pri" style="display:block;text-align:center;line-height:38px;text-decoration:none;color:#fff" href="${u}" download="ironman-sprite-sheet.png">Download PNG</a>`)}
+})();
+</script>
+
 </body>
 </html>
