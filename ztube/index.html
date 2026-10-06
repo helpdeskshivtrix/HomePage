@@ -462,7 +462,7 @@ const PIPED=["https://pipedapi.kavin.rocks","https://pipedapi.adminforge.de","ht
 const INV=["https://inv.nadeko.net","https://yewtu.be","https://invidious.nerdvpn.de","https://invidious.privacyredirect.com","https://yt.artemislena.eu","https://invidious.f5.si"];
 let PI=PIPED.slice(),IV=INV.slice();
 const enc=encodeURIComponent;
-async function j(u,t=7000){const c=new AbortController(),x=setTimeout(()=>c.abort(),t);
+async function j(u,t=4000){const c=new AbortController(),x=setTimeout(()=>c.abort(),t);
  try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw 0;return await r.json()}finally{clearTimeout(x)}}
 const good=r=>r&&(Array.isArray(r)?r.length>0:true);
 /* race many servers at once, first good answer wins */
@@ -576,7 +576,8 @@ async function offDel(i){const it=LIST[i];if(!it||!confirm("Remove from offline 
  const d=await idb(),t=d.transaction("f","readwrite");t.objectStore("f").delete(it.id);await new Promise(ok=>t.oncomplete=ok);go("offline")}
 
 /* ---------- views ---------- */
-D.set=Object.assign({str:true,video:true,auto:true,fb:false,rot:true,q:"auto",cl:""},D.set||{});
+D.set=Object.assign({str:true,video:true,auto:true,fb:true,rot:true,q:"auto",cl:""},D.set||{});
+if(!D.set.fb2){D.set.fb=true;D.set.fb2=1;try{save()}catch(e){}}
 const S_=(p)=>`<svg viewBox="0 0 24 24">${p}</svg>`,SK='fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"';
 const IC={
  play:S_('<path d="M8 5.2v13.6l11-6.8z" fill="currentColor"/>'),
@@ -725,7 +726,7 @@ function showSet(){const T=(k,l)=>`<button class="btn" onclick="D.set.${k}=!D.se
  dlg(`<h3>Settings</h3>`+T("str","Ad-free stream mode")+
  `<p class="mut" style="font-size:12px;line-height:1.5;margin:6px 0">Streams through open Piped / Invidious servers: no ads, real background play and Picture-in-Picture. If every server is busy you get Retry / Next buttons instead of ads.</p>`+
  `<button class="btn" onclick="D.set.video=!D.set.video;save();syncBtns();showSet()">Stream type: ${D.set.video?"Video":"Audio only (saves data)"}</button>`+
- T("auto","Autoplay next")+T("fb","YouTube player fallback (may show ads)")+T("rot","Rotate to landscape in fullscreen")+
+ T("auto","Autoplay next")+T("fb","Use YouTube player if ad-free stream fails")+T("rot","Rotate to landscape in fullscreen")+
  `<button class="btn" onclick="closeDlg();obShow()">✎ Edit interests</button><button class="btn" onclick="showEQ()">🎚 Pro audio</button>`)}
 /* ---------- likes & playlists ---------- */
 function likeItem(it){
@@ -765,12 +766,12 @@ function loadCur(start){
  cache={};tab(curTab);keepOn();media(it);refreshLike();
  au.pause();vp.pause();const my=++sid;$("vbox").classList.remove("er");RT=0;
  if(it.off){mode="off";setBox();try{if(yt&&ytReady)yt.stopVideo()}catch(e){}chain();AC.resume();au.defaultPlaybackRate=au.playbackRate=spd;au.src=it.url;au.play().catch(()=>{})}
- else if(!follow&&D.set.str){mode="str";setBox();try{if(yt&&ytReady)yt.stopVideo()}catch(e){}strLoad(it,start,my)}
+ else if(!follow&&D.set.str&&Date.now()>STR_OFF){mode="str";setBox();try{if(yt&&ytReady)yt.stopVideo()}catch(e){}strLoad(it,start,my)}
  else{mode="yt";setBox();ytLoad(it.videoId,start)}
  if(!follow){sendLoad();topUp()}}
 /* ad-free stream: direct audio/video from open servers, works in background + PiP.
    Never uses the YouTube iframe (ads) unless "YouTube player fallback" is switched on in Settings. */
-let CS=null,CL=[],CI=0;
+let CS=null,CL=[],CI=0,STR_OFF=0,STR_FAILS=0;
 function cands(s){const L=[],vq=s.vq||[];
  if(D.set.video){const o=vq.slice(),w=D.set.q;
   if(w&&w!=="auto"){const k=o.findIndex(x=>x.q===w);if(k>0)o.unshift(o.splice(k,1)[0])}
@@ -785,20 +786,21 @@ async function strLoad(it,start,my,retry){retry=retry||0;
  const s=await streamP(it.videoId);
  if(my!==sid||mode!=="str")return;
  CS=s;
- if(!s){if(retry<2){PI.push(PI.shift());IV.push(IV.shift());return strLoad(it,start,my,retry+1)}return strFail(it,start)}
+ if(!s){if(retry<1){PI.push(PI.shift());IV.push(IV.shift());return strLoad(it,start,my,retry+1)}return strFail(it,start)}
  CL=cands(s);CI=0;RT=retry;if(!CL.length)return strFail(it,start);
  setSrc(start);autoSub(s)}
 function strErr(){const it=Q[qi];if(!it)return;const t=Math.floor(time());CI++;
  if(CI<CL.length)return setSrc(t);
- if(RT<2){RT++;delete SP[it.videoId];PI.push(PI.shift());IV.push(IV.shift());return strLoad(it,t,sid,RT)}
+ if(RT<1){RT++;delete SP[it.videoId];PI.push(PI.shift());IV.push(IV.shift());return strLoad(it,t,sid,RT)}
  strFail(it,t)}
 function strFail(it,start){if(follow||mode!=="str")return;
- if(D.set.fb){mode="yt";setBox();toast("Stream servers busy — using YouTube player (ads may show)");ytLoad(it.videoId,start||0);return}
+ if(++STR_FAILS>=2){STR_OFF=Date.now()+6e5;STR_FAILS=0}
+ if(D.set.fb){mode="yt";setBox();toast("Using YouTube player");ytLoad(it.videoId,start||0);return}
  const b=$("vbox");b.classList.remove("ld");b.classList.add("er");ui(false)}
 function strRetry(){const it=Q[qi];if(!it)return;delete SP[it.videoId];loadCur(Math.floor(time())||0)}
 function useYT(){const it=Q[qi];if(!it)return;$("vbox").classList.remove("er");vp.pause();mode="yt";setBox();ytLoad(it.videoId,Math.floor(time()))}
 vp.onerror=()=>{if(mode==="str"&&Q[qi]&&vp.getAttribute("src"))strErr()};
-vp.onplaying=()=>{$("vbox").classList.remove("ld");if(mode==="str"){errs=0;ui(true)}};
+vp.onplaying=()=>{$("vbox").classList.remove("ld");if(mode==="str"){errs=0;STR_FAILS=0;ui(true)}};
 vp.onplay=()=>{if(mode==="str")ui(true)};vp.onpause=()=>{if(mode==="str")ui(false)};vp.onended=()=>{if(mode==="str")ended()};
 function onState(e){if(mode!=="yt")return;const S=YT.PlayerState;
  if(e.data===S.PLAYING){userPaused=false;errs=0;ui(true);keepOn()}
