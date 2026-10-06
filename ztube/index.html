@@ -297,9 +297,22 @@ h1.vt{font-size:clamp(20px,2.2vw,30px)}
  .vrow,.ctl.ctl2{margin-left:4px;margin-right:4px}
 }
 @media(min-width:1800px){.ct{font-size:16px}.nv{font-size:15px}}
+
+html{background:#000}
+#splash{position:fixed;inset:0;z-index:99999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px;text-align:center;transition:opacity .6s}
+#splash.out{opacity:0;pointer-events:none}
+#splash img{width:min(46vw,210px);height:auto;animation:spIn .9s ease-out both}
+#splash p,.cr{font:500 13px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#9aa0aa;max-width:340px;margin:0;animation:spIn 1.2s .3s ease-out both}
+#splash a,.cr a{color:#4da3ff;font-weight:700;text-decoration:underline}
+.cr{padding:18px 14px;animation:none;font-size:12px}
+@keyframes spIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.vbox:-webkit-full-screen{width:100vw!important;height:100vh!important;max-width:none;aspect-ratio:auto;border-radius:0}
+body.pfs .vbox{position:fixed;inset:0;z-index:9999;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none;aspect-ratio:auto;border-radius:0;background:#000}
 </style>
 </head>
 <body>
+<div id="splash"><img src="./icon-512.png" alt="YouTrix"><p>Good things start with giving.<br>I’ve done my part—now it’s time to support the author.<br>All <a class="crl" href="#" target="_blank" rel="noopener">credit</a> goes to Solitude and perseverance</p></div>
+<script>window.CREDIT_URL="https://helpdeskshivtrix.github.io/HomePage/";document.querySelectorAll(".crl").forEach(function(a){a.href=window.CREDIT_URL});setTimeout(function(){var e=document.getElementById("splash");if(e){e.classList.add("out");setTimeout(function(){e.remove()},700)}},2600);</script>
 
 <header id="top">
  <button class="ib" id="menuBtn" onclick="document.body.classList.toggle('menu')" style="display:none">☰</button>
@@ -332,6 +345,7 @@ h1.vt{font-size:clamp(20px,2.2vw,30px)}
  <button class="nv" onclick="showEQ()">🎚 Pro audio</button>
  <button class="nv" onclick="scanQR()">📷 Scan room QR</button>
  <button class="nv" onclick="pal()">⌘ Command palette</button>
+ <div class="cr">Good things start with giving.<br>I’ve done my part—now it’s time to support the author.<br>All <a class="crl" href="#" target="_blank" rel="noopener">credit</a> goes to Solitude and perseverance</div>
 </nav>
 
 <main id="main"></main>
@@ -494,7 +508,14 @@ const chSearch=async q=>(await any([
  ...PP(`/search?q=${enc(q)}&filter=channels`,d=>d.items.filter(i=>/\/channel\//.test(i.url||"")).map(i=>({cid:cidP(i.url),name:i.name,img:i.thumbnail,subs:i.subscribers}))),
  ...IP(`/api/v1/search?q=${enc(q)}&type=channel`,(d,b)=>d.filter(i=>i.type==="channel").map(i=>({cid:i.authorId,name:i.author,img:fixU(b,((i.authorThumbnails||[]).slice(-1)[0]||{}).url),subs:i.subCount})))]))||[];
 /* channel: first page of videos + playlists tab handle */
+const rssChan=(id,name)=>[u=>"https://api.allorigins.win/raw?url="+enc(u),u=>"https://corsproxy.io/?url="+enc(u),u=>"https://api.codetabs.com/v1/proxy?quest="+enc(u)].map(px=>async()=>{
+ await new Promise(r=>setTimeout(r,2500));const c=new AbortController(),x=setTimeout(()=>c.abort(),7000);
+ try{const r=await fetch(px("https://www.youtube.com/feeds/videos.xml?channel_id="+id),{signal:c.signal});if(!r.ok)throw 0;
+  const d=new DOMParser().parseFromString(await r.text(),"text/xml"),es=[...d.getElementsByTagName("entry")];if(!es.length)throw 0;
+  const g=(e,n)=>(e.getElementsByTagName(n)[0]||{}).textContent||"",nm=g(d.documentElement,"name")||name;
+  return{name:nm,img:"",subs:0,v:es.map(e=>({videoId:g(e,"yt:videoId"),title:g(e,"title"),artist:nm,cid:id,duration:""})),nx:null,tab:""}}finally{clearTimeout(x)}});
 const chanGet=(id,name)=>any([
+ ...rssChan(id,name),
  ...PP(`/channel/${id}`,d=>({name:d.name,img:d.avatarUrl,subs:d.subscriberCount,
   v:(d.relatedStreams||[]).filter(isW).map(x=>({...pn(x),artist:x.uploaderName||d.name,cid:id})),
   nx:d.nextpage?{k:"p",t:d.nextpage}:null,tab:((d.tabs||[]).find(t=>t.name==="playlists")||{}).data||""})),
@@ -539,12 +560,15 @@ function streamP(id){const e=SP[id];if(e&&Date.now()-e.t<108e5)return e.p;
  const p=streamGet(id).then(r=>{if(!r){delete SP[id];return r}r.id=id;
   r.alt=IV.slice(0,4).flatMap(b=>[22,18].map(t=>`${b}/latest_version?id=${id}&itag=${t}&local=true`));return r}).catch(()=>{delete SP[id];return null});
  SP[id]={t:Date.now(),p};const k=Object.keys(SP);if(k.length>40)delete SP[k[0]];return p}
+const nk=t=>(t||"").toLowerCase().replace(/[\(\[].*?[\)\]]/g,"").replace(/\|.*$/,"").replace(/official|video|audio|lyrical|lyrics|full song|full|hd|4k|remastered|version/g,"").replace(/[^\p{L}\p{N}]+/gu,"").slice(0,30);
+const shufA=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[a[i],a[k]]=[a[k],a[i]]}return a};
 const related=async id=>{try{const s=await streamP(id);if(s&&s.rel&&s.rel.length)return fin(s.rel)}catch(e){}return[]};
 /* related with fallbacks so the Up next / Related lists never stay empty */
 async function relatedOf(it){let r=await related(it.videoId);
  if(!r.length)r=await search((it.artist.replace(/ - Topic$/,"")+" "+it.title.replace(/[\(\[].*?[\)\]]/g,"")).trim().slice(0,70));
  if(!r.length&&it.artist)r=await search(it.artist+" songs");
- return r.filter(x=>x.videoId!==it.videoId)}
+ const seenT=new Set([nk(it.title)]);
+ return shufA(r.filter(x=>{if(x.videoId===it.videoId)return false;const k=nk(x.title);if(!k||seenT.has(k))return false;seenT.add(k);return true}))}
 const comments=async id=>await any([
  ...PP(`/comments/${id}`,d=>d.comments.map(c=>({a:c.author,t:plain(c.commentText),l:c.likeCount,d:c.commentedTime}))),
  ...IP(`/api/v1/comments/${id}`,d=>d.comments.map(c=>({a:c.author,t:plain(c.content),l:c.likeCount,d:c.publishedText})))])||[];
@@ -869,7 +893,7 @@ async function topUp(force){
  const cur=Q[qi];if(busy||!cur||cur.off)return;if(!force&&Q.length-1-qi>=3)return;
  busy=true;renderTab();
  try{const r=await relatedOf(cur);
-  const fresh=r.filter(x=>!played.has(x.videoId)&&!Q.some(q=>q.videoId===x.videoId)).slice(0,10);
+  const fresh=r.filter(x=>!played.has(x.videoId)&&!Q.some(q=>q.videoId===x.videoId||nk(q.title)===nk(x.title))).slice(0,10);
   Q.push(...fresh)}catch(e){}
  busy=false;renderTab()}
 /* tabs */
@@ -1191,14 +1215,15 @@ setInterval(()=>{if(!Q.length)return;const t=time(),d=dur();
   else if(dir==="v"&&dy<-45){reset();openPl()}else reset();dir=""};
  m.addEventListener("touchend",end);m.addEventListener("touchcancel",end)})();
 /* fullscreen (works on touch) + landscape lock */
-const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement||(document.body.classList.contains("pfs")?document.body:null);
 async function togFs(){const b=$("vbox");
+ if(document.body.classList.contains("pfs")){document.body.classList.remove("pfs");fsChange();return}
  if(fsEl()){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}return}
  if(!Q.length)return toast("Play something first");
  try{if(b.requestFullscreen)await b.requestFullscreen({navigationUI:"hide"});else if(b.webkitRequestFullscreen)b.webkitRequestFullscreen();
-  else if(vp.webkitEnterFullscreen&&mode==="str"){vp.webkitEnterFullscreen();return}else return toast("Fullscreen isn’t supported here")}
+  else if(vp.webkitEnterFullscreen&&mode==="str"){vp.webkitEnterFullscreen();return}else{document.body.classList.add("pfs");fsChange();return}}
  catch(e){if(vp.webkitEnterFullscreen&&mode==="str")try{vp.webkitEnterFullscreen()}catch(x){}return}
- if(D.set.rot&&mode==="str"&&D.set.video)try{await screen.orientation.lock("landscape")}catch(e){}}
+ if(D.set.rot&&(mode==="yt"||(mode==="str"&&D.set.video)))try{await screen.orientation.lock("landscape")}catch(e){}}
 function fsChange(){const on=!!fsEl();document.body.classList.toggle("fs",on);$("bFs").innerHTML=on?IC.fsx:IC.fs;$("oFs").innerHTML=on?IC.fsx:IC.fs;
  if(!on){try{screen.orientation.unlock()}catch(e){}}else showOv()}
 document.addEventListener("fullscreenchange",fsChange);document.addEventListener("webkitfullscreenchange",fsChange);
@@ -1271,6 +1296,7 @@ load();paint();
 (function(){const p=new URLSearchParams(location.search),sh=p.get("url")||p.get("text")||p.get("q")||"";
  if(sh){try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}setTimeout(()=>doSearch(sh),500)}})();
 const rm=roomFrom(location.hash);if(rm){enterRoom(rm,false);toast("Joined room "+rm)}
+document.querySelectorAll(".crl").forEach(a=>a.href=window.CREDIT_URL);
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
 </script>
 </body>
