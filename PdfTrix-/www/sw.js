@@ -1,43 +1,69 @@
-/* PdfTrix service worker: precache everything for full offline use */
-const VERSION = 'v6';
-const CACHE = 'shivtrix-pdfpro-' + VERSION;
-const CORE = [
-  './', './index.html', './app.js', './manifest.json',
-  './icon-192.png', './icon-512.png',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-192.png', './icons/maskable-512.png',
-  './icons/apple-touch-icon.png', './icons/favicon-32.png', './icons/app.ico',
-  './libs/jszip.min.js', './libs/pdf-lib-enc.min.js', './libs/pdf-lib.min.js',
-  './libs/pdfjs/pdf.min.js', './libs/pdfjs/pdf.worker.min.js',
-  './libs/tesseract/tesseract.min.js', './libs/tesseract/worker.min.js', './libs/mammoth.browser.min.js'
-];
-/* OCR engine + English data: cached after first use (large) */
-const LAZY = /\/libs\/tesseract\/(tesseract-core.*|lang\/.*)$/;
+/* WhatsTrix service worker: offline app shell. The QR and network libraries are
+   built into index.html, so nothing else needs to be cached. Bump VERSION whenever
+   you change any file. Chat traffic (WebRTC and the PeerJS signaling socket) never
+   goes through the cache. */
+const VERSION = 'whatstrix-v2';
+const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
+  // one missing file must not break the install
+  e.waitUntil(
+    caches.open(VERSION)
+      .then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {}))))
+      .then(() => self.skipWaiting())
+  );
 });
+
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('shivtrix-pdfpro-') && k !== CACHE).map(k => caches.delete(k))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
+
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== location.origin) return; /* other-language OCR data etc. go straight to network */
-  e.respondWith((async () => {
-    const cache = await caches.open(CACHE);
-    const hit = await cache.match(req, { ignoreSearch: true });
-    if (hit) return hit;
-    try {
-      const res = await fetch(req);
-      if (res.ok && (LAZY.test(url.pathname) || CORE.some(p => new URL(p, location).pathname === url.pathname))) cache.put(req, res.clone());
-      return res;
-    } catch (err) {
-      if (req.mode === 'navigate') return (await cache.match('./index.html')) || Response.error();
-      throw err;
-    }
-  })());
+  if (url.origin !== location.origin) return;          // never touch other sites
+
+  // Pages: network first (with a timeout) so updates arrive immediately; cache when offline or slow.
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      new Promise((resolve, reject) => {
+        const t = setTimeout(() => caches.match('./index.html').then(h => h && resolve(h)), 6000);
+        fetch(req).then(res => {
+          clearTimeout(t);
+          if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put('./index.html', copy)); }
+          resolve(res);
+        }).catch(() => { clearTimeout(t); caches.match('./index.html').then(h => h ? resolve(h) : reject()); });
+      })
+    );
+    return;
+  }
+
+  // Own static files: cache first, refresh in the background.
+  e.respondWith(
+    caches.match(req).then(hit => {
+      const net = fetch(req).then(res => {
+        if (res && res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
+        return res;
+      }).catch(() => hit);
+      return hit || net;
+    })
+  );
+});
+
+// Tapping a notification focuses the app and opens the room.
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const g = e.notification.data && e.notification.data.g;
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      const w = list.find(c => 'focus' in c);
+      if (w) { if (g) w.postMessage({ g }); return w.focus(); }
+      return self.clients.openWindow('./');
+    })
+  );
 });
